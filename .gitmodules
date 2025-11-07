@@ -1,0 +1,12 @@
+[submodule "src/External/mumble"]
+	path = src/External/mumble
+	url = https://github.com/RaidcoreGG/RCGG-lib-mumble-api.git
+[submodule "src/External/nexus"]
+	path = src/External/nexus
+	url = https://github.com/RaidcoreGG/RCGG-lib-nexus-api.git
+[submodule "src/External/imgui"]
+	path = src/External/imgui
+	url = https://github.com/RaidcoreGG/imgui.git
+[submodule "src/External/gw2re"]
+	path = src/External/gw2re
+	url = https://github.com/TyrianDeveloperCollective/GW2RE-lib.git
