@@ -122,7 +122,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(ProjectDir)src;$(ProjectDir)src\External;$(ProjectDir)src\External\gw2re;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)src;$(ProjectDir)src\External;$(ProjectDir)src\External\gw2re;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
@@ -147,7 +147,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(ProjectDir)src;$(ProjectDir)src\External;$(ProjectDir)src\External\gw2re;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)src;$(ProjectDir)src\External;$(ProjectDir)src\External\gw2re;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
@@ -165,7 +165,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="resource.h" />
-    <ClInclude Include="src\buffs.h" />
+    <ClInclude Include="src\Common\BuffData.h" />
     <ClInclude Include="src\Common\Globals.h" />
     <ClInclude Include="src\Common\Types.h" />
     <ClInclude Include="src\Common\Utils.h" />
@@ -187,7 +187,6 @@
     <ClInclude Include="src\Version.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\buffs.cpp" />
     <ClCompile Include="src\Common\Globals.cpp" />
     <ClCompile Include="src\Common\Utils.cpp" />
     <ClCompile Include="src\Core\Addon.cpp" />
@@ -223,13 +222,19 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="src\Assets\demon_slaying.png" />
+    <Image Include="src\Assets\destroyer_slaying.png" />
     <Image Include="src\Assets\dredge_slaying.png" />
+    <Image Include="src\Assets\elemental_slaying.png" />
     <Image Include="src\Assets\flame_legion_slaying.png" />
     <Image Include="src\Assets\ghost_slaying.png" />
+    <Image Include="src\Assets\ice_brood_slaying.png" />
     <Image Include="src\Assets\inquest_slaying.png" />
     <Image Include="src\Assets\nightmare_court_slaying.png" />
+    <Image Include="src\Assets\night_sigil.png" />
     <Image Include="src\Assets\outlaw_slaying.png" />
     <Image Include="src\Assets\sharpening_stone.png" />
+    <Image Include="src\Assets\sons_of_svanir_slaying.png" />
+    <Image Include="src\Assets\thumbs_up.png" />
     <Image Include="src\Assets\undead_slaying.png" />
   </ItemGroup>
   <ItemGroup>

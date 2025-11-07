@@ -10,8 +10,7 @@
 
 namespace
 {
-    bool showText = false;
-    float hideAt  = 0.0f;
+    bool showOverlay = false;
 
     void HandleOverlayDrag()
     {
@@ -37,11 +36,9 @@ namespace
 
 namespace Overlay
 {
-
-    void ShowOverlay(int seconds)
+    void ToggleOverlay(bool state)
     {
-        showText = true;
-        hideAt   = ImGui::GetTime() + seconds;
+        showOverlay = !state;
     }
 
     void RenderOverlay(const Buff &buff)
@@ -62,16 +59,10 @@ namespace Overlay
 
         if (!isDragEnabled)
         {
-            if (buff.id <= 0 || !showText)
+            if (buff.id <= 0 || !showOverlay)
                 return;
 
-            if (showText && ImGui::GetTime() > hideAt)
-            {
-                showText = false;
-                return;
-            }
-
-            // pass through all inputs when user not dragging
+            // in "prod mode" make the overlay non-interactive
             flags |= ImGuiWindowFlags_NoInputs;
         }
 

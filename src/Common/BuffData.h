@@ -1,0 +1,37 @@
+#pragma once
+
+#include <resource.h>
+#include <string>
+#include <unordered_map>
+
+namespace
+{
+    struct BuffInfo
+    {
+        int resourceID;
+        std::string name;
+    };
+} // namespace
+
+std::unordered_map<int, BuffInfo> BuffDefs = {
+    {1, {THUMBS_UP, "THUMBS_UP"}},
+    {9963, {SHARPENING_STONE, "SHARPENING STONE"}},
+    {9949, {DREDGE_SLAYING, "DREDGE SLAYING"}},
+    {9925, {FLAME_LEGION_SLAYING, "FLAME LEGION SLAYING"}},
+    {8493, {GHOST_SLAYING, "GHOST SLAYING"}},
+    {9917, {INQUEST_SLAYING, "INQUEST SLAYING"}},
+    {9941, {NIGHTMARE_COURT_SLAYING, "NIGHTMARE COURT SLAYING"}},
+    {9933, {OUTLAW_SLAYING, "OUTLAW SLAYING"}},
+    {9837, {UNDEAD_SLAYING, "UNDEAD SLAYING"}},
+    {9861, {ICE_BROOD_SLAYING, "ICE BROOD SLAYING"}},
+    {9869, {DESTROYER_SLAYING, "DESTROYER SLAYING"}},
+    {9893, {ELEMENTAL_SLAYING, "ELEMENTAL SLAYING"}},
+    {9901, {DEMON_SLAYING, "DEMON SLAYING"}},
+    {9909, {SONS_OF_SVANIR_SLAYING, "SONS OF SVANIR SLAYING"}},
+    {23228, {DEMON_SLAYING, "SCARLET'S ARMIES SLAYING"}}, // shares icon with demon slaying
+    {15268, {NIGHT_SIGIL, "NIGHT SIGIL"}},
+    //{9845, {CENTAUR_SLAYING, "CENTAUR SLAYING"}},
+    //{9853, {GRAWL_SLAYING, "GRAWL SLAYING"}},
+    //{9877, {OGRE_SLAYING, "OGRE SLAYING"}},
+    //{9885, {KRAIT_SLAYING, "KRAIT SLAYING"}},
+};

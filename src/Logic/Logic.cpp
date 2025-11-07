@@ -1,47 +1,79 @@
 #include "Logic.h"
+#include <Common/BuffData.h>
 #include <Common/Globals.h>
 #include <Common/Types.h>
 #include <Common/Utils.h>
 #include <Data/SettingsManager.h>
+#include <External/gw2re/Game/Char/ChBuffMgr.h>
+#include <External/gw2re/Game/Char/ChCliContext.h>
+#include <External/gw2re/Game/Char/ChCombatant.h>
+#include <External/gw2re/Game/Char/Character.h>
+#include <External/gw2re/Game/PropContext.h>
 #include <UI/Overlay/Overlay.h>
-#include <buffs.h>
 #include <chrono>
 #include <format>
 #include <nexus/Nexus.h>
 #include <string>
 #include <vector>
 
-bool IsPlayerInSector(const Vec2 &pos, const std::vector<Vec2> &bounds)
+namespace
 {
-    if (bounds.size() < 3)
-        return false;
-
-    bool inside  = false;
-    size_t count = bounds.size();
-
-    for (size_t i = 0, j = count - 1; i < count; j = i++)
+    bool IsPlayerInSector(const Vec2 &pos, const std::vector<Vec2> &bounds)
     {
-        const auto &pi = bounds[i];
-        const auto &pj = bounds[j];
+        if (bounds.size() < 3)
+            return false;
 
-        bool intersect =
-            ((pi.y > pos.y) != (pj.y > pos.y)) &&
-            (pos.x < (pj.x - pi.x) * (pos.y - pi.y) / (pj.y - pi.y) + pi.x);
+        bool inside  = false;
+        size_t count = bounds.size();
 
-        if (intersect)
-            inside = !inside;
+        for (size_t i = 0, j = count - 1; i < count; j = i++)
+        {
+            const auto &pi = bounds[i];
+            const auto &pj = bounds[j];
+
+            bool intersect =
+                ((pi.y > pos.y) != (pj.y > pos.y)) &&
+                (pos.x < (pj.x - pi.x) * (pos.y - pi.y) / (pj.y - pi.y) + pi.x);
+
+            if (intersect)
+                inside = !inside;
+        }
+
+        return inside;
     }
 
-    return inside;
-}
+    bool PlayerHasBuff(Buff buff)
+    {
+        static GW2RE::CPropContext propCtx = GW2RE::CPropContext::Get();
+
+        GW2RE::CCharCliContext cctx = propCtx.GetCharCliCtx();
+
+        GW2RE::CCharacter character = cctx.GetControlledCharacter();
+        GW2RE::CCombatant combatant = character.GetCombatant();
+        GW2RE::CBuffMgr buffMgr     = combatant.GetBuffMgr();
+        GW2RE::BuffBar_t buffBar    = buffMgr.GetBuffBar();
+
+        for (size_t i = 0; i < buffBar.Capacity; i++)
+        {
+            if (buffBar.Entries[i].Hash == 0)
+                continue;
+
+            if (static_cast<int>(buffBar.Entries[i].KVP.Value->EffectID) == buff.id)
+            {
+                Log::Debug("Player has desired buff: " + BuffDefs.at(buff.id).name);
+                return true;
+            }
+        }
+
+        return false;
+    }
+} // namespace
 
 void OnRender()
 {
-    BuffTest();
-
     if (SettingsManager::IsOverlayDragEnabled())
     {
-        Overlay::RenderOverlay(Buff(9963, "DRAG ME BABY!", ""));
+        Overlay::RenderOverlay(Buff(1, "Drag me to new places", ""));
         return; // no need to do the rest here
     }
 
@@ -59,7 +91,7 @@ void OnRender()
 
     Overlay::RenderOverlay(buff); // must be called each frame
 
-    if (elapsed < 1000)
+    if (elapsed < 500)
         return;
 
     last = now;
@@ -68,31 +100,33 @@ void OnRender()
         return;
 
     // global player position
-    double x = G::MumbleLink->Context.Compass.PlayerPosition.X;
-    double y = G::MumbleLink->Context.Compass.PlayerPosition.Y;
+    float x = G::MumbleLink->Context.Compass.PlayerPosition.X;
+    float y = G::MumbleLink->Context.Compass.PlayerPosition.Y;
 
     auto &currentMap = G::MapDataMap.at(G::CurrentMapID);
 
     for (auto &sector : currentMap.sectors)
     {
-        if (!IsPlayerInSector({x, y}, sector.bounds) || sector.id == G::CurrentSectorID)
+        if (!IsPlayerInSector({x, y}, sector.bounds))
         {
             continue;
         }
 
-        G::CurrentSectorID = sector.id;
-
-        Log::Info(std::format("Sector: {} ({})", sector.name, sector.id).c_str());
+        if (sector.id != G::CurrentSectorID)
+        {
+            G::CurrentSectorID = sector.id;
+            Log::Info(std::format("Sector: {} ({})", sector.name, sector.id).c_str());
+        }
 
         if (sector.buffs.utility.has_value())
         {
             buff = sector.buffs.utility.value();
-            Overlay::ShowOverlay(SettingsManager::GetOverlayTimeoutSeconds());
+            Overlay::ToggleOverlay(PlayerHasBuff(buff));
         }
         else if (currentMap.default_buffs.utility.has_value())
         {
             buff = currentMap.default_buffs.utility.value();
-            Overlay::ShowOverlay(SettingsManager::GetOverlayTimeoutSeconds());
+            Overlay::ToggleOverlay(PlayerHasBuff(buff));
         }
         else
         {

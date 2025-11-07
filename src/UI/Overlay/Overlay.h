@@ -4,6 +4,6 @@
 
 namespace Overlay
 {
-void RenderOverlay(const Buff &buff);
-void ShowOverlay(int seconds);
+    void RenderOverlay(const Buff &buff);
+    void ToggleOverlay(bool state);
 } // namespace Overlay
