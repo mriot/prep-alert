@@ -31,6 +31,7 @@ namespace
             const auto &pi = bounds[i];
             const auto &pj = bounds[j];
 
+            // ngl this is some ray-casting shit from stackoverflow
             bool intersect =
                 ((pi.y > pos.y) != (pj.y > pos.y)) &&
                 (pos.x < (pj.x - pi.x) * (pos.y - pi.y) / (pj.y - pi.y) + pi.x);
@@ -71,13 +72,14 @@ namespace
 
 void OnRender()
 {
-    static Buff buff;
+    static std::vector<Buff> buffs;
     static auto last           = std::chrono::steady_clock::now();
     static bool wasOptionsOpen = false;
 
     if (!G::NexusLink->IsGameplay)
         return;
 
+    // needed to disable drag mode when closing settings
     if (G::IsOptionsPaneOpen)
     {
         wasOptionsOpen       = true;
@@ -89,22 +91,25 @@ void OnRender()
         wasOptionsOpen = false;
     }
 
-    // this must run regardless of map status
+    // run regardless of map support status to be able to drag overlay on any map
     if (SettingsManager::IsOverlayDragEnabled())
     {
-        Overlay::RenderOverlay(Buff(1, "Drag me to new places"));
+        Overlay::RenderOverlay({Buff(-1, "I'm just a placeholder"), Buff(-1, "While you change settings")});
         return; // no need to go further
     }
 
     if (!G::IsOnSupportedMap)
+    {
+        buffs.clear(); // avoids ugly leftovers when changing map
         return;
+    }
 
+    Overlay::RenderOverlay(buffs);
+
+    // avoid checking check map and sector stuff each frame
     auto now     = std::chrono::steady_clock::now();
     auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(now - last).count();
 
-    Overlay::RenderOverlay(buff);
-
-    // avoid checking check map and sector stuff each frame
     if (elapsed < 500)
         return;
 
@@ -120,7 +125,7 @@ void OnRender()
     {
         if (!IsPlayerInSector({x, y}, sector.bounds))
         {
-            continue;
+            continue; // out of bounds eh?
         }
 
         if (sector.id != G::CurrentSectorID)
@@ -129,21 +134,41 @@ void OnRender()
             Log::Info(std::format("Sector: {} ({})", sector.name, sector.id).c_str());
         }
 
-        if (sector.buffs.utility.has_value())
+        // we have to check buffs even if sector didn't change
+        // in case a buff ran out or equipment changed etc.
+
+        buffs.clear();
+
+        auto addBuffReminder = [&](const std::optional<Buff> &buffOpt) {
+            if (!buffOpt.has_value())
+                return false; // not specified -> try fallback if any
+
+            // either we add a reminder or player has buff already
+            if (!PlayerHasBuff(buffOpt.value()))
+            {
+                buffs.push_back(buffOpt.value());
+            }
+            return true;
+        };
+
+        // utility
+        if (!addBuffReminder(sector.buffs.utility))
         {
-            buff = sector.buffs.utility.value();
-            Overlay::ToggleOverlay(PlayerHasBuff(buff));
-        }
-        else if (currentMap.default_buffs.utility.has_value())
-        {
-            buff = currentMap.default_buffs.utility.value();
-            Overlay::ToggleOverlay(PlayerHasBuff(buff));
-        }
-        else
-        {
-            Log::Warning("No utility buff found for this sector or map default.");
+            addBuffReminder(currentMap.default_buffs.utility);
         }
 
-        break;
+        // sigil
+        if (!addBuffReminder(sector.buffs.sigil))
+        {
+            addBuffReminder(currentMap.default_buffs.sigil);
+        }
+
+        // sus
+        if (buffs.empty())
+        {
+            Log::Warning("No buff found for this sector nor a map default");
+        }
+
+        break; // player can be in only one sector
     }
 }

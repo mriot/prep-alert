@@ -14,7 +14,7 @@ namespace
 } // namespace
 
 std::unordered_map<int, BuffInfo> BuffDefs = {
-    {1, {THUMBS_UP, "THUMBS_UP"}},
+    {-1, {THUMBS_UP, "THUMBS_UP"}},
     {9963, {SHARPENING_STONE, "SHARPENING STONE"}},
     {9949, {DREDGE_SLAYING, "DREDGE SLAYING"}},
     {9925, {FLAME_LEGION_SLAYING, "FLAME LEGION SLAYING"}},
