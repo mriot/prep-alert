@@ -40,3 +40,14 @@ struct MapData
     std::vector<Sector> sectors;
     Buffs default_buffs;
 };
+
+struct OverlayPosition
+{
+    float x;
+    float y;
+};
+
+struct Settings
+{
+    OverlayPosition overlayPosition;
+};
