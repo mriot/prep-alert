@@ -26,6 +26,8 @@ void OnOptionsRender()
 
     // Overlay positioning
     ImGui::Text("Change overlay position");
+    ImGui::SameLine();
+    ImGui::TextDisabled("(dragging is also supported)");
 
     ImVec2 pos = SettingsManager::GetOverlayPosition();
     if (ImGui::InputFloat("Position X", &pos.x, 1.0f, 10.0f, "%.1f"))
