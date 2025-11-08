@@ -49,4 +49,5 @@ struct OverlayPosition
 struct Settings
 {
     OverlayPosition overlayPosition;
+    int flashingDuration;
 };

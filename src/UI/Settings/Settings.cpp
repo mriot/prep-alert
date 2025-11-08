@@ -6,6 +6,21 @@
 
 void OnOptionsRender()
 {
+    ImGui::Text("Buff reminder flash animation duration");
+    int flashingDuration = SettingsManager::GetFlashingDuration();
+    if (ImGui::SliderInt("Seconds", &flashingDuration, 0, 60))
+    {
+        SettingsManager::SetFlashingDuration(flashingDuration);
+    }
+    if (ImGui::IsItemHovered())
+    {
+        ImGui::SetTooltip("Ctrl + Click to enter a value (Default 5s)");
+    }
+
+    ImGui::Spacing();
+    ImGui::Separator();
+    ImGui::Spacing();
+
     G::IsOptionsPaneOpen = true;
     SettingsManager::SetOverlayDragEnabled(true);
 
@@ -29,10 +44,6 @@ void OnOptionsRender()
     if (ImGui::Button("Reset overlay position"))
     {
         SettingsManager::ResetOverlayPosition();
-    }
-    if (ImGui::IsItemHovered())
-    {
-        ImGui::SetTooltip("Restore the overlay to its default position");
     }
 
     /*

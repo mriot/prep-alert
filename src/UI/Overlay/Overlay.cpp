@@ -4,6 +4,7 @@
 #include <Common/Utils.h>
 #include <Data/SettingsManager.h>
 #include <Data/TextureLoader.h>
+#include <chrono>
 #include <format>
 #include <imgui/imgui.h>
 #include <nexus/Nexus.h>
@@ -33,7 +34,16 @@ namespace
             s_prevPos   = currentPos;
         }
     }
+
+    static float alpha    = 1.0f;
+    static int prevBuffID = -1;
 } // namespace
+
+float RotateAlpha()
+{
+    float t = ImGui::GetTime() * 10.0f; // time since imgui initialized
+    return 0.5f + 0.5f * sinf(t);       // oscillates between 0 and 1 (sinf -1 to 1)
+}
 
 namespace Overlay
 {
@@ -44,6 +54,8 @@ namespace Overlay
 
     void RenderOverlay(const Buff &buff)
     {
+        static auto last = std::chrono::steady_clock::now();
+
         if (!G::APIDefs->ImguiContext || !ImGui::GetCurrentContext())
         {
             Log::Critical("Failed to get ImGui context");
@@ -65,9 +77,22 @@ namespace Overlay
 
             // in "prod mode" make the overlay non-interactive
             flags |= ImGuiWindowFlags_NoInputs;
+
+            if (prevBuffID != buff.id)
+            {
+                prevBuffID = buff.id;
+                last       = std::chrono::steady_clock::now();
+            }
+
+            auto now     = std::chrono::steady_clock::now();
+            auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(now - last).count();
+
+            alpha = elapsed <= SettingsManager::GetFlashingDuration() * 1000 ? RotateAlpha() : 1.0f;
         }
 
         ImGui::SetNextWindowPos(SettingsManager::GetOverlayPosition(), isDragEnabled && !SettingsManager::IsOverlayPositionDirty() ? ImGuiCond_FirstUseEver : ImGuiCond_Always);
+
+        ImGui::PushStyleVar(ImGuiStyleVar_Alpha, isDragEnabled ? 1.0f : alpha);
 
         if (ImGui::Begin(G::ADDON_NAME, nullptr, flags))
         {
@@ -85,6 +110,7 @@ namespace Overlay
                 HandleOverlayDrag();
         }
         ImGui::End();
+        ImGui::PopStyleVar();
     }
 } // namespace Overlay
 

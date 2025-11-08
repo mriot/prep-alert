@@ -23,8 +23,9 @@ namespace
     static std::mutex s_SettingsMutex;
     static Settings s_settings{{70.0f, 40.0f}};
 
-    static bool s_overlayDragEnabled   = false;
-    static bool s_overlayPositionDirty = false;
+    static bool s_overlayDragEnabled     = false;
+    static bool s_overlayPositionDirty   = false;
+    static int s_flashingDurationSeconds = 5;
     // static int s_overlayTimeoutSeconds = 30;
 
     void DebouncedSave()
@@ -44,6 +45,17 @@ namespace
 
 namespace SettingsManager
 {
+    // Flashing duration
+    int GetFlashingDuration()
+    {
+        return s_flashingDurationSeconds;
+    }
+    void SetFlashingDuration(int seconds)
+    {
+        s_flashingDurationSeconds = seconds;
+        DebouncedSave();
+    }
+
     // Overlay drag
     bool IsOverlayDragEnabled()
     {
@@ -140,6 +152,11 @@ namespace SettingsManager
                 if (pos.contains("y") && !pos["y"].is_null())
                     s_settings.overlayPosition.y = pos["y"].get<float>();
             }
+
+            if (settingsJson.contains("flashing_duration_seconds") && !settingsJson["flashing_duration_seconds"].is_null())
+            {
+                s_flashingDurationSeconds = settingsJson["flashing_duration_seconds"].get<int>();
+            }
         }
         catch (const std::exception &ex)
         {
@@ -164,8 +181,11 @@ namespace SettingsManager
         try
         {
             json j;
+
             j["overlay_position"]["x"] = s_settings.overlayPosition.x;
             j["overlay_position"]["y"] = s_settings.overlayPosition.y;
+
+            j["flashing_duration_seconds"] = s_flashingDurationSeconds;
 
             std::ofstream file(path, std::ios::trunc);
             if (!file.is_open())

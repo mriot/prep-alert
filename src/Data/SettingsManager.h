@@ -19,6 +19,9 @@ namespace SettingsManager
     bool IsOverlayPositionDirty();
     void SetPreciseOverlayPosition(const ImVec2 &position);
 
+    int GetFlashingDuration();
+    void SetFlashingDuration(int seconds);
+
     bool LoadSettings();
     bool SaveSettings();
 } // namespace SettingsManager
