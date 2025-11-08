@@ -6,6 +6,7 @@ namespace
     bool s_overlayDragEnabled   = false;
     int s_overlayTimeoutSeconds = 30;
     ImVec2 s_overlayPosition    = {70, 40};
+    bool s_overlayPositionDirty = false;
 } // namespace
 
 namespace SettingsManager
@@ -24,6 +25,7 @@ namespace SettingsManager
     void ResetOverlayPosition()
     {
         SetOverlayPosition({70, 40});
+        s_overlayPositionDirty = true;
     }
 
     // Overlay timeout
@@ -44,6 +46,19 @@ namespace SettingsManager
     void SetOverlayPosition(const ImVec2 &position)
     {
         s_overlayPosition = position;
+    }
+
+    // Overlay position dirty flag
+    bool IsOverlayPositionDirty()
+    {
+        bool isDirty           = s_overlayPositionDirty;
+        s_overlayPositionDirty = false; // reset after reading
+        return isDirty;
+    }
+    void SetPreciseOverlayPosition(const ImVec2 &position)
+    {
+        s_overlayPosition      = position;
+        s_overlayPositionDirty = true;
     }
 } // namespace SettingsManager
 

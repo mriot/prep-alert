@@ -4,6 +4,7 @@
 #include <Common/Utils.h>
 #include <Data/SettingsManager.h>
 #include <Data/TextureLoader.h>
+#include <format>
 #include <imgui/imgui.h>
 #include <nexus/Nexus.h>
 #include <string>
@@ -66,7 +67,7 @@ namespace Overlay
             flags |= ImGuiWindowFlags_NoInputs;
         }
 
-        ImGui::SetNextWindowPos(SettingsManager::GetOverlayPosition(), isDragEnabled ? ImGuiCond_FirstUseEver : ImGuiCond_Always);
+        ImGui::SetNextWindowPos(SettingsManager::GetOverlayPosition(), isDragEnabled && !SettingsManager::IsOverlayPositionDirty() ? ImGuiCond_FirstUseEver : ImGuiCond_Always);
 
         if (ImGui::Begin(G::ADDON_NAME, nullptr, flags))
         {

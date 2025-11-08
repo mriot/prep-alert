@@ -14,4 +14,7 @@ namespace SettingsManager
 
     ImVec2 GetOverlayPosition();
     void SetOverlayPosition(const ImVec2 &position);
+
+    bool IsOverlayPositionDirty();
+    void SetPreciseOverlayPosition(const ImVec2 &position);
 } // namespace SettingsManager
