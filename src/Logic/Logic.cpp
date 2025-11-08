@@ -73,7 +73,7 @@ void OnRender()
 {
     if (SettingsManager::IsOverlayDragEnabled())
     {
-        Overlay::RenderOverlay(Buff(1, "Drag me to new places", ""));
+        Overlay::RenderOverlay(Buff(1, "Drag me to new places"));
         return; // no need to do the rest here
     }
 

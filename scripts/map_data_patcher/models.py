@@ -10,7 +10,6 @@ from typing import List
 class Buff:
     id: int
     name: str
-    icon: str
 
 
 @dataclass

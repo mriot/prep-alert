@@ -5,7 +5,6 @@
 #include <Common/Utils.h>
 #include <exception>
 #include <format>
-#include <nexus/Nexus.h>
 #include <nlohmann/json.hpp>
 #include <optional>
 #include <string>
@@ -25,7 +24,6 @@ void from_json(const json &j, Vec2 &v)
 void from_json(const json &j, Buff &b)
 {
     j.at("id").get_to(b.id);
-    j.at("icon").get_to(b.icon);
     j.at("name").get_to(b.name);
 }
 

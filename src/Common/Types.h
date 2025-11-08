@@ -14,7 +14,6 @@ struct Buff
 {
     int id;
     std::string name;
-    std::string icon;
 };
 
 struct Buffs
