@@ -1,10 +1,8 @@
 #include "Events.h"
 #include <Common/Globals.h>
 #include <Common/Utils.h>
-#include <Logic/Logic.h>
 #include <format>
 #include <mumble/Mumble.h>
-#include <nexus/Nexus.h>
 #include <string>
 
 void OnMumbleIdentityUpdated(void *eventData)
@@ -16,17 +14,18 @@ void OnMumbleIdentityUpdated(void *eventData)
     if (G::MumbleIdentity->MapID == G::CurrentMapID)
         return;
 
+    // on map change reset sector ID to avoid false positives
     G::CurrentMapID    = G::MumbleIdentity->MapID;
-    G::CurrentSectorID = -1;
+    G::CurrentSectorID = 0;
 
     if (!G::SupportedMaps.contains(G::CurrentMapID))
     {
-        Log::Info((std::format("Map {} is NOT supported", G::CurrentMapID)).c_str());
-        G::APIDefs->GUI_Deregister(OnRender);
+        G::IsOnSupportedMap = false;
+        Log::Debug((std::format("Map {} is NOT supported", G::CurrentMapID)).c_str());
 
         return;
     }
 
-    Log::Info((std::format("Map {} is supported", G::CurrentMapID)).c_str());
-    G::APIDefs->GUI_Register(ERenderType::RT_Render, OnRender);
+    G::IsOnSupportedMap = true;
+    Log::Debug((std::format("Map {} is supported", G::CurrentMapID)).c_str());
 }

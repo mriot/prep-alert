@@ -62,6 +62,7 @@ void AddonLoad(AddonAPI_t *api)
 
     Log::Info((std::format("{} supported maps", G::SupportedMaps.size()).c_str()));
 
+    G::APIDefs->GUI_Register(ERenderType::RT_Render, OnRender);
     G::APIDefs->GUI_Register(ERenderType::RT_OptionsRender, OnOptionsRender);
     G::APIDefs->Events_Subscribe(EV_MUMBLE_IDENTITY_UPDATED, OnMumbleIdentityUpdated);
 }

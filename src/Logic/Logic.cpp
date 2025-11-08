@@ -71,7 +71,12 @@ namespace
 
 void OnRender()
 {
+    static Buff buff;
+    static auto last           = std::chrono::steady_clock::now();
     static bool wasOptionsOpen = false;
+
+    if (!G::NexusLink->IsGameplay)
+        return;
 
     if (G::IsOptionsPaneOpen)
     {
@@ -84,33 +89,26 @@ void OnRender()
         wasOptionsOpen = false;
     }
 
+    // this must run regardless of map status
     if (SettingsManager::IsOverlayDragEnabled())
     {
         Overlay::RenderOverlay(Buff(1, "Drag me to new places"));
-        return; // no need to do the rest here
+        return; // no need to go further
     }
 
-    static Buff buff;
-    static auto last = std::chrono::steady_clock::now();
+    if (!G::IsOnSupportedMap)
+        return;
 
     auto now     = std::chrono::steady_clock::now();
     auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(now - last).count();
 
-    if (!G::NexusLink->IsGameplay)
-        return;
+    Overlay::RenderOverlay(buff);
 
-    if (G::CurrentMapID == -1 || !G::SupportedMaps.contains(G::CurrentMapID))
-        return;
-
-    Overlay::RenderOverlay(buff); // must be called each frame
-
+    // avoid checking check map and sector stuff each frame
     if (elapsed < 500)
         return;
 
     last = now;
-
-    if (!G::MapDataMap.contains(G::CurrentMapID))
-        return;
 
     // global player position
     float x = G::MumbleLink->Context.Compass.PlayerPosition.X;

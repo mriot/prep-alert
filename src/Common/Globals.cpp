@@ -11,8 +11,9 @@ namespace G
     Mumble::Identity *MumbleIdentity = nullptr;
     NexusLinkData_t *NexusLink       = nullptr;
 
-    uint32_t CurrentMapID    = 0;
-    uint32_t CurrentSectorID = 0;
+    extern bool IsOnSupportedMap = false;
+    uint32_t CurrentMapID        = 0;
+    uint32_t CurrentSectorID     = 0;
     std::unordered_set<uint32_t> SupportedMaps;
     std::unordered_map<int, MapData> MapDataMap;
 
