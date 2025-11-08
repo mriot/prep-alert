@@ -1,42 +1,38 @@
 #include "Settings.h"
+#include <Common/Globals.h>
+#include <Common/Utils.h>
 #include <Data/SettingsManager.h>
 #include <imgui/imgui.h>
 
 void OnOptionsRender()
 {
-    // Overlay drag enable checkbox
-    bool dragEnabled = SettingsManager::IsOverlayDragEnabled();
-    if (ImGui::Checkbox("Change overlay position", &dragEnabled))
+    G::IsOptionsPaneOpen = true;
+    SettingsManager::SetOverlayDragEnabled(true);
+
+    // Overlay positioning
+    ImGui::Text("Change overlay position");
+
+    ImVec2 pos = SettingsManager::GetOverlayPosition();
+    if (ImGui::InputFloat("Position X", &pos.x, 1.0f, 10.0f, "%.1f"))
     {
-        SettingsManager::SetOverlayDragEnabled(dragEnabled);
+        SettingsManager::SetPreciseOverlayPosition(pos);
     }
 
-    if (dragEnabled)
+    if (ImGui::InputFloat("Position Y", &pos.y, 1.0f, 10.0f, "%.1f"))
     {
-        ImGui::TextDisabled("You can also drag and drop");
+        SettingsManager::SetPreciseOverlayPosition(pos);
+    }
 
-        ImVec2 pos = SettingsManager::GetOverlayPosition();
-        if (ImGui::InputFloat("Overlay position X", &pos.x, 1.0f, 10.0f, "%.1f"))
-        {
-            SettingsManager::SetPreciseOverlayPosition(pos);
-        }
+    ImGui::Spacing();
 
-        if (ImGui::InputFloat("Overlay position Y", &pos.y, 1.0f, 10.0f, "%.1f"))
-        {
-            SettingsManager::SetPreciseOverlayPosition(pos);
-        }
-
-        ImGui::Spacing();
-
-        // Reset overlay position button
-        if (ImGui::Button("Reset overlay position"))
-        {
-            SettingsManager::ResetOverlayPosition();
-        }
-        if (ImGui::IsItemHovered())
-        {
-            ImGui::SetTooltip("Restore the overlay to its default position");
-        }
+    // Reset overlay position button
+    if (ImGui::Button("Reset overlay position"))
+    {
+        SettingsManager::ResetOverlayPosition();
+    }
+    if (ImGui::IsItemHovered())
+    {
+        ImGui::SetTooltip("Restore the overlay to its default position");
     }
 
     /*

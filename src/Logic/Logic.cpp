@@ -71,6 +71,19 @@ namespace
 
 void OnRender()
 {
+    static bool wasOptionsOpen = false;
+
+    if (G::IsOptionsPaneOpen)
+    {
+        wasOptionsOpen       = true;
+        G::IsOptionsPaneOpen = false;
+    }
+    else if (wasOptionsOpen)
+    {
+        SettingsManager::SetOverlayDragEnabled(false);
+        wasOptionsOpen = false;
+    }
+
     if (SettingsManager::IsOverlayDragEnabled())
     {
         Overlay::RenderOverlay(Buff(1, "Drag me to new places"));

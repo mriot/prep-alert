@@ -153,7 +153,6 @@ namespace SettingsManager
     // Settings save
     bool SaveSettings()
     {
-        Log::Info("Saving shit");
         std::lock_guard<std::mutex> lock(s_SettingsMutex);
 
         std::filesystem::path path = G::APIDefs->Paths_GetAddonDirectory(G::ADDON_NAME);
