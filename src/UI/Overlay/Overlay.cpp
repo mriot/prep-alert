@@ -118,7 +118,7 @@ namespace Overlay
                 // vertically center the text relative to the image
                 ImGui::SetCursorPosY(text_cursor.y + (imageSize.y - lineHeight - 1) * 0.5f);
 
-                ImGui::TextUnformatted(buff.name.c_str());
+                ImGui::TextOutlined("%s", buff.name.c_str());
 
                 ImGui::EndGroup();
             }
