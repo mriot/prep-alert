@@ -61,7 +61,7 @@ namespace
 
             if (static_cast<int>(buffBar.Entries[i].KVP.Value->EffectID) == buff.id)
             {
-                Log::Debug("Player has desired buff: " + BuffDefs.at(buff.id).name);
+                // Log::Debug("Player has desired buff: " + BuffDefs.at(buff.id).name);
                 return true;
             }
         }
@@ -104,6 +104,7 @@ void OnRender()
         return;
     }
 
+    // let the overlay handle the case of no buffs to show (needed for some cleanup)
     Overlay::RenderOverlay(buffs);
 
     // avoid checking check map and sector stuff each frame
@@ -161,12 +162,6 @@ void OnRender()
         if (!addBuffReminder(sector.buffs.sigil))
         {
             addBuffReminder(currentMap.default_buffs.sigil);
-        }
-
-        // sus
-        if (buffs.empty())
-        {
-            Log::Warning("No buff found for this sector nor a map default");
         }
 
         break; // player can be in only one sector
