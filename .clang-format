@@ -1,22 +1,7 @@
 BasedOnStyle: Microsoft
 NamespaceIndentation: All
 AlignConsecutiveMacros: Consecutive
-AlignConsecutiveAssignments: Consecutive 
+AlignConsecutiveAssignments: Consecutive
 ColumnLimit: 0
 InsertNewlineAtEOF: true
 KeepEmptyLinesAtEOF: true
-
-
-# IndentWidth: 4
-# UseTab: Never
-# BreakBeforeBraces: Allman
-# AllowShortFunctionsOnASingleLine: Inline
-# AlignConsecutiveDeclarations: false 
-# AlignAfterOpenBracket: true
-# AlignTrailingComments: true
-# PointerAlignment: Right
-# SpacesInParens: Custom
-# SpacesInParensOptions:
-#   ExceptDoubleParentheses: true
-#   InConditionalStatements: true
-#   InEmptyParentheses: true
