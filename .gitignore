@@ -40,3 +40,6 @@ x64/
 # Python
 __pycache__
 .venv
+
+# Misc
+Version.h
