@@ -44,10 +44,13 @@ namespace Overlay
     void RenderOverlay(const std::vector<Buff> &buffs)
     {
         static float alpha                  = 1.0f;
-        static std::vector<int> prevBuffIDs = {-1, -1};
+        static std::vector<int> prevBuffIDs = {};
 
         if (buffs.empty())
+        {
+            prevBuffIDs.clear(); // cleanup when no buffs to show anymore
             return;
+        }
 
         static auto last = std::chrono::steady_clock::now();
 
