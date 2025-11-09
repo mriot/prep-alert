@@ -94,6 +94,7 @@ namespace Overlay
 
         ImGui::SetNextWindowPos(SettingsManager::GetOverlayPosition(), isDragEnabled && !SettingsManager::IsOverlayPositionDirty() ? ImGuiCond_FirstUseEver : ImGuiCond_Always);
 
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
         ImGui::PushStyleVar(ImGuiStyleVar_Alpha, isDragEnabled ? 1.0f : alpha);
         ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(ImGui::GetStyle().ItemSpacing.x, 1.0f));
 
@@ -127,7 +128,7 @@ namespace Overlay
                 HandleOverlayDrag();
         }
         ImGui::End();
-        ImGui::PopStyleVar(2); // alpha + spacing
+        ImGui::PopStyleVar(3); // alpha + item spacing + window padding
     }
 } // namespace Overlay
 
