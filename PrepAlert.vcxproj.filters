@@ -98,7 +98,7 @@
     <ClCompile Include="src\Data\SettingsManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Logic\Logic.cpp">
+    <ClCompile Include="src\Logic\Controller.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\UI\Overlay\Overlay.cpp">

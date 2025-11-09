@@ -5,7 +5,7 @@
 #include <Data/MapData.h>
 #include <Data/SettingsManager.h>
 #include <gw2re/Util/Validation.h>
-#include <Logic/Logic.h>
+#include <Controller/Controller.h>
 #include <UI/Settings/Settings.h>
 #include <format>
 #include <imgui/imgui.h>

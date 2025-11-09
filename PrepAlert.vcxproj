@@ -204,7 +204,7 @@
     <ClCompile Include="src\External\imgui\imgui_draw.cpp" />
     <ClCompile Include="src\External\imgui\imgui_tables.cpp" />
     <ClCompile Include="src\External\imgui\imgui_widgets.cpp" />
-    <ClCompile Include="src\Logic\Logic.cpp" />
+    <ClCompile Include="src\Logic\Controller.cpp" />
     <ClCompile Include="src\Main.cpp" />
     <ClCompile Include="src\UI\Overlay\Overlay.cpp" />
     <ClCompile Include="src\UI\Settings\Settings.cpp" />

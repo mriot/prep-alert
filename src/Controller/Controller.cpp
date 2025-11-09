@@ -1,4 +1,4 @@
-#include "Logic.h"
+#include "Controller.h"
 #include <Common/BuffData.h>
 #include <Common/Globals.h>
 #include <Common/Types.h>
