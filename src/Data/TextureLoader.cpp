@@ -11,10 +11,10 @@ Texture_t *LoadTexture(int buffID)
 {
     if (!BuffDefs.contains(buffID))
     {
-        Log::Warning(std::format("Buff ID {} not found in resources!", buffID).c_str());
+        Log::Warning(std::format("Buff ID {} not found in resources!", buffID));
         return nullptr;
     }
 
-    BuffInfo resInfo = BuffDefs.at(buffID);
-    return G::APIDefs->Textures_GetOrCreateFromResource(resInfo.name.c_str(), resInfo.resourceID, G::ModuleHandle);
+    auto [resourceID, name] = BuffDefs.at(buffID);
+    return G::APIDefs->Textures_GetOrCreateFromResource(name.c_str(), resourceID, G::ModuleHandle);
 }

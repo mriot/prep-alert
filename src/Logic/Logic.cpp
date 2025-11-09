@@ -23,8 +23,8 @@ namespace
         if (bounds.size() < 3)
             return false;
 
-        bool inside  = false;
-        size_t count = bounds.size();
+        bool inside        = false;
+        const size_t count = bounds.size();
 
         for (size_t i = 0, j = count - 1; i < count; j = i++)
         {
@@ -43,7 +43,7 @@ namespace
         return inside;
     }
 
-    bool PlayerHasBuff(Buff buff)
+    bool PlayerHasBuff(const Buff &buff)
     {
         static GW2RE::CPropContext propCtx = GW2RE::CPropContext::Get();
 
@@ -107,9 +107,9 @@ void OnRender()
     // let the overlay handle the case of no buffs to show (needed for some cleanup)
     Overlay::RenderOverlay(buffs);
 
-    // avoid checking check map and sector stuff each frame
-    auto now     = std::chrono::steady_clock::now();
-    auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(now - last).count();
+    // avoid checking map and sector stuff each frame
+    const auto now = std::chrono::steady_clock::now();
+    auto elapsed   = std::chrono::duration_cast<std::chrono::milliseconds>(now - last).count();
 
     if (elapsed < 500)
         return;
@@ -132,7 +132,7 @@ void OnRender()
         if (sector.id != G::CurrentSectorID)
         {
             G::CurrentSectorID = sector.id;
-            Log::Info(std::format("Sector: {} ({})", sector.name, sector.id).c_str());
+            Log::Info(std::format("Sector: {} ({})", sector.name, sector.id));
         }
 
         // we have to check buffs even if sector didn't change

@@ -30,8 +30,7 @@ void AddonLoad(AddonAPI_t *api)
         return;
     }
 
-    std::string patterns = GW2RE::RunDiag();
-    if (!patterns.empty())
+    if (const std::string patterns = GW2RE::RunDiag(); !patterns.empty())
     {
         Log::Critical("GW2RE pattern validation failed:\n" + patterns);
         return;
@@ -60,7 +59,7 @@ void AddonLoad(AddonAPI_t *api)
         G::SupportedMaps.insert(id);
     }
 
-    Log::Info((std::format("{} supported maps", G::SupportedMaps.size()).c_str()));
+    Log::Info((std::format("{} supported maps", G::SupportedMaps.size())));
 
     G::APIDefs->GUI_Register(ERenderType::RT_Render, OnRender);
     G::APIDefs->GUI_Register(ERenderType::RT_OptionsRender, OnOptionsRender);

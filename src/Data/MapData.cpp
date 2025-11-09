@@ -83,8 +83,7 @@ static std::optional<std::vector<char>> LoadResourceBytes(HMODULE hModule, int r
     if (!hModule)
         return std::nullopt;
 
-    HRSRC hRes = FindResourceW(hModule, MAKEINTRESOURCEW(resourceId), L"JSON");
-    // HRSRC hRes = FindResourceA(hModule, MAKEINTRESOURCEA(resourceId), MAKEINTRESOURCEA(10));
+    const HRSRC hRes = FindResourceW(hModule, MAKEINTRESOURCEW(resourceId), L"JSON");
 
     if (!hRes)
     {
@@ -92,14 +91,14 @@ static std::optional<std::vector<char>> LoadResourceBytes(HMODULE hModule, int r
         return std::nullopt;
     }
 
-    HGLOBAL hGlobal = LoadResource(hModule, hRes);
+    const HGLOBAL hGlobal = LoadResource(hModule, hRes);
     if (!hGlobal)
     {
         Log::Warning("Unable to load");
         return std::nullopt;
     }
 
-    DWORD size = SizeofResource(hModule, hRes);
+    const DWORD size = SizeofResource(hModule, hRes);
     if (size == 0)
     {
         Log::Warning("Size is 0");

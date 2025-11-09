@@ -50,6 +50,7 @@ namespace SettingsManager
     {
         return s_flashingDurationSeconds;
     }
+
     void SetFlashingDuration(int seconds)
     {
         s_flashingDurationSeconds = seconds;
@@ -61,6 +62,7 @@ namespace SettingsManager
     {
         return s_overlayDragEnabled;
     }
+
     void SetOverlayDragEnabled(bool enabled)
     {
         s_overlayDragEnabled = enabled;
@@ -92,6 +94,7 @@ namespace SettingsManager
     {
         return ImVec2(s_settings.overlayPosition.x, s_settings.overlayPosition.y);
     }
+
     void SetOverlayPosition(const ImVec2 &position)
     {
         s_settings.overlayPosition.x = position.x;
@@ -102,10 +105,11 @@ namespace SettingsManager
     // Overlay position dirty flag
     bool IsOverlayPositionDirty()
     {
-        bool isDirty           = s_overlayPositionDirty;
+        const bool isDirty     = s_overlayPositionDirty;
         s_overlayPositionDirty = false; // reset after reading
         return isDirty;
     }
+
     void SetPreciseOverlayPosition(const ImVec2 &position)
     {
         s_settings.overlayPosition.x = position.x;

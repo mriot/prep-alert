@@ -4,16 +4,13 @@
 #include <string>
 #include <unordered_map>
 
-namespace
+struct BuffInfo
 {
-    struct BuffInfo
-    {
-        int resourceID;
-        std::string name;
-    };
-} // namespace
+    int resourceID;
+    std::string name;
+};
 
-std::unordered_map<int, BuffInfo> BuffDefs = {
+inline std::unordered_map<int, BuffInfo> BuffDefs = {
     {-1, {THUMBS_UP, "THUMBS_UP"}},
     {9963, {SHARPENING_STONE, "SHARPENING STONE"}},
     {9949, {DREDGE_SLAYING, "DREDGE SLAYING"}},

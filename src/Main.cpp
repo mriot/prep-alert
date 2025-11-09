@@ -7,7 +7,7 @@
 /* -------------------------------------------------------------------------- */
 /*                                  DLL MAIN                                  */
 /* -------------------------------------------------------------------------- */
-BOOL APIENTRY DllMain(HMODULE hModule, DWORD reason, LPVOID)
+BOOL APIENTRY DllMain(const HMODULE hModule, const DWORD reason, LPVOID)
 {
     if (reason == DLL_PROCESS_ATTACH)
     {
@@ -24,7 +24,7 @@ AddonDefinition_t addonDef;
 
 extern "C" __declspec(dllexport) AddonDefinition_t *GetAddonDef()
 {
-    addonDef.Signature   = (uint32_t)-1;
+    addonDef.Signature   = static_cast<uint32_t>(-1);
     addonDef.APIVersion  = NEXUS_API_VERSION;
     addonDef.Name        = G::ADDON_NAME;
     addonDef.Version     = {V_MAJOR, V_MINOR, V_BUILD, V_REVISION};

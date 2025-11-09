@@ -16,7 +16,7 @@ namespace
         static ImVec2 s_prevPos = SettingsManager::GetOverlayPosition();
         static bool s_wasMoving = false;
 
-        ImVec2 currentPos = ImGui::GetWindowPos();
+        const ImVec2 currentPos = ImGui::GetWindowPos();
 
         if (currentPos.x != s_prevPos.x || currentPos.y != s_prevPos.y)
         {
@@ -34,8 +34,8 @@ namespace
 
     float RotateAlpha()
     {
-        float t = ImGui::GetTime() * 10.0f; // time since imgui initialized
-        return 0.5f + 0.5f * sinf(t);       // oscillates between 0 and 1 (sinf -1 to 1)
+        const float t = ImGui::GetTime() * 10.0f; // time since imgui initialized
+        return 0.5f + 0.5f * sinf(t); // oscillates between 0 and 1 (sinf -1 to 1)
     }
 } // namespace
 
@@ -86,8 +86,8 @@ namespace Overlay
                 last        = std::chrono::steady_clock::now();
             }
 
-            auto now     = std::chrono::steady_clock::now();
-            auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(now - last).count();
+            const auto now     = std::chrono::steady_clock::now();
+            const auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(now - last).count();
 
             alpha = elapsed <= SettingsManager::GetFlashingDuration() * 1000 ? RotateAlpha() : 1.0f;
         }
@@ -112,8 +112,8 @@ namespace Overlay
 
                 ImGui::SameLine();
 
-                ImVec2 text_cursor = ImGui::GetCursorPos();
-                float lineHeight   = ImGui::GetTextLineHeight();
+                const ImVec2 text_cursor = ImGui::GetCursorPos();
+                const float lineHeight   = ImGui::GetTextLineHeight();
 
                 // vertically center the text relative to the image
                 ImGui::SetCursorPosY(text_cursor.y + (imageSize.y - lineHeight - 1) * 0.5f);
