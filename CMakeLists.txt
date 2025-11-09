@@ -18,21 +18,18 @@
             src/*.h
     )
 
-    # Exclude everything under src/External
-    list(FILTER SRC_FILES EXCLUDE REGEX ".*/src/External/.*")
-
-    # Add required External source files manually
-    set(EXPLICIT_EXTERNAL_SOURCES
-            src/External/imgui/imgui.cpp
-            src/External/imgui/imgui_draw.cpp
-            src/External/imgui/imgui_tables.cpp
-            src/External/imgui/imgui_widgets.cpp
-            src/External/gw2re/Game/PropContext.cpp
-            src/External/gw2re/Game/Char/Character.cpp
-            src/External/gw2re/Game/Char/ChBuffMgr.cpp
-            src/External/gw2re/Game/Char/ChCliContext.cpp
-            src/External/gw2re/Game/Char/ChCombatant.cpp
-            src/External/gw2re/Util/Validation.cpp
+    # Third-party source files to include explicitly
+    set(THIRD_PARTY_SOURCES
+            third-party/imgui/imgui.cpp
+            third-party/imgui/imgui_draw.cpp
+            third-party/imgui/imgui_tables.cpp
+            third-party/imgui/imgui_widgets.cpp
+            third-party/gw2re/Game/PropContext.cpp
+            third-party/gw2re/Game/Char/Character.cpp
+            third-party/gw2re/Game/Char/ChBuffMgr.cpp
+            third-party/gw2re/Game/Char/ChCliContext.cpp
+            third-party/gw2re/Game/Char/ChCombatant.cpp
+            third-party/gw2re/Util/Validation.cpp
     )
 
     # Resource files
@@ -43,7 +40,7 @@
     # Add sources to target
     target_sources(${PROJECT_NAME} PRIVATE
             ${SRC_FILES}
-            ${EXPLICIT_EXTERNAL_SOURCES}
+            ${THIRD_PARTY_SOURCES}
             ${RESOURCE_FILES}
     )
 
@@ -51,8 +48,8 @@
     target_include_directories(${PROJECT_NAME} PRIVATE
             ${CMAKE_CURRENT_SOURCE_DIR}
             ${CMAKE_CURRENT_SOURCE_DIR}/src
-            ${CMAKE_CURRENT_SOURCE_DIR}/src/External
-            ${CMAKE_CURRENT_SOURCE_DIR}/src/External/GW2RE
+            ${CMAKE_CURRENT_SOURCE_DIR}/third-party
+            ${CMAKE_CURRENT_SOURCE_DIR}/third-party/GW2RE
     )
 
     # Compiler settings for MSVC

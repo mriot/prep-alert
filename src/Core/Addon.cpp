@@ -4,7 +4,7 @@
 #include <Core/Events.h>
 #include <Data/MapData.h>
 #include <Data/SettingsManager.h>
-#include <External/gw2re/Util/Validation.h>
+#include <gw2re/Util/Validation.h>
 #include <Logic/Logic.h>
 #include <UI/Settings/Settings.h>
 #include <format>

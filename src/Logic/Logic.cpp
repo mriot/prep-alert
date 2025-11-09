@@ -4,11 +4,11 @@
 #include <Common/Types.h>
 #include <Common/Utils.h>
 #include <Data/SettingsManager.h>
-#include <External/gw2re/Game/Char/ChBuffMgr.h>
-#include <External/gw2re/Game/Char/ChCliContext.h>
-#include <External/gw2re/Game/Char/ChCombatant.h>
-#include <External/gw2re/Game/Char/Character.h>
-#include <External/gw2re/Game/PropContext.h>
+#include <gw2re/Game/Char/ChBuffMgr.h>
+#include <gw2re/Game/Char/ChCliContext.h>
+#include <gw2re/Game/Char/ChCombatant.h>
+#include <gw2re/Game/Char/Character.h>
+#include <gw2re/Game/PropContext.h>
 #include <UI/Overlay/Overlay.h>
 #include <chrono>
 #include <format>
