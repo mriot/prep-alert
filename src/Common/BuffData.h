@@ -27,6 +27,7 @@ inline std::unordered_map<int, BuffInfo> BuffDefs = {
     {9909, {SONS_OF_SVANIR_SLAYING, "SONS OF SVANIR SLAYING"}},
     {23228, {DEMON_SLAYING, "SCARLET'S ARMIES SLAYING"}}, // shares icon with demon slaying
     {15268, {NIGHT_SIGIL, "NIGHT SIGIL"}},
+    {9347, {SERPENT_SIGIL, "SERPENT SIGIL"}},
     //{9845, {CENTAUR_SLAYING, "CENTAUR SLAYING"}},
     //{9853, {GRAWL_SLAYING, "GRAWL SLAYING"}},
     //{9877, {OGRE_SLAYING, "OGRE SLAYING"}},

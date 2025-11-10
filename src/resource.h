@@ -18,6 +18,7 @@
 #define NIGHT_SIGIL             125
 #define SONS_OF_SVANIR_SLAYING  126
 #define THUMBS_UP               127
+#define SERPENT_SIGIL           128
 
 // Next default values for new objects
 //

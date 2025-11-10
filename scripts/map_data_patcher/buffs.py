@@ -27,3 +27,4 @@ GHOST_SLAYING = Buff(8493, "Potion of Ghost Slaying")
 
 # SIGILS
 NIGHT_SIGIL = Buff(15268, "Night Sigil")
+SERPENT_SIGIL = Buff(9347, "Serpent Slaying Sigil")
