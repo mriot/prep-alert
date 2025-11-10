@@ -38,8 +38,13 @@ void AddonLoad(AddonAPI_t *api)
 
     if (!SettingsManager::LoadSettings())
     {
-        Log::Critical("Failed to load settings");
-        return;
+        Log::Warning("Failed to load settings. Attempting to load default settings.");
+        SettingsManager::SaveSettings();
+        if (SettingsManager::LoadSettings())
+        {
+            Log::Critical("Failed to load settings");
+            return;
+        }
     }
 
     if ((G::MapDataMap = LoadMapData()).empty())
