@@ -15,23 +15,42 @@
 #include <nlohmann/json.hpp>
 #include <string>
 #include <thread>
+#include <Data/SettingsSerialization.h>
 
 using json = nlohmann::json;
 
 namespace
 {
-    static std::mutex s_SettingsMutex;
-    static Settings s_settings{{70.0f, 40.0f}};
+    static std::mutex settingsMutex;
+    static constexpr Settings defaultSettings{
+        .position = {85.0f, 33.0f},
+        .compact = false,
+        .horizontal = false,
+        .flashDuration = 5,
+        .imageSize = 32,
+        .shownBuffTypes = {
+            .food = true,
+            .utility = true,
+            .sigil = true,
+        }
+    };
+    static Settings settings = defaultSettings;
 
-    static bool s_overlayDragEnabled     = false;
-    static bool s_overlayPositionDirty   = false;
-    static int s_flashingDurationSeconds = 5;
-    // static int s_overlayTimeoutSeconds = 30;
+    // volatile state (not persisted)
+    bool overlayDragEnabled   = false;
+    bool overlayPositionDirty = false;
+
+    std::filesystem::path GetSettingsPath()
+    {
+        const std::filesystem::path dir = G::APIDefs->Paths_GetAddonDirectory(G::ADDON_NAME);
+        std::filesystem::create_directories(dir);
+        return dir / "settings.json";
+    }
 
     void DebouncedSave()
     {
         static std::atomic<uint64_t> token{0};
-        auto threadToken = ++token; // invalidate previous tokens
+        unsigned long long threadToken = ++token; // invalidate previous tokens
 
         std::thread([threadToken]() {
             std::this_thread::sleep_for(std::chrono::milliseconds(500));
@@ -45,126 +64,140 @@ namespace
 
 namespace SettingsManager
 {
+    // Image size
+    int GetImageSize()
+    {
+        return settings.imageSize;
+    }
+
+    void SetImageSize(const int size)
+    {
+        settings.imageSize = size;
+        DebouncedSave();
+    }
+
+    // Compact mode
+    bool IsCompactMode()
+    {
+        return settings.compact;
+    }
+
+    void SetCompactMode(const bool compact)
+    {
+        settings.compact = compact;
+        DebouncedSave();
+    }
+
+    // Horizontal mode
+    bool IsHorizontalMode()
+    {
+        return settings.horizontal;
+    }
+
+    void SetHorizontalMode(const bool horizontal)
+    {
+        settings.horizontal = horizontal;
+        DebouncedSave();
+    }
+
+    // Shown buff types
+    ShownBuffTypes GetShownBuffTypes()
+    {
+        return settings.shownBuffTypes;
+    }
+
+    void SetShownBuffTypes(const ShownBuffTypes &types)
+    {
+        settings.shownBuffTypes.food    = types.food;
+        settings.shownBuffTypes.utility = types.utility;
+        settings.shownBuffTypes.sigil   = types.sigil;
+        DebouncedSave();
+    }
+
     // Flashing duration
     int GetFlashingDuration()
     {
-        return s_flashingDurationSeconds;
+        return settings.flashDuration;
     }
 
-    void SetFlashingDuration(int seconds)
+    void SetFlashingDuration(const int seconds)
     {
-        s_flashingDurationSeconds = seconds;
+        settings.flashDuration = seconds;
         DebouncedSave();
     }
 
     // Overlay drag
     bool IsOverlayDragEnabled()
     {
-        return s_overlayDragEnabled;
+        return overlayDragEnabled;
     }
 
-    void SetOverlayDragEnabled(bool enabled)
+    void SetOverlayDragEnabled(const bool enabled)
     {
-        s_overlayDragEnabled = enabled;
+        overlayDragEnabled = enabled;
     }
-
-    // Reset overlay position
-    void ResetOverlayPosition()
-    {
-        SetOverlayPosition({70.0f, 40.0f});
-        s_overlayPositionDirty = true;
-    }
-
-    // Overlay timeout
-    /*
-    int GetOverlayTimeoutSeconds()
-    {
-
-        return s_overlayTimeoutSeconds;
-    }
-    void SetOverlayTimeoutSeconds(int seconds)
-    {
-
-        s_overlayTimeoutSeconds = seconds;
-    }
-    */
 
     // Overlay position
     ImVec2 GetOverlayPosition()
     {
-        return ImVec2(s_settings.overlayPosition.x, s_settings.overlayPosition.y);
+        return ImVec2(settings.position.x, settings.position.y);
     }
 
     void SetOverlayPosition(const ImVec2 &position)
     {
-        s_settings.overlayPosition.x = position.x;
-        s_settings.overlayPosition.y = position.y;
+        settings.position.x = position.x;
+        settings.position.y = position.y;
         DebouncedSave();
     }
 
     // Overlay position dirty flag
     bool IsOverlayPositionDirty()
     {
-        const bool isDirty     = s_overlayPositionDirty;
-        s_overlayPositionDirty = false; // reset after reading
+        const bool isDirty   = overlayPositionDirty;
+        overlayPositionDirty = false; // reset after reading
         return isDirty;
     }
 
+    // Precise overlay position
     void SetPreciseOverlayPosition(const ImVec2 &position)
     {
-        s_settings.overlayPosition.x = position.x;
-        s_settings.overlayPosition.y = position.y;
-        s_overlayPositionDirty       = true;
+        settings.position.x  = position.x;
+        settings.position.y  = position.y;
+        overlayPositionDirty = true;
         DebouncedSave();
     }
+
+    // ------------------------------
+
+    // Reset settings
+    void ResetSettings()
+    {
+        settings             = defaultSettings;
+        overlayPositionDirty = true;
+        DebouncedSave();
+    }
+
+    // ------------------------------
 
     // Settings load
     bool LoadSettings()
     {
-        std::filesystem::path path = G::APIDefs->Paths_GetAddonDirectory(G::ADDON_NAME);
-        std::filesystem::create_directories(path);
-
-        path /= "settings.json";
-        Log::Info(std::format("Loading settings from {}", path.string()).c_str());
-
-        if (!std::filesystem::exists(path))
-        {
-            Log::Warning("Settings file not found; using defaults");
-            SaveSettings();
-            return false;
-        }
+        const std::filesystem::path path = GetSettingsPath();
+        Log::Info(std::format("Loading settings from {}", path.string()));
 
         try
         {
             std::ifstream file(path);
-            if (!file.is_open())
-            {
-                Log::Warning("Failed to open settings file; using defaults");
-                SaveSettings();
-                return false;
-            }
-
             json settingsJson;
             file >> settingsJson;
             file.close();
 
-            if (settingsJson.contains("overlay_position") && !settingsJson["overlay_position"].is_null())
-            {
-                const auto &pos = settingsJson["overlay_position"];
-                if (pos.contains("x") && !pos["x"].is_null())
-                    s_settings.overlayPosition.x = pos["x"].get<float>();
-                if (pos.contains("y") && !pos["y"].is_null())
-                    s_settings.overlayPosition.y = pos["y"].get<float>();
-            }
-
-            if (settingsJson.contains("flashing_duration_seconds") && !settingsJson["flashing_duration_seconds"].is_null())
-            {
-                s_flashingDurationSeconds = settingsJson["flashing_duration_seconds"].get<int>();
-            }
+            std::lock_guard<std::mutex> lock(settingsMutex);
+            settings = settingsJson.get<Settings>();
         }
         catch (const std::exception &ex)
         {
-            Log::Critical(std::format("Failed to load settings: {}", ex.what()).c_str());
+            Log::Critical(std::format("Failed to load settings: {}", ex.what()));
             return false;
         }
 
@@ -174,36 +207,24 @@ namespace SettingsManager
     // Settings save
     bool SaveSettings()
     {
-        std::lock_guard<std::mutex> lock(s_SettingsMutex);
+        std::lock_guard<std::mutex> lock(settingsMutex);
 
-        std::filesystem::path path = G::APIDefs->Paths_GetAddonDirectory(G::ADDON_NAME);
-        std::filesystem::create_directories(path);
-
-        path /= "settings.json";
-        Log::Info(std::format("Saving settings to {}", path.string()).c_str());
+        const std::filesystem::path path = GetSettingsPath();
+        Log::Info(std::format("Saving settings to {}", path.string()));
 
         try
         {
             json j;
-
-            j["overlay_position"]["x"] = s_settings.overlayPosition.x;
-            j["overlay_position"]["y"] = s_settings.overlayPosition.y;
-
-            j["flashing_duration_seconds"] = s_flashingDurationSeconds;
+            j = settings;
 
             std::ofstream file(path, std::ios::trunc);
-            if (!file.is_open())
-            {
-                Log::Critical("Failed to open settings file for writing");
-                return false;
-            }
 
             file << j.dump(4);
             file.close();
         }
         catch (const std::exception &ex)
         {
-            Log::Critical(std::format("Failed to save settings: {}", ex.what()).c_str());
+            Log::Critical(std::format("Failed to save settings: {}", ex.what()));
             return false;
         }
 

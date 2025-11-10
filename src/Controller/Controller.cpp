@@ -91,10 +91,21 @@ void OnRender()
         wasOptionsOpen = false;
     }
 
-    // run regardless of map support status to be able to drag overlay on any map
+    // run settings overlay regardless of map support status to be able to drag overlay on any map
     if (SettingsManager::IsOverlayDragEnabled())
     {
-        Overlay::RenderOverlay({Buff(-1, "I'm just a placeholder"), Buff(-1, "While you change settings")});
+        if (SettingsManager::GetShownBuffTypes().utility)
+        {
+            buffs.push_back(Buff(9963, "Utility Placeholder"));
+        }
+        if (SettingsManager::GetShownBuffTypes().sigil)
+        {
+            buffs.push_back(Buff(15268, "Sigil Placeholder"));
+        }
+
+        Overlay::RenderOverlay(buffs);
+        buffs.clear();
+
         return; // no need to go further
     }
 
@@ -153,15 +164,21 @@ void OnRender()
         };
 
         // utility
-        if (!addBuffReminder(sector.buffs.utility))
+        if (SettingsManager::GetShownBuffTypes().utility)
         {
-            addBuffReminder(currentMap.default_buffs.utility);
+            if (!addBuffReminder(sector.buffs.utility))
+            {
+                addBuffReminder(currentMap.default_buffs.utility);
+            }
         }
 
         // sigil
-        if (!addBuffReminder(sector.buffs.sigil))
+        if (SettingsManager::GetShownBuffTypes().sigil)
         {
-            addBuffReminder(currentMap.default_buffs.sigil);
+            if (!addBuffReminder(sector.buffs.sigil))
+            {
+                addBuffReminder(currentMap.default_buffs.sigil);
+            }
         }
 
         break; // player can be in only one sector

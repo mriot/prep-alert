@@ -5,23 +5,50 @@
 
 namespace SettingsManager
 {
+    bool LoadSettings();
+
+    bool SaveSettings();
+
+    // image size
+    int GetImageSize();
+
+    void SetImageSize(const int size);
+
+    // compact mode
+    bool IsCompactMode();
+
+    void SetCompactMode(bool compact);
+
+    // horizontal mode
+    bool IsHorizontalMode();
+
+    void SetHorizontalMode(bool horizontal);
+
+    // overlay drag
     bool IsOverlayDragEnabled();
+
     void SetOverlayDragEnabled(bool enabled);
 
-    void ResetOverlayPosition();
-
-    /*int GetOverlayTimeoutSeconds();
-    void SetOverlayTimeoutSeconds(int seconds);*/
-
+    // overlay position
     ImVec2 GetOverlayPosition();
+
     void SetOverlayPosition(const ImVec2 &position);
 
+    void ResetSettings();
+
+    // overlay position dirty flag
     bool IsOverlayPositionDirty();
+
     void SetPreciseOverlayPosition(const ImVec2 &position);
 
+    // flashing duration
     int GetFlashingDuration();
+
     void SetFlashingDuration(int seconds);
 
-    bool LoadSettings();
-    bool SaveSettings();
+    // shown buffs
+    ShownBuffTypes GetShownBuffTypes();
+
+    void SetShownBuffTypes(const ShownBuffTypes &types);
+
 } // namespace SettingsManager

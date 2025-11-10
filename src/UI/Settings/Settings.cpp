@@ -10,6 +10,58 @@
 
 void OnOptionsRender()
 {
+    bool compactMode = SettingsManager::IsCompactMode();
+    if (ImGui::Checkbox("No Text", &compactMode))
+    {
+        SettingsManager::SetCompactMode(compactMode);
+    }
+
+    if (compactMode)
+    {
+        ImGui::SameLine();
+        bool horizontalMode = SettingsManager::IsHorizontalMode();
+        if (ImGui::Checkbox("Horizontal", &horizontalMode))
+        {
+            SettingsManager::SetHorizontalMode(horizontalMode);
+        }
+    }
+
+    ImGui::Spacing();
+
+    ImGui::Text("Buffs to alert you about");
+    ShownBuffTypes shownBuffs = SettingsManager::GetShownBuffTypes();
+
+    // ImGui::SameLine();
+    if (ImGui::Checkbox("Utility", &shownBuffs.utility))
+    {
+        SettingsManager::SetShownBuffTypes(shownBuffs);
+    }
+    ImGui::SameLine();
+    if (ImGui::Checkbox("Sigil", &shownBuffs.sigil))
+    {
+        SettingsManager::SetShownBuffTypes(shownBuffs);
+    }
+    // ImGui::SameLine();
+    // if (ImGui::Checkbox("Food", &shownBuffs.food))
+    // {
+    //     SettingsManager::SetShownBuffTypes(shownBuffs);
+    // }
+
+    ImGui::Spacing();
+
+    ImGui::Text("Icon size");
+    int imageSize = SettingsManager::GetImageSize();
+    if (ImGui::SliderInt("Pixel", &imageSize, 24, 64))
+    {
+        SettingsManager::SetImageSize(imageSize);
+    }
+    if (ImGui::IsItemHovered())
+    {
+        ImGui::SetTooltip("Ctrl + Click to enter a value (Default 32px)");
+    }
+
+    ImGui::Spacing();
+
     ImGui::Text("Buff reminder flash animation duration");
     int flashingDuration = SettingsManager::GetFlashingDuration();
     if (ImGui::SliderInt("Seconds", &flashingDuration, 0, 60))
@@ -21,8 +73,6 @@ void OnOptionsRender()
         ImGui::SetTooltip("Ctrl + Click to enter a value (Default 5s)");
     }
 
-    ImGui::Spacing();
-    ImGui::Separator();
     ImGui::Spacing();
 
     G::IsOptionsPaneOpen = true;
@@ -46,10 +96,10 @@ void OnOptionsRender()
 
     ImGui::Spacing();
 
-    // Reset overlay position button
-    if (ImGui::Button("Reset overlay position"))
+    // Reset settings
+    if (ImGui::Button("Reset settings to default"))
     {
-        SettingsManager::ResetOverlayPosition();
+        SettingsManager::ResetSettings();
     }
 
     /*

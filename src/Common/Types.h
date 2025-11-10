@@ -40,7 +40,16 @@ struct MapData
     Buffs default_buffs;
 };
 
-struct OverlayPosition
+// -- SETTINGS --
+
+struct ShownBuffTypes
+{
+    bool food;
+    bool utility;
+    bool sigil;
+};
+
+struct Position
 {
     float x;
     float y;
@@ -48,6 +57,10 @@ struct OverlayPosition
 
 struct Settings
 {
-    OverlayPosition overlayPosition;
-    int flashingDuration;
+    Position position;
+    bool compact;
+    bool horizontal;
+    int flashDuration;
+    int imageSize;
+    ShownBuffTypes shownBuffTypes;
 };

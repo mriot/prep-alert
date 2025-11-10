@@ -8,6 +8,7 @@
 #include <imgui/imgui.h>
 #include <nexus/Nexus.h>
 #include <string>
+#include <nexus/Nexus.h>
 
 namespace
 {
@@ -94,41 +95,63 @@ namespace Overlay
 
         ImGui::SetNextWindowPos(SettingsManager::GetOverlayPosition(), isDragEnabled && !SettingsManager::IsOverlayPositionDirty() ? ImGuiCond_FirstUseEver : ImGuiCond_Always);
 
-        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
         ImGui::PushStyleVar(ImGuiStyleVar_Alpha, isDragEnabled ? 1.0f : alpha);
-        ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(ImGui::GetStyle().ItemSpacing.x, 1.0f));
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
+        ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(5.0f, 5.0f));
+        ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(ImGui::GetStyle().CellPadding.x, 0.0f));
 
         if (ImGui::Begin(G::ADDON_NAME, nullptr, flags))
         {
-            for (Buff buff : buffs)
-            {
-                ImGui::BeginGroup();
-
-                ImVec2 imageSize(32, 32);
-
-                if (Texture_t *texture = LoadTexture(buff.id))
-                    ImGui::Image((void *)texture->Resource, imageSize);
-                else
-                    ImGui::Dummy(imageSize);
-
-                ImGui::SameLine();
-
-                const ImVec2 text_cursor = ImGui::GetCursorPos();
-                const float lineHeight   = ImGui::GetTextLineHeight();
-
-                // vertically center the text relative to the image
-                ImGui::SetCursorPosY(text_cursor.y + (imageSize.y - lineHeight - 1) * 0.5f);
-
-                ImGui::TextOutlined("%s", buff.name.c_str());
-
-                ImGui::EndGroup();
-            }
-
             if (isDragEnabled)
                 HandleOverlayDrag();
+
+            for (Buff buff : buffs)
+            {
+                const ImVec2 imageSize(SettingsManager::GetImageSize(), SettingsManager::GetImageSize());
+
+                // compact mode
+                if (SettingsManager::IsCompactMode())
+                {
+                    if (Texture_t *texture = LoadTexture(buff.id))
+                        ImGui::Image((void *)texture->Resource, imageSize);
+                    else
+                        ImGui::Dummy(imageSize);
+
+                    if (SettingsManager::IsHorizontalMode())
+                    {
+                        ImGui::SameLine();
+                    }
+                }
+                // normal mode
+                else if (ImGui::BeginTable("buffs", 2, ImGuiTableFlags_SizingFixedFit))
+                {
+                    const float textHeight = ImGui::GetTextLineHeight();
+
+                    ImGui::TableSetupColumn("Icon", ImGuiTableColumnFlags_WidthFixed, imageSize.x);
+                    ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_WidthStretch);
+
+                    ImGui::TableNextColumn();
+                    if (Texture_t *texture = LoadTexture(buff.id))
+                        ImGui::Image((void *)texture->Resource, imageSize);
+                    else
+                        ImGui::Dummy(imageSize);
+                    ImGui::TableNextColumn();
+
+                    ImVec2 cellMin = ImGui::GetCursorScreenPos();
+                    ImVec2 cellMax = ImVec2(cellMin.x + ImGui::GetColumnWidth(), cellMin.y + imageSize.y);
+                    float yOffset  = (imageSize.y - textHeight) * 0.5f;
+
+                    ImGui::SetCursorScreenPos(ImVec2(cellMin.x, cellMin.y + yOffset));
+
+                    ImGui::TextOutlined("%s", buff.name.c_str());
+
+                    ImGui::SetCursorScreenPos(ImVec2(cellMin.x, cellMax.y));
+
+                    ImGui::EndTable();
+                }
+            }
         }
         ImGui::End();
-        ImGui::PopStyleVar(3); // alpha + item spacing + window padding
+        ImGui::PopStyleVar(4); // alpha + window padding + item spacing + cell padding
     }
 } // namespace Overlay
-
