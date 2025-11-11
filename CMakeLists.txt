@@ -44,6 +44,9 @@
             ${RESOURCE_FILES}
     )
 
+    # Always rebuild resource on each build
+    set_source_files_properties(src/PrepAlert.rc PROPERTIES OBJECT_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/src/maps.json")
+
     # Include directories
     target_include_directories(${PROJECT_NAME} PRIVATE
             ${CMAKE_CURRENT_SOURCE_DIR}
@@ -55,7 +58,10 @@
     # Compiler settings for MSVC
     if (MSVC)
         # Disable warnings about unsafe C functions
-        target_compile_definitions(${PROJECT_NAME} PRIVATE _CRT_SECURE_NO_WARNINGS)
+        # target_compile_definitions(${PROJECT_NAME} PRIVATE _CRT_SECURE_NO_WARNINGS)
+
+        # Define DEBUG macro in Debug builds
+        target_compile_definitions(${PROJECT_NAME} PRIVATE $<$<CONFIG:Debug>:DEBUG>)
 
         # Keep warning level modest to avoid churn; enable multi-processor compilation
         target_compile_options(${PROJECT_NAME} PRIVATE /W3 /MP)
@@ -78,8 +84,8 @@
 
     # --- Custom build steps ---
 
-    # Make Version.h generation a proper generated output so CMake tracks dependencies
     if (WIN32)
+        # generate Version.h before build
         add_custom_target(generate_version ALL
                 COMMAND cmd /C "${CMAKE_SOURCE_DIR}/version.bat"
                 WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
