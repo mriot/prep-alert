@@ -8,78 +8,123 @@
 #include <string>
 #include <vector>
 
+namespace ImGui
+{
+    void HoverTooltip(const std::string &text)
+    {
+        if (ImGui::IsItemHovered())
+        {
+            ImGui::SetTooltip("%s", text.c_str());
+        }
+    }
+}
+
 void OnOptionsRender()
 {
+    ///----------------------------------------------------------------------------------------------------
+    /// buff types to show
+    ///----------------------------------------------------------------------------------------------------
+
+    ImGui::Text("Buff types to show");
+    ShownBuffTypes shownBuffs = SettingsManager::GetShownBuffTypes();
+
+    if (ImGui::Checkbox("Enhancement", &shownBuffs.utility))
+    {
+        SettingsManager::SetShownBuffTypes(shownBuffs);
+    }
+
+    if (ImGui::Checkbox("Sigil", &shownBuffs.sigil))
+    {
+        SettingsManager::SetShownBuffTypes(shownBuffs);
+    }
+
+    ImGui::Spacing();
+    ImGui::Separator();
+    ImGui::Spacing();
+
+    ///----------------------------------------------------------------------------------------------------
+    /// compact mode
+    ///----------------------------------------------------------------------------------------------------
+
     bool compactMode = SettingsManager::IsCompactMode();
-    if (ImGui::Checkbox("No Text", &compactMode))
+    if (ImGui::Checkbox("Hide buff names", &compactMode))
     {
         SettingsManager::SetCompactMode(compactMode);
     }
 
     if (compactMode)
     {
+        ImGui::Indent();
+
+        bool affe = SettingsManager::IsHorizontalMode();
+        if (ImGui::Checkbox("Enable tooltips on hover", &affe))
+        {
+            SettingsManager::SetHorizontalMode(affe);
+        }
         ImGui::SameLine();
+        ImGui::TextDisabled("(i)");
+        ImGui::HoverTooltip("Note: Mouse events aren't passed through to the game if enabled");
+
         bool horizontalMode = SettingsManager::IsHorizontalMode();
-        if (ImGui::Checkbox("Horizontal", &horizontalMode))
+        if (ImGui::Checkbox("Align icons horizontally", &horizontalMode))
         {
             SettingsManager::SetHorizontalMode(horizontalMode);
         }
+
+        ImGui::Unindent();
     }
 
     ImGui::Spacing();
-
-    ImGui::Text("Buffs to alert you about");
-    ShownBuffTypes shownBuffs = SettingsManager::GetShownBuffTypes();
-
-    // ImGui::SameLine();
-    if (ImGui::Checkbox("Utility", &shownBuffs.utility))
-    {
-        SettingsManager::SetShownBuffTypes(shownBuffs);
-    }
-    ImGui::SameLine();
-    if (ImGui::Checkbox("Sigil", &shownBuffs.sigil))
-    {
-        SettingsManager::SetShownBuffTypes(shownBuffs);
-    }
-    // ImGui::SameLine();
-    // if (ImGui::Checkbox("Food", &shownBuffs.food))
-    // {
-    //     SettingsManager::SetShownBuffTypes(shownBuffs);
-    // }
-
+    ImGui::Separator();
     ImGui::Spacing();
 
-    ImGui::Text("Icon size");
+    ///----------------------------------------------------------------------------------------------------
+    /// buff icon size
+    ///----------------------------------------------------------------------------------------------------
+
+    ImGui::Text("Buff icon size");
     int imageSize = SettingsManager::GetImageSize();
     if (ImGui::SliderInt("Pixel", &imageSize, 24, 64))
     {
         SettingsManager::SetImageSize(imageSize);
     }
-    if (ImGui::IsItemHovered())
+
+    ///----------------------------------------------------------------------------------------------------
+    /// default buff reminder timeout
+    ///----------------------------------------------------------------------------------------------------
+
+    ImGui::Text("Default buff reminder timeout");
+    ImGui::SameLine();
+    ImGui::TextDisabled("(i)");
+    ImGui::HoverTooltip("Default buff reminders are shown on a timer.\nYou can configure their timeout here.");
+
+    int defaultBuffTimeout = SettingsManager::GetDefaultBuffReminderTimeout();
+    if (ImGui::SliderInt("Timeout seconds", &defaultBuffTimeout, 0, 60))
     {
-        ImGui::SetTooltip("Ctrl + Click to enter a value (Default 32px)");
+        SettingsManager::SetDefaultBuffReminderTimeout(defaultBuffTimeout);
     }
 
-    ImGui::Spacing();
+    ///----------------------------------------------------------------------------------------------------
+    /// buff reminder flash animation duration
+    ///----------------------------------------------------------------------------------------------------
 
     ImGui::Text("Buff reminder flash animation duration");
     int flashingDuration = SettingsManager::GetFlashingDuration();
-    if (ImGui::SliderInt("Seconds", &flashingDuration, 0, 60))
+    if (ImGui::SliderInt("Animation seconds", &flashingDuration, 0, 60))
     {
         SettingsManager::SetFlashingDuration(flashingDuration);
     }
-    if (ImGui::IsItemHovered())
-    {
-        ImGui::SetTooltip("Ctrl + Click to enter a value (Default 5s)");
-    }
 
     ImGui::Spacing();
+
+    ///----------------------------------------------------------------------------------------------------
+    /// overlay position
+    ///----------------------------------------------------------------------------------------------------
 
     G::IsOptionsPaneOpen = true;
     SettingsManager::SetOverlayDragEnabled(true);
 
-    // Overlay positioning
-    ImGui::Text("Change overlay position");
+    ImGui::Text("Reminder position");
     ImGui::SameLine();
     ImGui::TextDisabled("(dragging is also supported)");
 
@@ -102,31 +147,14 @@ void OnOptionsRender()
         SettingsManager::ResetSettings();
     }
 
-    /*
     ImGui::Spacing();
     ImGui::Separator();
     ImGui::Spacing();
 
-    ImGui::NextColumn();
+    ///----------------------------------------------------------------------------------------------------
+    /// supported maps table
+    ///----------------------------------------------------------------------------------------------------
 
-    // Overlay timeout slider
-    ImGui::Text("Overlay visibility timeout (seconds)");
-    int timeout = SettingsManager::GetOverlayTimeoutSeconds();
-    if (ImGui::SliderInt("", &timeout, 1, 60))
-    {
-        SettingsManager::SetOverlayTimeoutSeconds(timeout);
-    }
-    if (ImGui::IsItemHovered())
-    {
-        ImGui::SetTooltip("Ctrl + Click to manually enter a value");
-    }
-    */
-
-    ImGui::Spacing();
-    ImGui::Separator();
-    ImGui::Spacing();
-
-    // supported maps table
     std::string headerLabel = "Supported maps: " + std::to_string(G::SupportedMaps.size());
 
     if (ImGui::CollapsingHeader(headerLabel.c_str()))

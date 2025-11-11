@@ -26,7 +26,8 @@ namespace
         .position = {85.0f, 33.0f},
         .compact = false,
         .horizontal = false,
-        .flashDuration = 5,
+        .flashDuration = 10,
+        .defaultBuffTimeout = 30,
         .imageSize = 32,
         .shownBuffTypes = {
             .food = true,
@@ -64,6 +65,18 @@ namespace
 
 namespace SettingsManager
 {
+    // Default buff reminder timeout
+    int GetDefaultBuffReminderTimeout()
+    {
+        return settings.defaultBuffTimeout;
+    }
+
+    void SetDefaultBuffReminderTimeout(const int seconds)
+    {
+        settings.defaultBuffTimeout = seconds;
+        DebouncedSave();
+    }
+
     // Image size
     int GetImageSize()
     {

@@ -35,6 +35,7 @@ void to_json(json &j, const Settings &s)
         {"compact", s.compact},
         {"horizontal", s.horizontal},
         {"flash_duration", s.flashDuration},
+        {"default_buff_timeout", s.defaultBuffTimeout},
         {"image_size", s.imageSize},
         {"shown_buffs", s.shownBuffTypes}
     };
@@ -46,6 +47,7 @@ void from_json(const json &j, Settings &s)
     j.at("compact").get_to(s.compact);
     j.at("horizontal").get_to(s.horizontal);
     j.at("flash_duration").get_to(s.flashDuration);
+    j.at("default_buff_timeout").get_to(s.defaultBuffTimeout);
     j.at("image_size").get_to(s.imageSize);
     j.at("shown_buffs").get_to(s.shownBuffTypes);
 }

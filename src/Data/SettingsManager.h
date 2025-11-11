@@ -9,6 +9,11 @@ namespace SettingsManager
 
     bool SaveSettings();
 
+    // default buff reminder timeout
+    int GetDefaultBuffReminderTimeout();
+
+    void SetDefaultBuffReminderTimeout(const int seconds);
+
     // image size
     int GetImageSize();
 
