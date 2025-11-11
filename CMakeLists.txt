@@ -91,6 +91,13 @@
                 WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
         )
         add_dependencies(${PROJECT_NAME} generate_version)
+
+        # patch map data before build
+        add_custom_target(patch_map_data ALL
+                COMMAND cmd /C "uv run ${CMAKE_SOURCE_DIR}/scripts/map_data_patcher/main.py"
+                WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
+        )
+        add_dependencies(${PROJECT_NAME} patch_map_data)
     endif ()
 
     # Post-build: copy DLL to GW2 addons folder using CMake -E (portable within Windows/MSYS)
