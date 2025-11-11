@@ -19,6 +19,9 @@
 #define SONS_OF_SVANIR_SLAYING  126
 #define THUMBS_UP               127
 #define SERPENT_SIGIL           128
+#define GENERIC_FOOD            129
+#define GENERIC_ENHANCEMENT     130
+#define GENERIC_SIGIL           131
 
 // Next default values for new objects
 //

@@ -32,4 +32,4 @@ SERPENT_SIGIL = Buff(9347, "Serpent Slaying Sigil")
 ICEBROOD_SIGIL = Buff(9340, "Icebrood Sigil")
 
 # FOOD
-GENERIC_FOOD = Buff(9785, "Default Food")
+GENERIC_FOOD = Buff(-3, "Default Food")
