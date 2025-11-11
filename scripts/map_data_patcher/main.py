@@ -7,7 +7,10 @@ from buffs import (
     DESTROYER_SLAYING,
     DREDGE_SLAYING,
     FLAME_LEGION_SLAYING,
+    GENERIC_ENHANCEMENT,
+    GENERIC_SIGIL,
     GHOST_SLAYING,
+    ICEBROOD_SIGIL,
     ICEBROOD_SLAYING,
     INQUEST_SLAYING,
     NIGHT_SIGIL,
@@ -25,6 +28,17 @@ from models import Buffs, DungeonMap, FractalMap, MapPatch, NewSector, SectorPat
 #                                    PATCHES                                   #
 # ---------------------------------------------------------------------------- #
 PATCHES = [
+    MapPatch(
+        map_id=FractalMap.SILENT_SURF,
+        default=Buffs(utility=GENERIC_ENHANCEMENT, sigil=GENERIC_SIGIL),
+        sector_patches=[],
+    ),
+    # ------------------------------ KINFALL FRACTAL ----------------------------- #
+    MapPatch(
+        map_id=FractalMap.KINFALL,
+        default=Buffs(utility=ICEBROOD_SLAYING, sigil=ICEBROOD_SIGIL),
+        sector_patches=[],
+    ),
     # ----------------------------- NIGHTMARE FRACTAL ---------------------------- #
     MapPatch(
         map_id=FractalMap.NIGHTMARE,
@@ -33,7 +47,7 @@ PATCHES = [
             SectorPatch(
                 sector_id=1412,
                 name="Spawn",
-                buffs=Buffs(utility=SONS_OF_SVANIR_SLAYING),
+                buffs=Buffs(utility=SCARLETS_ARMIES_SLAYING),
                 bounds=[
                     [12040, 4519],
                     [12001, 4508],
@@ -48,7 +62,7 @@ PATCHES = [
             NewSector(
                 sector_id=1413,
                 name="Barriers",
-                buffs=Buffs(utility=GHOST_SLAYING),
+                buffs=Buffs(utility=SCARLETS_ARMIES_SLAYING),
                 bounds=[
                     [11993, 4597],
                     [11992, 4622],
@@ -68,7 +82,7 @@ PATCHES = [
             NewSector(
                 sector_id=1414,
                 name="MAMA",
-                buffs=Buffs(utility=GHOST_SLAYING),
+                buffs=Buffs(utility=SCARLETS_ARMIES_SLAYING),
                 bounds=[
                     [12146, 4542],
                     [12186, 4584],
@@ -84,7 +98,7 @@ PATCHES = [
             NewSector(
                 sector_id=1415,
                 name="Balls 1",
-                buffs=Buffs(sigil=SERPENT_SIGIL),
+                buffs=Buffs(sigil=SERPENT_SIGIL, utility=SCARLETS_ARMIES_SLAYING),
                 bounds=[
                     [12273, 4562],
                     [12306, 4590],
@@ -110,7 +124,7 @@ PATCHES = [
             NewSector(
                 sector_id=1416,
                 name="Balls 2",
-                buffs=Buffs(utility=SHARPENING_STONE),
+                buffs=Buffs(sigil=SERPENT_SIGIL, utility=SCARLETS_ARMIES_SLAYING),
                 bounds=[
                     [12347, 4678],
                     [12346, 4702],
@@ -137,7 +151,7 @@ PATCHES = [
             NewSector(
                 sector_id=1417,
                 name="Carolabruecke",
-                buffs=Buffs(utility=SERPENT_SIGIL),
+                buffs=Buffs(sigil=SERPENT_SIGIL, utility=SCARLETS_ARMIES_SLAYING),
                 bounds=[
                     [12177, 4971],
                     [12216, 4973],
@@ -158,7 +172,7 @@ PATCHES = [
             NewSector(
                 sector_id=1418,
                 name="Siax",
-                buffs=Buffs(utility=NIGHTMARE_COURT_SLAYING),
+                buffs=Buffs(sigil=SERPENT_SIGIL, utility=SCARLETS_ARMIES_SLAYING),
                 bounds=[
                     [12176, 4956],
                     [12168, 4953],
@@ -176,7 +190,7 @@ PATCHES = [
             NewSector(
                 sector_id=1419,
                 name="Ensolyss",
-                buffs=Buffs(utility=SCARLETS_ARMIES_SLAYING),
+                buffs=Buffs(sigil=SERPENT_SIGIL, utility=SCARLETS_ARMIES_SLAYING),
                 bounds=[
                     [12124, 4781],
                     [12149, 4774],
@@ -197,11 +211,11 @@ PATCHES = [
     # ---------------------------- SUNQUA PEAK FRACTAL --------------------------- #
     MapPatch(
         map_id=FractalMap.SUNQUA_PEAK,
-        default=Buffs(utility=SHARPENING_STONE),
+        default=Buffs(sigil=NIGHT_SIGIL, utility=GENERIC_ENHANCEMENT),
         sector_patches=[
             SectorPatch(
                 sector_id=1840,
-                buffs=Buffs(utility=ICEBROOD_SLAYING),
+                buffs=Buffs(sigil=NIGHT_SIGIL),
                 name="CM Spawn",
                 bounds=[
                     [11982, 4708],
@@ -223,7 +237,7 @@ PATCHES = [
             NewSector(
                 sector_id=1841,
                 name="Boss Arena",
-                buffs=Buffs(sigil=SERPENT_SIGIL),
+                buffs=Buffs(sigil=NIGHT_SIGIL),
                 bounds=[
                     [11997, 4810],
                     [11974, 4819],
