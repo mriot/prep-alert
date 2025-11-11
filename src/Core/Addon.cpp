@@ -1,4 +1,5 @@
 #include "Addon.h"
+#include <filesystem>
 #include <Common/Globals.h>
 #include <Common/Utils.h>
 #include <Core/Events.h>
@@ -14,9 +15,13 @@
 
 void AddonLoad(AddonAPI_t *api)
 {
-    G::APIDefs    = api;
+    G::APIDefs    = api; // this is the first thing to do (!)
     G::MumbleLink = static_cast<Mumble::Data *>(G::APIDefs->DataLink_Get(DL_MUMBLE_LINK));
     G::NexusLink  = static_cast<NexusLinkData_t *>(G::APIDefs->DataLink_Get(DL_NEXUS_LINK));
+
+#ifdef DEBUG
+    Log::Debug("!!! Addon loading in DEBUG mode !!!");
+#endif
 
     if (!G::NexusLink)
     {
@@ -69,6 +74,10 @@ void AddonLoad(AddonAPI_t *api)
     G::APIDefs->GUI_Register(ERenderType::RT_Render, OnRender);
     G::APIDefs->GUI_Register(ERenderType::RT_OptionsRender, OnOptionsRender);
     G::APIDefs->Events_Subscribe(EV_MUMBLE_IDENTITY_UPDATED, OnMumbleIdentityUpdated);
+
+#ifdef DEBUG
+    G::APIDefs->InputBinds_RegisterWithString("KB_COORD_DUMPER", CoordDumper, "CTRL+B");
+#endif
 }
 
 /* -------------------------------------------------------------------------- */
@@ -79,4 +88,8 @@ void AddonUnload()
     G::APIDefs->GUI_Deregister(OnRender);
     G::APIDefs->GUI_Deregister(OnOptionsRender);
     G::APIDefs->Events_Unsubscribe(EV_MUMBLE_IDENTITY_UPDATED, OnMumbleIdentityUpdated);
+
+#ifdef DEBUG
+    G::APIDefs->InputBinds_Deregister("KB_COORD_DUMPER");
+#endif
 }

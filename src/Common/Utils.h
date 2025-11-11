@@ -3,6 +3,10 @@
 #include <string>
 #include <imgui/imgui.h>
 
+#ifdef DEBUG
+void CoordDumper(const char *aIdentifier, const bool isDown);
+#endif
+
 namespace Log
 {
     void Trace(const std::string &message);
@@ -38,3 +42,4 @@ namespace ImGui
         va_end(args);
     }
 }
+
