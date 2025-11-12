@@ -461,6 +461,17 @@ def apply_patches(patches, dungeon_maps: dict) -> dict:
 
 
 # ---------------------------------------------------------------------------- #
+#                            STRIP UNPATCHED SECTORS                           #
+# ---------------------------------------------------------------------------- #
+def strip_unpatched_sectors(maps: dict) -> dict:
+    for map_id, map_data in maps.items():
+        for sector_id, sector_data in list(map_data["sectors"].items()):
+            if "buffs" not in sector_data:
+                del map_data["sectors"][sector_id]
+    return maps
+
+
+# ---------------------------------------------------------------------------- #
 #                                SECTORS TO LIST                               #
 # ---------------------------------------------------------------------------- #
 def convert_sectors_to_list(maps: dict) -> dict:
@@ -501,6 +512,7 @@ if __name__ == "__main__":
     maps = load_raw_maps(src_file, map_ids)
     maps = derive_dungeon_story_maps(maps)
     maps = apply_patches(PATCHES, maps)
+    # maps = strip_unpatched_sectors(maps)
     maps = convert_sectors_to_list(maps)
 
     with open(dest_file, "w", encoding="utf-8") as f:
