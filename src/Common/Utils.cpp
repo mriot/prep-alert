@@ -1,8 +1,14 @@
+#include "imgui/imgui.h"
 #include <filesystem>
 #include <fstream>
 #include <Common/Globals.h>
 #include <nexus/Nexus.h>
 #include <string>
+
+
+/// ----------------------------------------------------------------------------------------------------
+/// Logging utilities
+/// ----------------------------------------------------------------------------------------------------
 
 namespace Log
 {
@@ -31,6 +37,47 @@ namespace Log
         G::APIDefs->Log(LOGL_CRITICAL, G::ADDON_NAME, message.c_str());
     }
 } // namespace Log
+
+
+/// ----------------------------------------------------------------------------------------------------
+/// ImGui utilities
+/// ----------------------------------------------------------------------------------------------------
+
+namespace ImGui
+{
+    void HoverTooltip(const std::string &text)
+    {
+        if (ImGui::IsItemHovered())
+        {
+            ImGui::SetTooltip("%s", text.c_str());
+        }
+    }
+
+    void TextOutlined(const char *fmt, ...)
+    {
+        ImVec2 pos = GetCursorPos();
+
+        va_list args;
+        va_start(args, fmt);
+        pos.x += 1;
+        pos.y += 1;
+        SetCursorPos(pos);
+
+        const float alpha = ImGui::GetStyle().Alpha;
+        TextColoredV(ImVec4(0, 0, 0, alpha), fmt, args);
+
+        pos.x -= 1;
+        pos.y -= 1;
+        SetCursorPos(pos);
+        TextV(fmt, args);
+        va_end(args);
+    }
+}
+
+
+/// ----------------------------------------------------------------------------------------------------
+/// DEBUG UTILITIES
+/// ----------------------------------------------------------------------------------------------------
 
 #ifdef DEBUG
 void CoordDumper(const char *aIdentifier, const bool isDown)

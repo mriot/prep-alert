@@ -5,3 +5,4 @@ AlignConsecutiveAssignments: Consecutive
 ColumnLimit: 0
 InsertNewlineAtEOF: true
 KeepEmptyLinesAtEOF: true
+AllowShortFunctionsOnASingleLine: All

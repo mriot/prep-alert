@@ -16,5 +16,5 @@ Texture_t *LoadTexture(int buffID)
     }
 
     auto [resourceID, name] = BuffDefs.at(buffID);
-    return G::APIDefs->Textures_GetOrCreateFromResource(name.c_str(), resourceID, G::ModuleHandle);
+    return G::APIDefs->Textures_GetOrCreateFromResource((std::format("{}_{}", G::ADDON_NAME, name)).c_str(), resourceID, G::ModuleHandle);
 }

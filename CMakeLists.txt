@@ -44,7 +44,7 @@
             ${RESOURCE_FILES}
     )
 
-    # Always rebuild resource on each build
+    # Ensure resource file is rebuilt if maps.json changes
     set_source_files_properties(src/PrepAlert.rc PROPERTIES OBJECT_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/src/maps.json")
 
     # Include directories

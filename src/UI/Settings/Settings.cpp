@@ -8,17 +8,6 @@
 #include <string>
 #include <vector>
 
-namespace ImGui
-{
-    void HoverTooltip(const std::string &text)
-    {
-        if (ImGui::IsItemHovered())
-        {
-            ImGui::SetTooltip("%s", text.c_str());
-        }
-    }
-}
-
 void OnOptionsRender()
 {
     ///----------------------------------------------------------------------------------------------------
