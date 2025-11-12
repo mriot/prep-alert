@@ -9,10 +9,7 @@ namespace SettingsManager
 
     bool SaveSettings();
 
-    // default buff reminder timeout
-    int GetDefaultBuffReminderTimeout();
-
-    void SetDefaultBuffReminderTimeout(const int seconds);
+    void ResetSettings();
 
     // image size
     int GetImageSize();
@@ -38,8 +35,6 @@ namespace SettingsManager
     ImVec2 GetOverlayPosition();
 
     void SetOverlayPosition(const ImVec2 &position);
-
-    void ResetSettings();
 
     // overlay position dirty flag
     bool IsOverlayPositionDirty();

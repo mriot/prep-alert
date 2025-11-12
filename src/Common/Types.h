@@ -61,7 +61,6 @@ struct Settings
     bool compact;
     bool horizontal;
     int flashDuration;
-    int defaultBuffTimeout;
     int imageSize;
     ShownBuffTypes shownBuffTypes;
 };

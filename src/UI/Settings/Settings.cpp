@@ -79,21 +79,6 @@ void OnOptionsRender()
     }
 
     ///----------------------------------------------------------------------------------------------------
-    /// default buff reminder timeout
-    ///----------------------------------------------------------------------------------------------------
-
-    ImGui::Text("Default buff reminder timeout");
-    ImGui::SameLine();
-    ImGui::TextDisabled("(i)");
-    ImGui::HoverTooltip("Default buff reminders are shown on a timer.\nYou can configure their timeout here.");
-
-    int defaultBuffTimeout = SettingsManager::GetDefaultBuffReminderTimeout();
-    if (ImGui::SliderInt("Timeout seconds", &defaultBuffTimeout, 0, 60))
-    {
-        SettingsManager::SetDefaultBuffReminderTimeout(defaultBuffTimeout);
-    }
-
-    ///----------------------------------------------------------------------------------------------------
     /// buff reminder flash animation duration
     ///----------------------------------------------------------------------------------------------------
 

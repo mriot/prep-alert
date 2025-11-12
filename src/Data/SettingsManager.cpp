@@ -15,19 +15,18 @@
 #include <nlohmann/json.hpp>
 #include <string>
 #include <thread>
-#include <Data/SettingsSerialization.h>
 
 using json = nlohmann::json;
 
 namespace
 {
-    static std::mutex settingsMutex;
-    static constexpr Settings defaultSettings{
+    std::mutex settingsMutex;
+
+    Settings defaultSettings{
         .position = {85.0f, 33.0f},
         .compact = false,
         .horizontal = false,
         .flashDuration = 10,
-        .defaultBuffTimeout = 30,
         .imageSize = 32,
         .shownBuffTypes = {
             .food = true,
@@ -35,7 +34,7 @@ namespace
             .sigil = true,
         }
     };
-    static Settings settings = defaultSettings;
+    Settings settings = defaultSettings;
 
     // volatile state (not persisted)
     bool overlayDragEnabled   = false;
@@ -63,25 +62,70 @@ namespace
     }
 } // namespace
 
+
+/// ----------------------------------------------------------------------------------------------------
+/// SETTINGS SERIALIZATION
+/// ----------------------------------------------------------------------------------------------------
+
+
+// shown buff types
+void to_json(json &j, const ShownBuffTypes &t)
+{
+    j = {{"food", t.food}, {"utility", t.utility}, {"sigil", t.sigil}};
+}
+
+void from_json(const json &j, ShownBuffTypes &t)
+{
+    t.food    = j.value("food", true);
+    t.utility = j.value("utility", true);
+    t.sigil   = j.value("sigil", true);
+}
+
+// overlay position
+void to_json(json &j, const Position &p)
+{
+    j = {{"x", p.x}, {"y", p.y}};
+}
+
+void from_json(const json &j, Position &p)
+{
+    p.x = j.value("x", 0.0f);
+    p.y = j.value("y", 0.0f);
+}
+
+// settings main
+void to_json(json &j, const Settings &s)
+{
+    j = {
+        {"position", s.position},
+        {"compact", s.compact},
+        {"horizontal", s.horizontal},
+        {"flash_duration", s.flashDuration},
+        {"image_size", s.imageSize},
+        {"shown_buffs", s.shownBuffTypes}
+    };
+}
+
+void from_json(const json &j, Settings &s)
+{
+    j.at("position").get_to(s.position);
+    j.at("compact").get_to(s.compact);
+    j.at("horizontal").get_to(s.horizontal);
+    j.at("flash_duration").get_to(s.flashDuration);
+    j.at("image_size").get_to(s.imageSize);
+    j.at("shown_buffs").get_to(s.shownBuffTypes);
+}
+
+
+/// ----------------------------------------------------------------------------------------------------
+/// SETTINGS MANAGER
+/// ----------------------------------------------------------------------------------------------------
+
+
 namespace SettingsManager
 {
-    // Default buff reminder timeout
-    int GetDefaultBuffReminderTimeout()
-    {
-        return settings.defaultBuffTimeout;
-    }
-
-    void SetDefaultBuffReminderTimeout(const int seconds)
-    {
-        settings.defaultBuffTimeout = seconds;
-        DebouncedSave();
-    }
-
     // Image size
-    int GetImageSize()
-    {
-        return settings.imageSize;
-    }
+    int GetImageSize() { return settings.imageSize; }
 
     void SetImageSize(const int size)
     {
@@ -90,10 +134,7 @@ namespace SettingsManager
     }
 
     // Compact mode
-    bool IsCompactMode()
-    {
-        return settings.compact;
-    }
+    bool IsCompactMode() { return settings.compact; }
 
     void SetCompactMode(const bool compact)
     {
@@ -102,10 +143,7 @@ namespace SettingsManager
     }
 
     // Horizontal mode
-    bool IsHorizontalMode()
-    {
-        return settings.horizontal;
-    }
+    bool IsHorizontalMode() { return settings.horizontal; }
 
     void SetHorizontalMode(const bool horizontal)
     {
@@ -114,10 +152,7 @@ namespace SettingsManager
     }
 
     // Shown buff types
-    ShownBuffTypes GetShownBuffTypes()
-    {
-        return settings.shownBuffTypes;
-    }
+    ShownBuffTypes GetShownBuffTypes() { return settings.shownBuffTypes; }
 
     void SetShownBuffTypes(const ShownBuffTypes &types)
     {
@@ -128,10 +163,7 @@ namespace SettingsManager
     }
 
     // Flashing duration
-    int GetFlashingDuration()
-    {
-        return settings.flashDuration;
-    }
+    int GetFlashingDuration() { return settings.flashDuration; }
 
     void SetFlashingDuration(const int seconds)
     {
@@ -140,10 +172,7 @@ namespace SettingsManager
     }
 
     // Overlay drag
-    bool IsOverlayDragEnabled()
-    {
-        return overlayDragEnabled;
-    }
+    bool IsOverlayDragEnabled() { return overlayDragEnabled; }
 
     void SetOverlayDragEnabled(const bool enabled)
     {
@@ -151,15 +180,20 @@ namespace SettingsManager
     }
 
     // Overlay position
-    ImVec2 GetOverlayPosition()
-    {
-        return ImVec2(settings.position.x, settings.position.y);
-    }
+    ImVec2 GetOverlayPosition() { return {settings.position.x, settings.position.y}; }
 
     void SetOverlayPosition(const ImVec2 &position)
     {
         settings.position.x = position.x;
         settings.position.y = position.y;
+        DebouncedSave();
+    }
+
+    void SetPreciseOverlayPosition(const ImVec2 &position)
+    {
+        settings.position.x  = position.x;
+        settings.position.y  = position.y;
+        overlayPositionDirty = true;
         DebouncedSave();
     }
 
@@ -171,18 +205,12 @@ namespace SettingsManager
         return isDirty;
     }
 
-    // Precise overlay position
-    void SetPreciseOverlayPosition(const ImVec2 &position)
-    {
-        settings.position.x  = position.x;
-        settings.position.y  = position.y;
-        overlayPositionDirty = true;
-        DebouncedSave();
-    }
 
-    // ------------------------------
+    /// ----------------------------------------------------------------------------------------------------
+    /// SETTINGS RESET / LOAD / SAVE
+    /// ----------------------------------------------------------------------------------------------------
 
-    // Reset settings
+
     void ResetSettings()
     {
         settings             = defaultSettings;
@@ -190,9 +218,7 @@ namespace SettingsManager
         DebouncedSave();
     }
 
-    // ------------------------------
 
-    // Settings load
     bool LoadSettings()
     {
         const std::filesystem::path path = GetSettingsPath();
@@ -217,7 +243,7 @@ namespace SettingsManager
         return true;
     }
 
-    // Settings save
+
     bool SaveSettings()
     {
         std::lock_guard<std::mutex> lock(settingsMutex);
