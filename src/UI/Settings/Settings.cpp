@@ -45,15 +45,18 @@ void OnOptionsRender()
     {
         ImGui::Indent();
 
-        bool affe = SettingsManager::IsHorizontalMode();
-        if (ImGui::Checkbox("Enable tooltips on hover", &affe))
+        // tooltips
+        bool isTooltipsEnabled = SettingsManager::IsTooltipsEnabled();
+        if (ImGui::Checkbox("Show name in tooltip on mouse over", &isTooltipsEnabled))
         {
-            SettingsManager::SetHorizontalMode(affe);
+            SettingsManager::SetTooltipsEnabled(isTooltipsEnabled);
         }
+
         ImGui::SameLine();
         ImGui::TextDisabled("(i)");
         ImGui::HoverTooltip("Note: Mouse events aren't passed through to the game if enabled");
 
+        // horizontal mode
         bool horizontalMode = SettingsManager::IsHorizontalMode();
         if (ImGui::Checkbox("Align icons horizontally", &horizontalMode))
         {

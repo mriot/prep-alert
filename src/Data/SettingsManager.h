@@ -1,5 +1,6 @@
 #pragma once
 
+#include <filesystem>
 #include <Common/Types.h>
 #include <imgui/imgui.h>
 
@@ -11,6 +12,8 @@ namespace SettingsManager
 
     void ResetSettings();
 
+    std::filesystem::path GetSettingsPath();
+
     // image size
     int GetImageSize();
 
@@ -20,6 +23,11 @@ namespace SettingsManager
     bool IsCompactMode();
 
     void SetCompactMode(bool compact);
+
+    // tooltips
+    bool IsTooltipsEnabled();
+
+    void SetTooltipsEnabled(bool enabled);
 
     // horizontal mode
     bool IsHorizontalMode();

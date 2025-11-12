@@ -59,6 +59,7 @@ struct Settings
 {
     Position position;
     bool compact;
+    bool tooltips;
     bool horizontal;
     int flashDuration;
     int imageSize;

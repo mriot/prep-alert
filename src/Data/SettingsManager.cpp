@@ -25,9 +25,10 @@ namespace
     Settings defaultSettings{
         .position = {85.0f, 33.0f},
         .compact = false,
+        .tooltips = false,
         .horizontal = false,
         .flashDuration = 10,
-        .imageSize = 32,
+        .imageSize = 40,
         .shownBuffTypes = {
             .food = true,
             .utility = true,
@@ -40,12 +41,6 @@ namespace
     bool overlayDragEnabled   = false;
     bool overlayPositionDirty = false;
 
-    std::filesystem::path GetSettingsPath()
-    {
-        const std::filesystem::path dir = G::APIDefs->Paths_GetAddonDirectory(G::ADDON_NAME);
-        std::filesystem::create_directories(dir);
-        return dir / "settings.json";
-    }
 
     void DebouncedSave()
     {
@@ -66,7 +61,6 @@ namespace
 /// ----------------------------------------------------------------------------------------------------
 /// SETTINGS SERIALIZATION
 /// ----------------------------------------------------------------------------------------------------
-
 
 // shown buff types
 void to_json(json &j, const ShownBuffTypes &t)
@@ -99,6 +93,7 @@ void to_json(json &j, const Settings &s)
     j = {
         {"position", s.position},
         {"compact", s.compact},
+        {"tooltips", s.tooltips},
         {"horizontal", s.horizontal},
         {"flash_duration", s.flashDuration},
         {"image_size", s.imageSize},
@@ -108,19 +103,19 @@ void to_json(json &j, const Settings &s)
 
 void from_json(const json &j, Settings &s)
 {
-    j.at("position").get_to(s.position);
-    j.at("compact").get_to(s.compact);
-    j.at("horizontal").get_to(s.horizontal);
-    j.at("flash_duration").get_to(s.flashDuration);
-    j.at("image_size").get_to(s.imageSize);
-    j.at("shown_buffs").get_to(s.shownBuffTypes);
+    s.position       = j.value("position", json(defaultSettings.position)).get<Position>();
+    s.compact        = j.value("compact", defaultSettings.compact);
+    s.tooltips       = j.value("tooltips", defaultSettings.tooltips);
+    s.horizontal     = j.value("horizontal", defaultSettings.horizontal);
+    s.flashDuration  = j.value("flash_duration", defaultSettings.flashDuration);
+    s.imageSize      = j.value("image_size", defaultSettings.imageSize);
+    s.shownBuffTypes = j.value("shown_buffs", json(defaultSettings.shownBuffTypes)).get<ShownBuffTypes>();
 }
 
 
 /// ----------------------------------------------------------------------------------------------------
 /// SETTINGS MANAGER
 /// ----------------------------------------------------------------------------------------------------
-
 
 namespace SettingsManager
 {
@@ -139,6 +134,15 @@ namespace SettingsManager
     void SetCompactMode(const bool compact)
     {
         settings.compact = compact;
+        DebouncedSave();
+    }
+
+    // Tooltips
+    bool IsTooltipsEnabled() { return settings.tooltips; }
+
+    void SetTooltipsEnabled(const bool enabled)
+    {
+        settings.tooltips = enabled;
         DebouncedSave();
     }
 
@@ -210,6 +214,12 @@ namespace SettingsManager
     /// SETTINGS RESET / LOAD / SAVE
     /// ----------------------------------------------------------------------------------------------------
 
+    std::filesystem::path GetSettingsPath()
+    {
+        const std::filesystem::path dir = G::APIDefs->Paths_GetAddonDirectory(G::ADDON_NAME);
+        std::filesystem::create_directories(dir);
+        return dir / "settings.json";
+    }
 
     void ResetSettings()
     {
