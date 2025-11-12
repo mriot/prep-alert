@@ -69,11 +69,15 @@ namespace Overlay
                                  ImGuiWindowFlags_AlwaysAutoResize |
                                  ImGuiWindowFlags_NoTitleBar;
 
-        if (!isDragEnabled)
+        if (!isDragEnabled) // normal overlay mode
         {
             // when not in options panel make the overlay non-interactive
-            flags |= ImGuiWindowFlags_NoInputs;
+            flags |= ImGuiWindowFlags_NoNav | ImGuiWindowFlags_NoFocusOnAppearing;
 
+            if (!SettingsManager::IsTooltipsEnabled())
+                flags |= ImGuiWindowFlags_NoInputs; // cant set this if user wants tooltips
+
+            // gather current buff IDs to check for changes
             std::vector<int> currentBuffIDs;
             for (const Buff &buff : buffs)
             {
@@ -116,6 +120,9 @@ namespace Overlay
                         ImGui::Image((void *)texture->Resource, imageSize);
                     else
                         ImGui::Dummy(imageSize);
+
+                    if (SettingsManager::IsTooltipsEnabled())
+                        ImGui::HoverTooltip(buff.name);
 
                     if (SettingsManager::IsHorizontalMode())
                     {

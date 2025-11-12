@@ -49,7 +49,9 @@ namespace ImGui
     {
         if (ImGui::IsItemHovered())
         {
+            ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 1.0f);
             ImGui::SetTooltip("%s", text.c_str());
+            ImGui::PopStyleVar();
         }
     }
 
