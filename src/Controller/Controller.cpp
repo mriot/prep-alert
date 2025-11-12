@@ -59,7 +59,9 @@ namespace
             if (buffBar.Entries[i].Hash == 0)
                 continue;
 
-            if (static_cast<int>(buffBar.Entries[i].KVP.Value->EffectID) == buff.id)
+            const int effectID = static_cast<int>(buffBar.Entries[i].KVP.Value->EffectID);
+
+            if (effectID == buff.id)
             {
                 // Log::Debug("Player has desired buff: " + BuffDefs.at(buff.id).name);
                 return true;
@@ -68,13 +70,59 @@ namespace
 
         return false;
     }
+
+    std::optional<Buff> GetBuffToShow(
+        const std::optional<Buff> &sectorBuff,
+        const std::optional<Buff> &defaultBuff,
+        bool isInCombat,
+        bool &genericShownFlag)
+    {
+        if (!sectorBuff.has_value() && !defaultBuff.has_value())
+        {
+            return std::nullopt;
+        }
+
+        // helper to check if buff id > 0
+        auto isRealBuff = [](const auto &buff) {
+            return buff.has_value() && buff->id > 0;
+        };
+
+        // reset generic flag when real buffs become available
+        const bool hasRealBuff = isRealBuff(sectorBuff) || isRealBuff(defaultBuff);
+        if (hasRealBuff)
+        {
+            genericShownFlag = false;
+        }
+
+        // determine which buff to show (sector takes priority)
+        const auto &buffToShow = sectorBuff.has_value() ? sectorBuff : defaultBuff;
+        const bool isGeneric   = (buffToShow->id < 0);
+
+        if (isGeneric)
+        {
+            if (isInCombat)
+            {
+                genericShownFlag = true; // hide generic buff upon entering combat
+            }
+            else if (!genericShownFlag)
+            {
+                return (buffToShow);
+            }
+            return std::nullopt; // either in combat or already shown
+        }
+
+        // show real buff
+        return (buffToShow);
+    }
 } // namespace
 
 void OnRender()
 {
-    static std::vector<Buff> buffs;
-    static auto last           = std::chrono::steady_clock::now();
-    static bool wasOptionsOpen = false;
+    static std::vector<Buff> buffReminders;
+    static auto last                = std::chrono::steady_clock::now();
+    static bool wasOptionsOpen      = false;
+    static bool genericSigilShown   = false;
+    static bool genericUtilityShown = false;
 
     if (!G::NexusLink->IsGameplay)
         return;
@@ -96,27 +144,26 @@ void OnRender()
     {
         if (SettingsManager::GetShownBuffTypes().utility)
         {
-            buffs.push_back(Buff(9963, "Utility Placeholder"));
+            buffReminders.push_back(Buff(-1, "Enhancement Placeholder"));
         }
         if (SettingsManager::GetShownBuffTypes().sigil)
         {
-            buffs.push_back(Buff(15268, "Sigil Placeholder"));
+            buffReminders.push_back(Buff(-2, "Sigil Placeholder"));
         }
 
-        Overlay::RenderOverlay(buffs);
-        buffs.clear();
+        Overlay::RenderOverlay(buffReminders);
+        buffReminders.clear();
 
         return; // no need to go further
     }
 
     if (!G::IsOnSupportedMap)
     {
-        buffs.clear(); // avoids ugly leftovers when changing map
+        buffReminders.clear();
         return;
     }
 
-    // let the overlay handle the case of no buffs to show (needed for some cleanup)
-    Overlay::RenderOverlay(buffs);
+    Overlay::RenderOverlay(buffReminders);
 
     // avoid checking map and sector stuff each frame
     const auto now = std::chrono::steady_clock::now();
@@ -137,7 +184,7 @@ void OnRender()
     {
         if (!IsPlayerInSector({x, y}, sector.bounds))
         {
-            continue; // out of bounds eh?
+            continue;
         }
 
         if (sector.id != G::CurrentSectorID)
@@ -149,35 +196,47 @@ void OnRender()
         // we have to check buffs even if sector didn't change
         // in case a buff ran out or equipment changed etc.
 
-        buffs.clear();
+        buffReminders.clear();
 
         auto addBuffReminder = [&](const std::optional<Buff> &buffOpt) {
             if (!buffOpt.has_value())
-                return false; // not specified -> try fallback if any
+                return false; // not specified
 
             // either we add a reminder or player has buff already
             if (!PlayerHasBuff(buffOpt.value()))
             {
-                buffs.push_back(buffOpt.value());
+                buffReminders.push_back(buffOpt.value());
             }
             return true;
         };
 
-        // utility
         if (SettingsManager::GetShownBuffTypes().utility)
         {
-            if (!addBuffReminder(sector.buffs.utility))
+            const auto buff = GetBuffToShow(
+                sector.buffs.utility,
+                currentMap.default_buffs.utility,
+                G::MumbleLink->Context.IsInCombat,
+                genericUtilityShown
+                );
+
+            if (buff.has_value())
             {
-                addBuffReminder(currentMap.default_buffs.utility);
+                addBuffReminder(buff);
             }
         }
 
-        // sigil
         if (SettingsManager::GetShownBuffTypes().sigil)
         {
-            if (!addBuffReminder(sector.buffs.sigil))
+            const auto buff = GetBuffToShow(
+                sector.buffs.sigil,
+                currentMap.default_buffs.sigil,
+                G::MumbleLink->Context.IsInCombat,
+                genericSigilShown
+                );
+
+            if (buff.has_value())
             {
-                addBuffReminder(currentMap.default_buffs.sigil);
+                addBuffReminder(buff);
             }
         }
 
