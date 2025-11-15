@@ -22,7 +22,10 @@ namespace G
     extern uint32_t CurrentSectorID;
     extern std::unordered_set<uint32_t> SupportedMaps;
     extern std::unordered_map<int, MapData> MapDataMap;
+}
 
+namespace UIState
+{
     extern bool IsOptionsPaneOpen;
-} // namespace G
-
+    extern bool WasOptionsPaneOpen;
+}

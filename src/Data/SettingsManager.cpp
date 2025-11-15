@@ -175,14 +175,6 @@ namespace SettingsManager
         DebouncedSave();
     }
 
-    // Overlay drag
-    bool IsOverlayDragEnabled() { return overlayDragEnabled; }
-
-    void SetOverlayDragEnabled(const bool enabled)
-    {
-        overlayDragEnabled = enabled;
-    }
-
     // Overlay position
     ImVec2 GetOverlayPosition() { return {settings.position.x, settings.position.y}; }
 

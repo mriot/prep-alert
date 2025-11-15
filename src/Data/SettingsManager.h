@@ -34,11 +34,6 @@ namespace SettingsManager
 
     void SetHorizontalMode(bool horizontal);
 
-    // overlay drag
-    bool IsOverlayDragEnabled();
-
-    void SetOverlayDragEnabled(bool enabled);
-
     // overlay position
     ImVec2 GetOverlayPosition();
 

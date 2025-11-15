@@ -119,28 +119,15 @@ namespace
 void OnRender()
 {
     static std::vector<Buff> buffReminders;
-    static auto last                = std::chrono::steady_clock::now();
-    static bool wasOptionsOpen      = false;
+    static auto lastFrameTime       = std::chrono::steady_clock::now();
     static bool genericSigilShown   = false;
     static bool genericUtilityShown = false;
 
     if (!G::NexusLink->IsGameplay)
         return;
 
-    // needed to disable drag mode when closing settings
-    if (G::IsOptionsPaneOpen)
-    {
-        wasOptionsOpen       = true;
-        G::IsOptionsPaneOpen = false;
-    }
-    else if (wasOptionsOpen)
-    {
-        SettingsManager::SetOverlayDragEnabled(false);
-        wasOptionsOpen = false;
-    }
-
     // run settings overlay regardless of map support status to be able to drag overlay on any map
-    if (SettingsManager::IsOverlayDragEnabled())
+    if (UIState::IsOptionsPaneOpen)
     {
         if (SettingsManager::GetShownBuffTypes().utility)
         {
@@ -154,6 +141,9 @@ void OnRender()
         Overlay::RenderOverlay(buffReminders);
         buffReminders.clear();
 
+        UIState::WasOptionsPaneOpen = UIState::IsOptionsPaneOpen;
+        UIState::IsOptionsPaneOpen  = false; // set to true by options render each frame
+
         return; // no need to go further
     }
 
@@ -165,18 +155,21 @@ void OnRender()
 
     Overlay::RenderOverlay(buffReminders);
 
+    UIState::WasOptionsPaneOpen = UIState::IsOptionsPaneOpen;
+    UIState::IsOptionsPaneOpen  = false; // set to true by options render each frame
+
     // avoid checking map and sector stuff each frame
-    const auto now = std::chrono::steady_clock::now();
-    auto elapsed   = std::chrono::duration_cast<std::chrono::milliseconds>(now - last).count();
+    const auto currentFrameTime = std::chrono::steady_clock::now();
+    auto elapsed                = std::chrono::duration_cast<std::chrono::milliseconds>(currentFrameTime - lastFrameTime).count();
 
     if (elapsed < 500)
         return;
 
-    last = now;
+    lastFrameTime = currentFrameTime;
 
     // global player position
-    float x = G::MumbleLink->Context.Compass.PlayerPosition.X;
-    float y = G::MumbleLink->Context.Compass.PlayerPosition.Y;
+    const float x = G::MumbleLink->Context.Compass.PlayerPosition.X;
+    const float y = G::MumbleLink->Context.Compass.PlayerPosition.Y;
 
     auto &currentMap = G::MapDataMap.at(G::CurrentMapID);
 

@@ -8,28 +8,26 @@
 #include <imgui/imgui.h>
 #include <nexus/Nexus.h>
 #include <string>
-#include <nexus/Nexus.h>
 
 namespace
 {
     void HandleOverlayDrag()
     {
-        static ImVec2 s_prevPos = SettingsManager::GetOverlayPosition();
-        static bool s_wasMoving = false;
+        static ImVec2 prevPos = SettingsManager::GetOverlayPosition();
+        static bool wasMoving = false;
 
         const ImVec2 currentPos = ImGui::GetWindowPos();
 
-        if (currentPos.x != s_prevPos.x || currentPos.y != s_prevPos.y)
+        if (currentPos.x != prevPos.x || currentPos.y != prevPos.y)
         {
-            s_wasMoving = true;
+            wasMoving = true;
         }
 
-        if (s_wasMoving && !ImGui::IsMouseDown(ImGuiMouseButton_Left))
+        if (wasMoving && !ImGui::IsMouseDown(ImGuiMouseButton_Left))
         {
             SettingsManager::SetOverlayPosition(currentPos);
-
-            s_wasMoving = false;
-            s_prevPos   = currentPos;
+            wasMoving = false;
+            prevPos   = currentPos;
         }
     }
 
@@ -38,7 +36,7 @@ namespace
         const float t = ImGui::GetTime() * 10.0f; // time since imgui initialized
         return 0.5f + 0.5f * sinf(t); // oscillates between 0 and 1 (sinf -1 to 1)
     }
-} // namespace
+}
 
 namespace Overlay
 {
@@ -61,17 +59,15 @@ namespace Overlay
             return;
         }
 
-        const bool isDragEnabled = SettingsManager::IsOverlayDragEnabled();
-
         ImGuiWindowFlags flags = ImGuiWindowFlags_NoFocusOnAppearing |
                                  ImGuiWindowFlags_NoBackground |
                                  ImGuiWindowFlags_NoCollapse |
                                  ImGuiWindowFlags_AlwaysAutoResize |
                                  ImGuiWindowFlags_NoTitleBar;
 
-        if (!isDragEnabled) // normal overlay mode
+        if (!UIState::IsOptionsPaneOpen)
         {
-            // when not in options panel make the overlay non-interactive
+            // when not in options pane make the overlay non-interactive
             flags |= ImGuiWindowFlags_NoNav | ImGuiWindowFlags_NoFocusOnAppearing;
 
             if (!SettingsManager::IsTooltipsEnabled())
@@ -94,29 +90,30 @@ namespace Overlay
             const auto now     = std::chrono::steady_clock::now();
             const auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(now - last).count();
 
-            alpha = elapsed <= SettingsManager::GetFlashingDuration() * 1000 ? RotateAlpha() : 1.0f;
+            alpha = elapsed <= SettingsManager::GetFlashingDuration() * 1000 ? RotateAlpha() : 1.0f; // flashing effect
         }
 
-        ImGui::SetNextWindowPos(SettingsManager::GetOverlayPosition(), isDragEnabled && !SettingsManager::IsOverlayPositionDirty() ? ImGuiCond_FirstUseEver : ImGuiCond_Always);
+        // only set position on first use to allow dragging and precise position simultaneously
+        ImGui::SetNextWindowPos(SettingsManager::GetOverlayPosition(), UIState::IsOptionsPaneOpen && !SettingsManager::IsOverlayPositionDirty() ? ImGuiCond_FirstUseEver : ImGuiCond_Always);
 
-        ImGui::PushStyleVar(ImGuiStyleVar_Alpha, isDragEnabled ? 1.0f : alpha);
+        ImGui::PushStyleVar(ImGuiStyleVar_Alpha, UIState::IsOptionsPaneOpen ? 1.0f : alpha);
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
         ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(5.0f, 5.0f));
         ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(ImGui::GetStyle().CellPadding.x, 0.0f));
 
         if (ImGui::Begin(G::ADDON_NAME, nullptr, flags))
         {
-            if (isDragEnabled)
+            if (UIState::IsOptionsPaneOpen)
                 HandleOverlayDrag();
 
-            for (Buff buff : buffs)
+            for (const Buff &buff : buffs)
             {
                 const ImVec2 imageSize(SettingsManager::GetImageSize(), SettingsManager::GetImageSize());
 
                 // compact mode
                 if (SettingsManager::IsCompactMode())
                 {
-                    if (Texture_t *texture = LoadTexture(buff.id))
+                    if (const Texture_t *texture = LoadTexture(buff.id))
                         ImGui::Image((void *)texture->Resource, imageSize);
                     else
                         ImGui::Dummy(imageSize);
@@ -144,9 +141,9 @@ namespace Overlay
                         ImGui::Dummy(imageSize);
                     ImGui::TableNextColumn();
 
-                    ImVec2 cellMin = ImGui::GetCursorScreenPos();
-                    ImVec2 cellMax = ImVec2(cellMin.x + ImGui::GetColumnWidth(), cellMin.y + imageSize.y);
-                    float yOffset  = (imageSize.y - textHeight) * 0.5f;
+                    const ImVec2 cellMin = ImGui::GetCursorScreenPos();
+                    const ImVec2 cellMax = ImVec2(cellMin.x + ImGui::GetColumnWidth(), cellMin.y + imageSize.y);
+                    const float yOffset  = (imageSize.y - textHeight) * 0.5f; // center text vertically
 
                     ImGui::SetCursorScreenPos(ImVec2(cellMin.x, cellMin.y + yOffset));
 
@@ -159,6 +156,6 @@ namespace Overlay
             }
         }
         ImGui::End();
-        ImGui::PopStyleVar(4); // alpha + window padding + item spacing + cell padding
+        ImGui::PopStyleVar(4); // window alpha + window padding + item spacing + cell padding
     }
 } // namespace Overlay
