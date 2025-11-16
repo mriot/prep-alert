@@ -26,6 +26,7 @@ namespace G
 
 namespace UIState
 {
+    // set to true when options pane is open and reset to false each frame after overlay render
+    // helps detect whether options pane is currently open
     extern bool IsOptionsPaneOpen;
-    extern bool WasOptionsPaneOpen;
 }

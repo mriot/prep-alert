@@ -141,8 +141,7 @@ void OnRender()
         Overlay::RenderOverlay(buffReminders);
         buffReminders.clear();
 
-        UIState::WasOptionsPaneOpen = UIState::IsOptionsPaneOpen;
-        UIState::IsOptionsPaneOpen  = false; // set to true by options render each frame
+        UIState::IsOptionsPaneOpen = false; // set to true by options render each frame
 
         return; // no need to go further
     }
@@ -155,8 +154,7 @@ void OnRender()
 
     Overlay::RenderOverlay(buffReminders);
 
-    UIState::WasOptionsPaneOpen = UIState::IsOptionsPaneOpen;
-    UIState::IsOptionsPaneOpen  = false; // set to true by options render each frame
+    UIState::IsOptionsPaneOpen = false; // set to true by options render each frame
 
     // avoid checking map and sector stuff each frame
     const auto currentFrameTime = std::chrono::steady_clock::now();

@@ -20,6 +20,5 @@ namespace G
 
 namespace UIState
 {
-    bool IsOptionsPaneOpen  = false;
-    bool WasOptionsPaneOpen = false;
+    bool IsOptionsPaneOpen = false;
 }
