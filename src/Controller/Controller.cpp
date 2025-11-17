@@ -56,10 +56,12 @@ namespace
 
         for (size_t i = 0; i < buffBar.Capacity; i++)
         {
-            if (buffBar.Entries[i].Hash == 0)
+            const auto &entry = buffBar.Entries[i];
+
+            if (entry.Hash == 0 || !entry.KVP.Value)
                 continue;
 
-            const int effectID = static_cast<int>(buffBar.Entries[i].KVP.Value->EffectID);
+            const int effectID = static_cast<int>(entry.KVP.Value->EffectID);
 
             if (effectID == buff.id)
             {
