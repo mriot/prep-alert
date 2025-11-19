@@ -38,6 +38,11 @@ namespace
 
     // volatile state (not persisted)
     bool overlayPositionDirty = false;
+#ifdef DEBUG
+    bool debugWindowEnabled = true;
+#else
+    bool debugWindowEnabled = false;
+#endif
 
 
     void DebouncedSave()
@@ -198,6 +203,10 @@ namespace SettingsManager
         overlayPositionDirty = false; // reset after reading
         return isDirty;
     }
+
+    // debug window
+    bool IsDebugWindowEnabled() { return debugWindowEnabled; }
+    void SetDebugWindowEnabled(const bool enabled) { debugWindowEnabled = enabled; }
 
 
     /// ----------------------------------------------------------------------------------------------------

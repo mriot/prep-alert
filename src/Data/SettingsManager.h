@@ -54,4 +54,9 @@ namespace SettingsManager
 
     void SetShownBuffTypes(const ShownBuffTypes &types);
 
+    // debug window
+    bool IsDebugWindowEnabled();
+
+    void SetDebugWindowEnabled(bool enabled);
+
 } // namespace SettingsManager

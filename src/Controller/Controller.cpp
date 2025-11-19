@@ -1,4 +1,5 @@
 #include "Controller.h"
+#include "UI/Debug/Debug.h"
 #include <Common/Globals.h>
 #include <Common/Types.h>
 #include <Data/SettingsManager.h>
@@ -130,6 +131,9 @@ void OnRender()
     static auto lastFrameTime       = std::chrono::steady_clock::now();
     static bool genericSigilShown   = false;
     static bool genericUtilityShown = false;
+
+    if (SettingsManager::IsDebugWindowEnabled())
+        DebugOverlay::OnDebugRender(buffReminders);
 
     if (!G::NexusLink->IsGameplay)
         return;
