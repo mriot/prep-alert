@@ -62,7 +62,11 @@ packed into the addon DLL.
 
 ### Memory Reading
 
-A tiny portion of the addon relies on memory reading to retrieve currently active buffs on the player.  
+A small portion of the addon relies on memory reading to
+
+- retrieve currently active buffs on the player
+- get the current map floor the player is on
+
 Should be safe but as always, use at your own risk.
 
 ### Dependencies
@@ -75,6 +79,5 @@ Should be safe but as always, use at your own risk.
 
 - Raidcore's Nexus addon platform and community (especially Delta)
 - The Gw2 Wiki, for a usable map data API
-- Elis, for support while mapping fractals
-- Baste, for making forgetting to swap Sigils a lifestyle - and unintentionally inspiring this project
+- Elis and Baste, for support while mapping fractals
 - The `[TY]` guild, for all the fun we have in dungeons

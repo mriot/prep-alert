@@ -6,3 +6,4 @@ ColumnLimit: 0
 InsertNewlineAtEOF: true
 KeepEmptyLinesAtEOF: true
 AllowShortFunctionsOnASingleLine: All
+AlignTrailingComments: true
