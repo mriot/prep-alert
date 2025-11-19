@@ -10,3 +10,6 @@
 [submodule "third-party/gw2re"]
 	path = third-party/gw2re
 	url = https://github.com/TyrianDeveloperCollective/GW2RE-lib.git
+[submodule "third-party/aob-patterns"]
+	path = third-party/aob-patterns
+	url = git@github.com:mriot/aob-patterns.git

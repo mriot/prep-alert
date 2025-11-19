@@ -287,6 +287,7 @@ PATCHES = [
                 sector_id=1413,
                 name="Barriers",
                 buffs=Buffs(utility=SCARLETS_ARMIES_SLAYING),
+                floors=[16],
                 bounds=[
                     [11993, 4597],
                     [11992, 4622],
@@ -307,6 +308,7 @@ PATCHES = [
                 sector_id=1414,
                 name="MAMA",
                 buffs=Buffs(utility=SCARLETS_ARMIES_SLAYING),
+                floors=[16],
                 bounds=[
                     [12146, 4542],
                     [12186, 4584],
@@ -323,6 +325,7 @@ PATCHES = [
                 sector_id=1415,
                 name="Balls 1",
                 buffs=Buffs(sigil=SERPENT_SIGIL, utility=SCARLETS_ARMIES_SLAYING),
+                floors=[16],
                 bounds=[
                     [12273, 4562],
                     [12306, 4590],
@@ -349,6 +352,7 @@ PATCHES = [
                 sector_id=1416,
                 name="Balls 2",
                 buffs=Buffs(sigil=SERPENT_SIGIL, utility=SCARLETS_ARMIES_SLAYING),
+                floors=[16],
                 bounds=[
                     [12347, 4678],
                     [12346, 4702],
@@ -376,6 +380,7 @@ PATCHES = [
                 sector_id=1417,
                 name="Carolabruecke",
                 buffs=Buffs(sigil=SERPENT_SIGIL, utility=SCARLETS_ARMIES_SLAYING),
+                floors=[16],
                 bounds=[
                     [12177, 4971],
                     [12216, 4973],
@@ -397,6 +402,7 @@ PATCHES = [
                 sector_id=1418,
                 name="Siax",
                 buffs=Buffs(sigil=SERPENT_SIGIL, utility=SCARLETS_ARMIES_SLAYING),
+                floors=[16],
                 bounds=[
                     [12176, 4956],
                     [12168, 4953],
@@ -415,6 +421,7 @@ PATCHES = [
                 sector_id=1419,
                 name="Ensolyss",
                 buffs=Buffs(sigil=SERPENT_SIGIL, utility=SCARLETS_ARMIES_SLAYING),
+                floors=[16],
                 bounds=[
                     [12124, 4781],
                     [12149, 4774],
@@ -462,6 +469,7 @@ PATCHES = [
                 sector_id=1841,
                 name="Boss Arena",
                 buffs=Buffs(sigil=NIGHT_SIGIL),
+                floors=[51],
                 bounds=[
                     [11997, 4810],
                     [11974, 4819],
@@ -656,6 +664,7 @@ def apply_patches(patches, dungeon_maps: dict) -> dict:
         for sector_patch in patch.sector_patches:
             sector = map_data["sectors"].get(str(sector_patch.sector_id))
 
+            # NEW SECTORS
             if isinstance(sector_patch, NewSector):
                 if sector:
                     print(f"Sector {sector_patch.sector_id} already exists on map {patch.map_id}")
@@ -666,8 +675,10 @@ def apply_patches(patches, dungeon_maps: dict) -> dict:
                     "name": sector_patch.name,
                     "bounds": sector_patch.bounds,
                     "buffs": sector_patch.buffs,
+                    "floors": sector_patch.floors,
                 }
 
+            # EXISTING SECTORS
             if isinstance(sector_patch, SectorPatch):
                 if not sector:
                     print(f"Sector {sector_patch.sector_id} not found on map {patch.map_id}")

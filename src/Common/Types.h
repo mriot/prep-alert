@@ -29,6 +29,7 @@ struct Sector
     std::string name;
     std::vector<Vec2> bounds;
     Buffs buffs;
+    std::vector<int> floors;
 };
 
 struct MapData

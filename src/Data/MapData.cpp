@@ -52,6 +52,7 @@ void from_json(const json &j, Sector &s)
     j.at("id").get_to(s.id);
     j.at("name").get_to(s.name);
     j.at("bounds").get_to(s.bounds);
+    j.at("floors").get_to(s.floors);
 
     if (j.contains("buffs"))
         j.at("buffs").get_to(s.buffs);

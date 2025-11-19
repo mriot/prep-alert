@@ -14,6 +14,7 @@ namespace G
     bool IsOnSupportedMap    = false;
     uint32_t CurrentMapID    = 0;
     uint32_t CurrentSectorID = 0;
+    int CurrentMapFloor      = 0;
     std::unordered_set<uint32_t> SupportedMaps;
     std::unordered_map<int, MapData> MapDataMap;
 }

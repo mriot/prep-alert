@@ -18,18 +18,24 @@
 
 namespace
 {
-    bool IsPlayerInSector(const Vec2 &pos, const std::vector<Vec2> &bounds)
+    bool IsPlayerInSector(const Vec2 &pos, const Sector &sector, const int floorLevel)
     {
-        if (bounds.size() < 3)
+        if (sector.bounds.size() < 3)
             return false;
 
+        // don't check floor level if it's 0 - our detection system prob didn't pick it up (yet)
+        if (floorLevel != 0 && std::ranges::find(sector.floors, floorLevel) == sector.floors.end())
+        {
+            return false;
+        }
+
         bool inside        = false;
-        const size_t count = bounds.size();
+        const size_t count = sector.bounds.size();
 
         for (size_t i = 0, j = count - 1; i < count; j = i++)
         {
-            const auto &pi = bounds[i];
-            const auto &pj = bounds[j];
+            const auto &pi = sector.bounds[i];
+            const auto &pj = sector.bounds[j];
 
             // ngl this is some ray-casting shit from stackoverflow
             bool intersect =
@@ -175,7 +181,7 @@ void OnRender()
 
     for (auto &sector : currentMap.sectors)
     {
-        if (!IsPlayerInSector({x, y}, sector.bounds))
+        if (!IsPlayerInSector({x, y}, sector, G::CurrentMapFloor))
         {
             continue;
         }

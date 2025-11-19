@@ -1,4 +1,6 @@
 #include "Addon.h"
+
+#include "Hooks.h"
 #include <filesystem>
 #include <Common/Globals.h>
 #include <Common/Utils.h>
@@ -55,6 +57,8 @@ void AddonLoad(AddonAPI_t *api)
 
     // --- passed all checks - let's go ---
 
+    Hooks::Init();
+
     ImGui::SetCurrentContext((ImGuiContext *)G::APIDefs->ImguiContext);
     ImGui::SetAllocatorFunctions((void *(*)(size_t, void *))G::APIDefs->ImguiMalloc,
                                  (void (*)(void *, void *))G::APIDefs->ImguiFree);
@@ -80,6 +84,7 @@ void AddonLoad(AddonAPI_t *api)
 /* -------------------------------------------------------------------------- */
 void AddonUnload()
 {
+    Hooks::Destroy();
     G::APIDefs->GUI_Deregister(OnRender);
     G::APIDefs->GUI_Deregister(OnOptionsRender);
     G::APIDefs->Events_Unsubscribe(EV_MUMBLE_IDENTITY_UPDATED, OnMumbleIdentityUpdated);

@@ -32,6 +32,7 @@ class NewSector:
     name: str
     buffs: Buffs
     bounds: List[List[float]]
+    floors: List[int]
 
 
 @dataclass
