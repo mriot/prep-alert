@@ -30,6 +30,7 @@ NIGHT_SIGIL = Buff(15268, "Night Sigil")
 
 SERPENT_SIGIL = Buff(9347, "Serpent Slaying Sigil")
 ICEBROOD_SIGIL = Buff(9340, "Icebrood Sigil")
+DEMON_SIGIL = Buff(9395, "Demon Sigil")
 
 # FOOD
 GENERIC_FOOD = Buff(-3, "Default Food")

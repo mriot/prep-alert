@@ -173,15 +173,21 @@ void OnRender()
 
     lastFrameTime = currentFrameTime;
 
-    // global player position
-    const float x = G::MumbleLink->Context.Compass.PlayerPosition.X;
-    const float y = G::MumbleLink->Context.Compass.PlayerPosition.Y;
+    const float map_x    = G::MumbleLink->Context.Compass.PlayerPosition.X;
+    const float map_y    = G::MumbleLink->Context.Compass.PlayerPosition.Y;
+    const float player_y = G::MumbleLink->AvatarPosition.Y; // vertical position
 
     auto &currentMap = G::MapDataMap.at(G::CurrentMapID);
 
+    // special case for Lonely Tower Fractal - despite actually having multiple floors, the game treats it as a single floor
+    if (currentMap.id == 1538 && player_y > 890.0f) // at this height we're definitely on the upper floor
+    {
+        G::CurrentMapFloor = 64; // default is 63
+    }
+
     for (auto &sector : currentMap.sectors)
     {
-        if (!IsPlayerInSector({x, y}, sector, G::CurrentMapFloor))
+        if (!IsPlayerInSector({map_x, map_y}, sector, G::CurrentMapFloor))
         {
             continue;
         }

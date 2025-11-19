@@ -40,6 +40,7 @@ class MapPatch:
     map_id: int
     default: Buffs
     sector_patches: List[SectorPatch | NewSector]
+    floors: List[int] | None = None
 
 
 # ---------------------------------------------------------------------------- #

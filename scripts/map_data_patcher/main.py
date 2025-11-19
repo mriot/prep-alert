@@ -4,6 +4,8 @@ from dataclasses import asdict, is_dataclass
 from pathlib import Path
 
 from buffs import (
+    DEMON_SIGIL,
+    DEMON_SLAYING,
     DESTROYER_SLAYING,
     DREDGE_SLAYING,
     FLAME_LEGION_SLAYING,
@@ -28,6 +30,31 @@ from models import Buffs, DungeonMap, FractalMap, MapPatch, NewSector, SectorPat
 #                                    PATCHES                                   #
 # ---------------------------------------------------------------------------- #
 PATCHES = [
+    # --------------------------- LONELY TOWER FRACTAL --------------------------- #
+    MapPatch(
+        map_id=FractalMap.LONELY_TOWER,
+        default=Buffs(utility=GENERIC_ENHANCEMENT, sigil=GENERIC_SIGIL),
+        floors=[63, 64],  # TODO not currently patched into map data
+        sector_patches=[
+            SectorPatch(
+                name="Lower floor",  # is on default floor 63
+                sector_id=2016,
+                buffs=Buffs(utility=GENERIC_ENHANCEMENT, sigil=GENERIC_SIGIL),
+                bounds=[
+                    [0, 0],  # TODO
+                ],
+            ),
+            NewSector(
+                sector_id=2017,
+                name="Upper floor",
+                buffs=Buffs(utility=DEMON_SLAYING, sigil=DEMON_SIGIL),
+                floors=[64],  # this is a custom floor and handled in the addon
+                bounds=[
+                    [0, 0],  # TODO
+                ],
+            ),
+        ],
+    ),
     # --------------------------- SHATTERED OBSERVATORY -------------------------- #
     MapPatch(
         map_id=FractalMap.SHATTERED_OBSERVATORY,
@@ -491,6 +518,7 @@ PATCHES = [
             ),
         ],
     ),
+    # ---------------------------------------------------------------------------- #
     # ----------------------------- Ascalon Catacombs ---------------------------- #
     MapPatch(
         DungeonMap.AC_STORY,
@@ -660,6 +688,7 @@ def apply_patches(patches, dungeon_maps: dict) -> dict:
         map_data = dungeon_maps[patch.map_id]
 
         map_data.setdefault("default_buffs", patch.default)
+        # TODO patch in map floors
 
         for sector_patch in patch.sector_patches:
             sector = map_data["sectors"].get(str(sector_patch.sector_id))

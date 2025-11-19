@@ -36,5 +36,6 @@ inline std::unordered_map<int, BuffInfo> BuffDefs = {
     // sigils
     {15268, {NIGHT_SIGIL, "NIGHT_SIGIL"}},
     {9347, {SERPENT_SIGIL, "SERPENT_SIGIL"}},
+    {9395, {DEMON_SIGIL, "DEMON_SIGIL"}},
 };
 
