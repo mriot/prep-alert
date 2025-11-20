@@ -10,7 +10,6 @@
 #include <format>
 #include <fstream>
 #include <imgui/imgui.h>
-#include <ios>
 #include <mutex>
 #include <nlohmann/json.hpp>
 #include <string>
@@ -38,7 +37,6 @@ namespace
     Settings settings = defaultSettings;
 
     // volatile state (not persisted)
-    bool overlayDragEnabled   = false;
     bool overlayPositionDirty = false;
 
 
@@ -271,4 +269,4 @@ namespace SettingsManager
 
         return true;
     }
-} // namespace SettingsManager
+}

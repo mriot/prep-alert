@@ -15,14 +15,20 @@
 #include <mumble/Mumble.h>
 #include <nexus/Nexus.h>
 
+
+///----------------------------------------------------------------------------------------------------
+/// ADDON LOAD
+///----------------------------------------------------------------------------------------------------
 void AddonLoad(AddonAPI_t *api)
 {
-    G::APIDefs    = api; // this is the first thing to do (!)
+    G::APIDefs    = api;
     G::MumbleLink = static_cast<Mumble::Data *>(G::APIDefs->DataLink_Get(DL_MUMBLE_LINK));
     G::NexusLink  = static_cast<NexusLinkData_t *>(G::APIDefs->DataLink_Get(DL_NEXUS_LINK));
 
 #ifdef DEBUG
-    Log::Debug("!!! Addon loading in DEBUG mode !!!");
+    Log::Debug("---> DEBUG BUILD <---");
+#else
+    Log::Debug("---> RELEASE BUILD <---");
 #endif
 
     if (!G::NexusLink)
@@ -39,7 +45,10 @@ void AddonLoad(AddonAPI_t *api)
 
     if (const std::string patterns = GW2RE::RunDiag(); !patterns.empty())
     {
-        Log::Critical("GW2RE pattern validation failed:\n" + patterns);
+        Log::Critical("GW2RE pattern validation failed");
+#ifdef DEBUG
+        Log::Debug(patterns);
+#endif
         return;
     }
 
@@ -68,7 +77,7 @@ void AddonLoad(AddonAPI_t *api)
         G::SupportedMaps.insert(id);
     }
 
-    Log::Info((std::format("{} supported maps", G::SupportedMaps.size())));
+    Log::Info(std::format("{} supported maps", G::SupportedMaps.size()));
 
     G::APIDefs->GUI_Register(RT_Render, OnRender);
     G::APIDefs->GUI_Register(RT_OptionsRender, OnOptionsRender);
@@ -79,9 +88,10 @@ void AddonLoad(AddonAPI_t *api)
 #endif
 }
 
-/* -------------------------------------------------------------------------- */
-/*                                ADDON UNLOAD                                */
-/* -------------------------------------------------------------------------- */
+
+///----------------------------------------------------------------------------------------------------
+/// ADDON UNLOAD
+///----------------------------------------------------------------------------------------------------
 void AddonUnload()
 {
     Hooks::Destroy();

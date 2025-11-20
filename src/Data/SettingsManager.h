@@ -17,7 +17,7 @@ namespace SettingsManager
     // image size
     int GetImageSize();
 
-    void SetImageSize(const int size);
+    void SetImageSize(int size);
 
     // compact mode
     bool IsCompactMode();

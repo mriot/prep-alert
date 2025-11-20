@@ -1,9 +1,6 @@
 #include "Events.h"
 #include <Common/Globals.h>
-#include <Common/Utils.h>
-#include <format>
 #include <mumble/Mumble.h>
-#include <string>
 
 void OnMumbleIdentityUpdated(void *eventData)
 {
@@ -21,11 +18,8 @@ void OnMumbleIdentityUpdated(void *eventData)
     if (!G::SupportedMaps.contains(G::CurrentMapID))
     {
         G::IsOnSupportedMap = false;
-        Log::Debug((std::format("Map {} is NOT supported", G::CurrentMapID)).c_str());
-
         return;
     }
 
     G::IsOnSupportedMap = true;
-    Log::Debug((std::format("Map {} is supported", G::CurrentMapID)).c_str());
 }

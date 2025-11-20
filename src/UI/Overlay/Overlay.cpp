@@ -34,7 +34,7 @@ namespace
     float RotateAlpha()
     {
         const float t = ImGui::GetTime() * 10.0f; // time since imgui initialized
-        return 0.5f + 0.5f * sinf(t); // oscillates between 0 and 1 (sinf -1 to 1)
+        return 0.5f + 0.5f * sinf(t);             // oscillates between 0 and 1 (sinf -1 to 1)
     }
 }
 
@@ -42,8 +42,9 @@ namespace Overlay
 {
     void RenderOverlay(const std::vector<Buff> &buffs)
     {
-        static float alpha                  = 1.0f;
         static std::vector<int> prevBuffIDs = {};
+        static float windowAlpha            = 1.0f;
+        static auto lastFrameTime           = std::chrono::steady_clock::now();
 
         if (buffs.empty())
         {
@@ -51,14 +52,13 @@ namespace Overlay
             return;
         }
 
-        static auto last = std::chrono::steady_clock::now();
-
         if (!G::APIDefs->ImguiContext || !ImGui::GetCurrentContext())
         {
             Log::Critical("Failed to get ImGui context");
             return;
         }
 
+        // default window flags
         ImGuiWindowFlags flags = ImGuiWindowFlags_NoFocusOnAppearing |
                                  ImGuiWindowFlags_NoBackground |
                                  ImGuiWindowFlags_NoCollapse |
@@ -70,10 +70,11 @@ namespace Overlay
             // when not in options pane make the overlay non-interactive
             flags |= ImGuiWindowFlags_NoNav | ImGuiWindowFlags_NoFocusOnAppearing;
 
+            // disable all inputs only if tooltips option is disabled
             if (!SettingsManager::IsTooltipsEnabled())
-                flags |= ImGuiWindowFlags_NoInputs; // cant set this if user wants tooltips
+                flags |= ImGuiWindowFlags_NoInputs;
 
-            // gather current buff IDs to check for changes
+            // gather current buff IDs to check for changes (used for flashing effect)
             std::vector<int> currentBuffIDs;
             for (const Buff &buff : buffs)
             {
@@ -83,38 +84,39 @@ namespace Overlay
             // check if buff list changed for flashing effect
             if (prevBuffIDs != currentBuffIDs)
             {
-                prevBuffIDs = currentBuffIDs;
-                last        = std::chrono::steady_clock::now();
+                prevBuffIDs   = currentBuffIDs;
+                lastFrameTime = std::chrono::steady_clock::now();
             }
 
-            const auto now     = std::chrono::steady_clock::now();
-            const auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(now - last).count();
+            const auto currentFrameTime = std::chrono::steady_clock::now();
+            const auto elapsed          = std::chrono::duration_cast<std::chrono::milliseconds>(currentFrameTime - lastFrameTime).count();
 
-            alpha = elapsed <= SettingsManager::GetFlashingDuration() * 1000 ? RotateAlpha() : 1.0f; // flashing effect
+            windowAlpha = elapsed <= SettingsManager::GetFlashingDuration() * 1000 ? RotateAlpha() : 1.0f; // flashing effect
         }
 
         // only set position on first use to allow dragging and precise position simultaneously
         ImGui::SetNextWindowPos(SettingsManager::GetOverlayPosition(), UIState::IsOptionsPaneOpen && !SettingsManager::IsOverlayPositionDirty() ? ImGuiCond_FirstUseEver : ImGuiCond_Always);
 
-        ImGui::PushStyleVar(ImGuiStyleVar_Alpha, UIState::IsOptionsPaneOpen ? 1.0f : alpha);
+        ImGui::PushStyleVar(ImGuiStyleVar_Alpha, UIState::IsOptionsPaneOpen ? 1.0f : windowAlpha); // full alpha in options pane (no flashing effect)
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
         ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(5.0f, 5.0f));
-        ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(ImGui::GetStyle().CellPadding.x, 0.0f));
+        ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(ImGui::GetStyle().CellPadding.x, 0.0f)); // no vertical padding in table cells
 
         if (ImGui::Begin(G::ADDON_NAME, nullptr, flags))
         {
             if (UIState::IsOptionsPaneOpen)
                 HandleOverlayDrag();
 
+            // render buff reminders
             for (const Buff &buff : buffs)
             {
                 const ImVec2 imageSize(SettingsManager::GetImageSize(), SettingsManager::GetImageSize());
 
-                // compact mode
+                // compact mode (icons only)
                 if (SettingsManager::IsCompactMode())
                 {
                     if (const Texture_t *texture = LoadTexture(buff.id))
-                        ImGui::Image((void *)texture->Resource, imageSize);
+                        ImGui::Image(texture->Resource, imageSize);
                     else
                         ImGui::Dummy(imageSize);
 
@@ -126,24 +128,24 @@ namespace Overlay
                         ImGui::SameLine();
                     }
                 }
-                // normal mode
-                else if (ImGui::BeginTable("buffs", 2, ImGuiTableFlags_SizingFixedFit))
+                // normal mode (with names)
+                else if (ImGui::BeginTable(std::format("{} Reminders", G::ADDON_NAME).c_str(), 2, ImGuiTableFlags_SizingFixedFit))
                 {
                     const float textHeight = ImGui::GetTextLineHeight();
-
                     ImGui::TableSetupColumn("Icon", ImGuiTableColumnFlags_WidthFixed, imageSize.x);
                     ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_WidthStretch);
 
                     ImGui::TableNextColumn();
-                    if (Texture_t *texture = LoadTexture(buff.id))
-                        ImGui::Image((void *)texture->Resource, imageSize);
+                    if (const Texture_t *texture = LoadTexture(buff.id))
+                        ImGui::Image(texture->Resource, imageSize);
                     else
                         ImGui::Dummy(imageSize);
                     ImGui::TableNextColumn();
 
+                    // center text vertically in cell
                     const ImVec2 cellMin = ImGui::GetCursorScreenPos();
                     const ImVec2 cellMax = ImVec2(cellMin.x + ImGui::GetColumnWidth(), cellMin.y + imageSize.y);
-                    const float yOffset  = (imageSize.y - textHeight) * 0.5f; // center text vertically
+                    const float yOffset  = (imageSize.y - textHeight) * 0.5f;
 
                     ImGui::SetCursorScreenPos(ImVec2(cellMin.x, cellMin.y + yOffset));
 
@@ -158,4 +160,4 @@ namespace Overlay
         ImGui::End();
         ImGui::PopStyleVar(4); // window alpha + window padding + item spacing + cell padding
     }
-} // namespace Overlay
+}

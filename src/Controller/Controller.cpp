@@ -1,8 +1,6 @@
 #include "Controller.h"
-#include <Common/BuffData.h>
 #include <Common/Globals.h>
 #include <Common/Types.h>
-#include <Common/Utils.h>
 #include <Data/SettingsManager.h>
 #include <gw2re/Game/Char/ChBuffMgr.h>
 #include <gw2re/Game/Char/ChCliContext.h>
@@ -11,10 +9,13 @@
 #include <gw2re/Game/PropContext.h>
 #include <UI/Overlay/Overlay.h>
 #include <chrono>
-#include <format>
 #include <nexus/Nexus.h>
-#include <string>
 #include <vector>
+
+
+///----------------------------------------------------------------------------------------------------
+/// Controller Internal Functions
+///----------------------------------------------------------------------------------------------------
 
 namespace
 {
@@ -38,7 +39,7 @@ namespace
             const auto &pj = sector.bounds[j];
 
             // ngl this is some ray-casting shit from stackoverflow
-            bool intersect =
+            const bool intersect =
                 ((pi.y > pos.y) != (pj.y > pos.y)) &&
                 (pos.x < (pj.x - pi.x) * (pos.y - pi.y) / (pj.y - pi.y) + pi.x);
 
@@ -55,10 +56,10 @@ namespace
 
         GW2RE::CCharCliContext cctx = propCtx.GetCharCliCtx();
 
-        GW2RE::CCharacter character = cctx.GetControlledCharacter();
-        GW2RE::CCombatant combatant = character.GetCombatant();
-        GW2RE::CBuffMgr buffMgr     = combatant.GetBuffMgr();
-        GW2RE::BuffBar_t buffBar    = buffMgr.GetBuffBar();
+        GW2RE::CCharacter character    = cctx.GetControlledCharacter();
+        GW2RE::CCombatant combatant    = character.GetCombatant();
+        GW2RE::CBuffMgr buffMgr        = combatant.GetBuffMgr();
+        const GW2RE::BuffBar_t buffBar = buffMgr.GetBuffBar();
 
         for (size_t i = 0; i < buffBar.Capacity; i++)
         {
@@ -76,9 +77,10 @@ namespace
             }
         }
 
-        return false;
+        return false; // buff not found
     }
 
+    // determines which buff to show based on sector/default buffs and combat state
     std::optional<Buff> GetBuffToShow(
         const std::optional<Buff> &sectorBuff,
         const std::optional<Buff> &defaultBuff,
@@ -96,17 +98,15 @@ namespace
         };
 
         // reset generic flag when real buffs become available
-        const bool hasRealBuff = isRealBuff(sectorBuff) || isRealBuff(defaultBuff);
-        if (hasRealBuff)
+        if (isRealBuff(sectorBuff) || isRealBuff(defaultBuff))
         {
             genericShownFlag = false;
         }
 
         // determine which buff to show (sector takes priority)
         const auto &buffToShow = sectorBuff.has_value() ? sectorBuff : defaultBuff;
-        const bool isGeneric   = (buffToShow->id < 0);
 
-        if (isGeneric)
+        if (buffToShow->id < 0) // generic (custom) buff
         {
             if (isInCombat)
             {
@@ -120,9 +120,9 @@ namespace
         }
 
         // show real buff
-        return (buffToShow);
+        return buffToShow;
     }
-} // namespace
+}
 
 void OnRender()
 {
@@ -134,16 +134,16 @@ void OnRender()
     if (!G::NexusLink->IsGameplay)
         return;
 
-    // run settings overlay regardless of map support status to be able to drag overlay on any map
+    // render settings overlay regardless of map support status to be able to drag it on any map
     if (UIState::IsOptionsPaneOpen)
     {
         if (SettingsManager::GetShownBuffTypes().utility)
         {
-            buffReminders.push_back(Buff(-1, "Enhancement Placeholder"));
+            buffReminders.push_back(Buff(-1, "\"Potion of Calibration\""));
         }
         if (SettingsManager::GetShownBuffTypes().sigil)
         {
-            buffReminders.push_back(Buff(-2, "Sigil Placeholder"));
+            buffReminders.push_back(Buff(-2, "\"Sigil of the Tinkerer\""));
         }
 
         Overlay::RenderOverlay(buffReminders);
@@ -166,7 +166,7 @@ void OnRender()
 
     // avoid checking map and sector stuff each frame
     const auto currentFrameTime = std::chrono::steady_clock::now();
-    auto elapsed                = std::chrono::duration_cast<std::chrono::milliseconds>(currentFrameTime - lastFrameTime).count();
+    auto const elapsed          = std::chrono::duration_cast<std::chrono::milliseconds>(currentFrameTime - lastFrameTime).count();
 
     if (elapsed < 500)
         return;
@@ -195,7 +195,6 @@ void OnRender()
         if (sector.id != G::CurrentSectorID)
         {
             G::CurrentSectorID = sector.id;
-            Log::Info(std::format("Sector: {} ({})", sector.name, sector.id));
         }
 
         // we have to check buffs even if sector didn't change

@@ -4,9 +4,11 @@
 #include <cstdint>
 #include <nexus/Nexus.h>
 
-/* -------------------------------------------------------------------------- */
-/*                                  DLL MAIN                                  */
-/* -------------------------------------------------------------------------- */
+
+///----------------------------------------------------------------------------------------------------
+/// DLL MAIN
+///----------------------------------------------------------------------------------------------------
+
 BOOL APIENTRY DllMain(const HMODULE hModule, const DWORD reason, LPVOID)
 {
     if (reason == DLL_PROCESS_ATTACH)
@@ -17,9 +19,11 @@ BOOL APIENTRY DllMain(const HMODULE hModule, const DWORD reason, LPVOID)
     return true;
 }
 
-/* -------------------------------------------------------------------------- */
-/*                              ADDON DEFINITION                              */
-/* -------------------------------------------------------------------------- */
+
+///----------------------------------------------------------------------------------------------------
+/// ADDON DEFINITION
+///----------------------------------------------------------------------------------------------------
+
 AddonDefinition_t addonDef;
 
 extern "C" __declspec(dllexport) AddonDefinition_t *GetAddonDef()
@@ -29,11 +33,11 @@ extern "C" __declspec(dllexport) AddonDefinition_t *GetAddonDef()
     addonDef.Name        = G::ADDON_NAME;
     addonDef.Version     = {V_MAJOR, V_MINOR, V_BUILD, V_REVISION};
     addonDef.Author      = "Eredin.4187";
-    addonDef.Description = "Swap reminder";
+    addonDef.Description = "Reminds you of missing buffs in Dungeons and Fractal CMs.";
     addonDef.Load        = AddonLoad;
     addonDef.Unload      = AddonUnload;
     addonDef.Flags       = AF_None;
     addonDef.Provider    = UP_GitHub;
-    addonDef.UpdateLink  = "https://example.com";
+    addonDef.UpdateLink  = "https://github.com/mriot/prep-alert";
     return &addonDef;
 }

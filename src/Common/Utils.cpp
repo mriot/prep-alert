@@ -1,3 +1,4 @@
+#include "Data/SettingsManager.h"
 #include "imgui/imgui.h"
 #include <filesystem>
 #include <fstream>
@@ -36,7 +37,7 @@ namespace Log
     {
         G::APIDefs->Log(LOGL_CRITICAL, G::ADDON_NAME, message.c_str());
     }
-} // namespace Log
+}
 
 
 /// ----------------------------------------------------------------------------------------------------
@@ -50,8 +51,9 @@ namespace ImGui
         if (ImGui::IsItemHovered())
         {
             ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 1.0f);
+            ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(5.0f, 3.0f));
             ImGui::SetTooltip("%s", text.c_str());
-            ImGui::PopStyleVar();
+            ImGui::PopStyleVar(2);
         }
     }
 
@@ -86,13 +88,12 @@ void CoordDumper(const char *aIdentifier, const bool isDown)
 {
     if (isDown)
     {
-
         int x = G::MumbleLink->Context.Compass.PlayerPosition.X;
         int y = G::MumbleLink->Context.Compass.PlayerPosition.Y;
 
-        // float x = G::MumbleLink->AvatarPosition.X;
-        // float y = G::MumbleLink->AvatarPosition.Y;
-        // float z = G::MumbleLink->AvatarPosition.Z;
+        // int x = G::MumbleLink->AvatarPosition.X;
+        // int y = G::MumbleLink->AvatarPosition.Y;
+        // int z = G::MumbleLink->AvatarPosition.Z;
 
         const std::filesystem::path dir = G::APIDefs->Paths_GetAddonDirectory(G::ADDON_NAME);
         std::filesystem::create_directories(dir);
