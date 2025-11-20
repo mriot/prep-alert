@@ -233,6 +233,13 @@ namespace SettingsManager
         const std::filesystem::path path = GetSettingsPath();
         Log::Info(std::format("Loading settings from {}", path.string()));
 
+        if (!std::filesystem::exists(path))
+        {
+            Log::Warning("Settings file does not exist, using default settings");
+            settings = defaultSettings;
+            return true;
+        }
+
         try
         {
             std::ifstream file(path);
