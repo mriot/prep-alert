@@ -85,15 +85,13 @@ namespace
     std::optional<Buff> GetBuffToShow(
         const std::optional<Buff> &sectorBuff,
         const std::optional<Buff> &defaultBuff,
-        bool isInCombat,
+        const bool isInCombat,
         bool &genericShownFlag)
     {
         if (!sectorBuff.has_value() && !defaultBuff.has_value())
-        {
             return std::nullopt;
-        }
 
-        // helper to check if buff id > 0
+        // helper to check if buff id > 0 (i.e. a "real" buff)
         auto isRealBuff = [](const auto &buff) {
             return buff.has_value() && buff->id > 0;
         };
@@ -103,20 +101,23 @@ namespace
         {
             genericShownFlag = false;
         }
+        // no real buffs and default buffs disabled
+        else if (!SettingsManager::GetShownBuffTypes().defaultBuffs)
+        {
+            return std::nullopt;
+        }
 
         // determine which buff to show (sector takes priority)
         const auto &buffToShow = sectorBuff.has_value() ? sectorBuff : defaultBuff;
 
-        if (buffToShow->id < 0) // generic (custom) buff
+        // generic (custom) buff handling
+        if (buffToShow->id < 0)
         {
-            if (isInCombat)
-            {
-                genericShownFlag = true; // hide generic buff upon entering combat
-            }
-            else if (!genericShownFlag)
-            {
-                return (buffToShow);
-            }
+            if (isInCombat) // hide generic buff upon entering combat
+                genericShownFlag = true;
+            else if (!genericShownFlag) // show only once until combat
+                return buffToShow;
+
             return std::nullopt; // either in combat or already shown
         }
 
@@ -228,9 +229,7 @@ void OnRender()
                 );
 
             if (buff.has_value())
-            {
                 addBuffReminder(buff);
-            }
         }
 
         if (SettingsManager::GetShownBuffTypes().sigil)
@@ -243,9 +242,7 @@ void OnRender()
                 );
 
             if (buff.has_value())
-            {
                 addBuffReminder(buff);
-            }
         }
 
         break; // player can be in only one sector

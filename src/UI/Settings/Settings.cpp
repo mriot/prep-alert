@@ -13,7 +13,7 @@ void OnOptionsRender()
     /// buff types to show
     ///----------------------------------------------------------------------------------------------------
 
-    ImGui::Text("Buff types to show");
+    ImGui::Text("Buff reminders");
     ShownBuffTypes shownBuffs = SettingsManager::GetShownBuffTypes();
 
     if (ImGui::Checkbox("Enhancement", &shownBuffs.utility))
@@ -25,6 +25,15 @@ void OnOptionsRender()
     {
         SettingsManager::SetShownBuffTypes(shownBuffs);
     }
+
+    if (ImGui::Checkbox("Default buffs", &shownBuffs.defaultBuffs))
+    {
+        SettingsManager::SetShownBuffTypes(shownBuffs);
+    }
+
+    ImGui::SameLine();
+    ImGui::TextDisabled("(i)");
+    ImGui::HoverTooltip("Default buffs are shown when no special buffs are available");
 
     ImGui::Spacing();
     ImGui::Separator();

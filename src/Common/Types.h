@@ -56,6 +56,7 @@ struct ShownBuffTypes
     bool food;
     bool utility;
     bool sigil;
+    bool defaultBuffs;
 };
 
 struct Position
