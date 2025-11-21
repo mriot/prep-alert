@@ -1,4 +1,6 @@
 #include "Controller.h"
+
+#include "Common/Utils.h"
 #include "UI/Debug/Debug.h"
 #include <Common/Globals.h>
 #include <Common/Types.h>
@@ -12,14 +14,77 @@
 #include <chrono>
 #include <nexus/Nexus.h>
 #include <vector>
+#include <unordered_set>
 
-
-///----------------------------------------------------------------------------------------------------
-/// Controller Internal Functions
-///----------------------------------------------------------------------------------------------------
 
 namespace
 {
+    struct BuffReminder
+    {
+        std::optional<Buff> buff;
+        bool isGenericDismissed = false;
+        bool showGenericBuff    = true;
+        bool playerInCombat     = false;
+
+        bool isGenericBuff() { return buff.has_value() && buff->id < 0; }
+
+        void clearBuff() { buff = {}; }
+
+        void reset()
+        {
+            buff.reset();
+            isGenericDismissed = false;
+        }
+    };
+
+    std::unordered_set<int> buildActiveBuffIdSet()
+    {
+        std::unordered_set<int> ids;
+
+        GW2RE::CPropContext propCtx    = GW2RE::CPropContext::Get();
+        GW2RE::CCharCliContext cctx    = propCtx.GetCharCliCtx();
+        GW2RE::CCharacter character    = cctx.GetControlledCharacter();
+        GW2RE::CCombatant combatant    = character.GetCombatant();
+        GW2RE::CBuffMgr buffMgr        = combatant.GetBuffMgr();
+        const GW2RE::BuffBar_t buffBar = buffMgr.GetBuffBar();
+
+        for (size_t i = 0; i < buffBar.Capacity; ++i)
+        {
+            const auto &entry = buffBar.Entries[i];
+            if (entry.Hash == 0 || !entry.KVP.Value)
+                continue;
+
+            ids.insert(static_cast<int>(entry.KVP.Value->EffectID));
+        }
+        return ids;
+    }
+
+    bool shouldAddBuffReminder(BuffReminder &reminder, const std::unordered_set<int> &activeBuffIds)
+    {
+        if (!reminder.buff.has_value())
+            return false;
+
+        if (reminder.isGenericBuff())
+        {
+            // player disabled generic buff reminders
+            if (!reminder.showGenericBuff)
+                return false;
+
+            // hide generic buff upon entering combat and then keep it hidden
+            if (reminder.playerInCombat)
+            {
+                reminder.isGenericDismissed = true;
+                return false;
+            }
+            return !reminder.isGenericDismissed;
+        }
+
+        if (activeBuffIds.contains(reminder.buff->id))
+            return false;
+
+        return true;
+    };
+
     bool IsPlayerInSector(const Vec2 &pos, const Sector &sector, const int floorLevel)
     {
         if (sector.bounds.size() < 3)
@@ -50,91 +115,17 @@ namespace
 
         return inside;
     }
-
-    bool PlayerHasBuff(const Buff &buff)
-    {
-        static GW2RE::CPropContext propCtx = GW2RE::CPropContext::Get();
-
-        GW2RE::CCharCliContext cctx = propCtx.GetCharCliCtx();
-
-        GW2RE::CCharacter character    = cctx.GetControlledCharacter();
-        GW2RE::CCombatant combatant    = character.GetCombatant();
-        GW2RE::CBuffMgr buffMgr        = combatant.GetBuffMgr();
-        const GW2RE::BuffBar_t buffBar = buffMgr.GetBuffBar();
-
-        for (size_t i = 0; i < buffBar.Capacity; i++)
-        {
-            const auto &entry = buffBar.Entries[i];
-
-            if (entry.Hash == 0 || !entry.KVP.Value)
-                continue;
-
-            const int effectID = static_cast<int>(entry.KVP.Value->EffectID);
-
-            if (effectID == buff.id)
-            {
-                // Log::Debug("Player has desired buff: " + BuffDefs.at(buff.id).name);
-                return true;
-            }
-        }
-
-        return false; // buff not found
-    }
-
-    // determines which buff to show based on sector/default buffs and combat state
-    std::optional<Buff> GetBuffToShow(
-        const std::optional<Buff> &sectorBuff,
-        const std::optional<Buff> &defaultBuff,
-        const bool isInCombat,
-        bool &genericShownFlag)
-    {
-        if (!sectorBuff.has_value() && !defaultBuff.has_value())
-            return std::nullopt;
-
-        // helper to check if buff id > 0 (i.e. a "real" buff)
-        auto isRealBuff = [](const auto &buff) {
-            return buff.has_value() && buff->id > 0;
-        };
-
-        // reset generic flag when real buffs become available
-        if (isRealBuff(sectorBuff) || isRealBuff(defaultBuff))
-        {
-            genericShownFlag = false;
-        }
-        // no real buffs and default buffs disabled
-        else if (!SettingsManager::GetShownBuffTypes().defaultBuffs)
-        {
-            return std::nullopt;
-        }
-
-        // determine which buff to show (sector takes priority)
-        const auto &buffToShow = sectorBuff.has_value() ? sectorBuff : defaultBuff;
-
-        // generic (custom) buff handling
-        if (buffToShow->id < 0)
-        {
-            if (isInCombat) // hide generic buff upon entering combat
-                genericShownFlag = true;
-            else if (!genericShownFlag) // show only once until combat
-                return buffToShow;
-
-            return std::nullopt; // either in combat or already shown
-        }
-
-        // show real buff
-        return buffToShow;
-    }
 }
 
 void OnRender()
 {
+    static auto lastFrameTime = std::chrono::steady_clock::now();
     static std::vector<Buff> buffReminders;
-    static auto lastFrameTime       = std::chrono::steady_clock::now();
-    static bool genericSigilShown   = false;
-    static bool genericUtilityShown = false;
+    static BuffReminder utilityReminder;
+    static BuffReminder sigilReminder;
 
     if (SettingsManager::IsDebugWindowEnabled())
-        DebugOverlay::OnDebugRender(buffReminders);
+        DebugOverlay::RenderDebugOverlay(buffReminders);
 
     if (!G::NexusLink->IsGameplay)
         return;
@@ -142,109 +133,106 @@ void OnRender()
     // render settings overlay regardless of map support status to be able to drag it on any map
     if (UIState::IsOptionsPaneOpen)
     {
-        if (SettingsManager::GetShownBuffTypes().utility)
-        {
-            buffReminders.push_back(Buff(-1, "\"Potion of Calibration\""));
-        }
-        if (SettingsManager::GetShownBuffTypes().sigil)
-        {
-            buffReminders.push_back(Buff(-2, "\"Sigil of the Tinkerer\""));
-        }
-
-        Overlay::RenderOverlay(buffReminders);
         buffReminders.clear();
 
-        UIState::IsOptionsPaneOpen = false; // set to true by options render each frame
+        if (SettingsManager::GetShownBuffTypes().utility)
+            buffReminders.push_back(Buff(-1, "\"Potion of Calibration\""));
 
-        return; // no need to go further
+        if (SettingsManager::GetShownBuffTypes().sigil)
+            buffReminders.push_back(Buff(-2, "\"Sigil of the Tinkerer\""));
     }
 
+    // to prevent flicker, the previous frame’s data is rendered since map/sector checks are throttled below
+    if (!buffReminders.empty())
+        Overlay::RenderOverlay(buffReminders);
+
+    // skip further processing if options pane is open
+    if (UIState::IsOptionsPaneOpen)
+    {
+        UIState::IsOptionsPaneOpen = false; // this is set to true by options render each frame it's open
+        return;
+    }
+
+    // reset everything if not on a supported map
+    // TODO we should reset on every map change actually
     if (!G::IsOnSupportedMap)
     {
+        sigilReminder.reset();
+        utilityReminder.reset();
         buffReminders.clear();
         return;
     }
 
-    Overlay::RenderOverlay(buffReminders);
-
-    UIState::IsOptionsPaneOpen = false; // set to true by options render each frame
-
-    // avoid checking map and sector stuff each frame
+    // throttle map/sector checks
     const auto currentFrameTime = std::chrono::steady_clock::now();
-    auto const elapsed          = std::chrono::duration_cast<std::chrono::milliseconds>(currentFrameTime - lastFrameTime).count();
+    auto const elapsedTime      = std::chrono::duration_cast<std::chrono::milliseconds>(currentFrameTime - lastFrameTime).count();
 
-    if (elapsed < 500)
+    if (elapsedTime < 500)
         return;
 
     lastFrameTime = currentFrameTime;
 
-    const float map_x    = G::MumbleLink->Context.Compass.PlayerPosition.X;
-    const float map_y    = G::MumbleLink->Context.Compass.PlayerPosition.Y;
-    const float player_y = G::MumbleLink->AvatarPosition.Y; // vertical position
+    buffReminders.clear(); // clear for new data
 
-    auto &currentMap = G::MapDataMap.at(G::CurrentMapID);
+    const auto mapIt = G::MapDataMap.find(G::CurrentMapID);
+    if (mapIt == G::MapDataMap.end()) // sanity check for map data - should never happen
+        return;
+
+    const bool showGenericBuffs = SettingsManager::GetShownBuffTypes().defaultBuffs;
+    const bool playerInCombat   = (bool)G::MumbleLink->Context.IsInCombat;
+    const auto activeBuffIds    = buildActiveBuffIdSet();
+    const auto &currentMap      = mapIt->second;
+    const float mapX            = G::MumbleLink->Context.Compass.PlayerPosition.X;
+    const float mapY            = G::MumbleLink->Context.Compass.PlayerPosition.Y;
+    const float playerY         = G::MumbleLink->AvatarPosition.Y; // vertical position (there is no vertical position in compass)
+
+    utilityReminder.clearBuff();
+    utilityReminder.showGenericBuff = showGenericBuffs;
+    utilityReminder.playerInCombat  = playerInCombat;
+
+    sigilReminder.clearBuff();
+    sigilReminder.showGenericBuff = showGenericBuffs;
+    sigilReminder.playerInCombat  = playerInCombat;
 
     // special case for Lonely Tower Fractal - despite actually having multiple floors, the game treats it as a single floor
-    if (currentMap.id == 1538 && player_y > 890.0f) // at this height we're definitely on the upper floor
+    if (currentMap.id == 1538 && playerY > 890.0f)
     {
-        G::CurrentMapFloor = 64; // default is 63
+        // artificially adjust the floor level when the player is on the upper floor (end boss)
+        G::CurrentMapFloor = 64; // the lower default floor is 63
     }
 
+    G::CurrentSectorID = 0;
+
+    // check for sector specific buffs
     for (auto &sector : currentMap.sectors)
     {
-        if (!IsPlayerInSector({map_x, map_y}, sector, G::CurrentMapFloor))
-        {
+        if (!IsPlayerInSector({mapX, mapY}, sector, G::CurrentMapFloor))
             continue;
-        }
 
-        if (sector.id != G::CurrentSectorID)
-        {
-            G::CurrentSectorID = sector.id;
-        }
-
-        // we have to check buffs even if sector didn't change
-        // in case a buff ran out or equipment changed etc.
-
-        buffReminders.clear();
-
-        auto addBuffReminder = [&](const std::optional<Buff> &buffOpt) {
-            if (!buffOpt.has_value())
-                return false; // not specified
-
-            // either we add a reminder or player has buff already
-            if (!PlayerHasBuff(buffOpt.value()))
-            {
-                buffReminders.push_back(buffOpt.value());
-            }
-            return true;
-        };
+        G::CurrentSectorID = sector.id;
 
         if (SettingsManager::GetShownBuffTypes().utility)
-        {
-            const auto buff = GetBuffToShow(
-                sector.buffs.utility,
-                currentMap.default_buffs.utility,
-                G::MumbleLink->Context.IsInCombat,
-                genericUtilityShown
-                );
-
-            if (buff.has_value())
-                addBuffReminder(buff);
-        }
+            utilityReminder.buff = sector.buffs.utility;
 
         if (SettingsManager::GetShownBuffTypes().sigil)
-        {
-            const auto buff = GetBuffToShow(
-                sector.buffs.sigil,
-                currentMap.default_buffs.sigil,
-                G::MumbleLink->Context.IsInCombat,
-                genericSigilShown
-                );
+            sigilReminder.buff = sector.buffs.sigil;
 
-            if (buff.has_value())
-                addBuffReminder(buff);
-        }
-
-        break; // player can be in only one sector
+        break; // player can be in only one sector at a time
     }
+
+    // handle map's default buffs if no sector buffs found
+
+    if (!utilityReminder.buff.has_value() && SettingsManager::GetShownBuffTypes().utility)
+        utilityReminder.buff = currentMap.default_buffs.utility;
+
+    if (!sigilReminder.buff.has_value() && SettingsManager::GetShownBuffTypes().sigil)
+        sigilReminder.buff = currentMap.default_buffs.sigil;
+
+    // build final buff reminder list
+
+    if (shouldAddBuffReminder(utilityReminder, activeBuffIds))
+        buffReminders.push_back(utilityReminder.buff.value());
+
+    if (shouldAddBuffReminder(sigilReminder, activeBuffIds))
+        buffReminders.push_back(sigilReminder.buff.value());
 }

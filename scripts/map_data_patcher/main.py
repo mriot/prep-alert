@@ -34,14 +34,17 @@ PATCHES = [
     MapPatch(
         map_id=FractalMap.LONELY_TOWER,
         default=Buffs(utility=GENERIC_ENHANCEMENT, sigil=GENERIC_SIGIL),
-        floors=[63, 64],  # TODO not currently patched into map data
+        floors=[63, 64],  # TODO not currently patched into map data (not really needed either)
         sector_patches=[
             SectorPatch(
-                name="Lower floor",  # is on default floor 63
+                name="Lower floor",  # default floor 63
                 sector_id=2016,
                 buffs=Buffs(utility=GENERIC_ENHANCEMENT, sigil=GENERIC_SIGIL),
                 bounds=[
-                    [0, 0],  # TODO
+                    [12048, 4650],
+                    [12077, 5315],
+                    [13181, 5321],
+                    [13178, 4650],
                 ],
             ),
             NewSector(
@@ -50,7 +53,10 @@ PATCHES = [
                 buffs=Buffs(utility=DEMON_SLAYING, sigil=DEMON_SIGIL),
                 floors=[64],  # this is a custom floor and handled in the addon
                 bounds=[
-                    [0, 0],  # TODO
+                    [12048, 4650],
+                    [12077, 5315],
+                    [13181, 5321],
+                    [13178, 4650],
                 ],
             ),
         ],
@@ -62,220 +68,14 @@ PATCHES = [
         sector_patches=[
             SectorPatch(
                 sector_id=1478,
-                buffs=Buffs(utility=GENERIC_ENHANCEMENT, sigil=GENERIC_SIGIL),
+                buffs=Buffs(utility=SCARLETS_ARMIES_SLAYING),
+                bounds=[
+                    [11348, 6063],
+                    [11344, 6235],
+                    [11729, 6236],
+                    [11691, 6060],
+                ],
             ),
-            # disable default sector when enabling new sectors
-            # NewSector(
-            #     sector_id=1478,
-            #     name="Spawn",
-            #     buffs=Buffs(utility=GENERIC_ENHANCEMENT, sigil=GENERIC_SIGIL),
-            #     bounds=[
-            #         [11292, 4683],
-            #         [11300, 4723],
-            #         [11340, 4728],
-            #         [11367, 4727],
-            #         [11368, 4720],
-            #         [11361, 4716],
-            #         [11323, 4705],
-            #         [11315, 4690],
-            #         [11306, 4675],
-            #     ],
-            # ),
-            # NewSector(
-            #     sector_id=1479,
-            #     name="Skorvald",
-            #     buffs=Buffs(utility=GENERIC_ENHANCEMENT, sigil=GENERIC_SIGIL),
-            #     bounds=[
-            #         [11456, 4698],
-            #         [11441, 4664],
-            #         [11417, 4654],
-            #         [11382, 4661],
-            #         [11367, 4689],
-            #         [11369, 4712],
-            #         [11379, 4730],
-            #         [11391, 4741],
-            #         [11403, 4747],
-            #         [11432, 4743],
-            #         [11453, 4723],
-            #     ],
-            # ),
-            # NewSector(
-            #     sector_id=1480,
-            #     name="Platform 1",
-            #     buffs=Buffs(utility=GENERIC_ENHANCEMENT, sigil=GENERIC_SIGIL),
-            #     bounds=[
-            #         [11358, 4753],
-            #         [11341, 4742],
-            #         [11325, 4760],
-            #         [11325, 4779],
-            #         [11332, 4795],
-            #         [11347, 4792],
-            #         [11357, 4784],
-            #         [11364, 4775],
-            #         [11362, 4759],
-            #     ],
-            # ),
-            # NewSector(
-            #     sector_id=1481,
-            #     name="Platform 2",
-            #     buffs=Buffs(utility=GENERIC_ENHANCEMENT, sigil=GENERIC_SIGIL),
-            #     bounds=[
-            #         [11497, 4766],
-            #         [11495, 4751],
-            #         [11476, 4745],
-            #         [11459, 4761],
-            #         [11456, 4779],
-            #         [11460, 4794],
-            #         [11469, 4793],
-            #         [11487, 4781],
-            #         [11495, 4770],
-            #     ],
-            # ),
-            # NewSector(
-            #     sector_id=1482,
-            #     name="Platform 3",
-            #     buffs=Buffs(utility=GENERIC_ENHANCEMENT, sigil=GENERIC_SIGIL),
-            #     bounds=[
-            #         [11477, 4617],
-            #         [11467, 4624],
-            #         [11465, 4634],
-            #         [11473, 4646],
-            #         [11492, 4659],
-            #         [11511, 4641],
-            #         [11509, 4626],
-            #         [11501, 4617],
-            #         [11491, 4617],
-            #     ],
-            # ),
-            # NewSector(
-            #     sector_id=1483,
-            #     name="Platform 4",
-            #     buffs=Buffs(utility=GENERIC_ENHANCEMENT, sigil=GENERIC_SIGIL),
-            #     bounds=[
-            #         [11316, 4642],
-            #         [11329, 4652],
-            #         [11347, 4654],
-            #         [11361, 4650],
-            #         [11362, 4630],
-            #         [11355, 4611],
-            #         [11340, 4613],
-            #     ],
-            # ),
-            # NewSector(
-            #     sector_id=1484,
-            #     name="Portal HUB",
-            #     buffs=Buffs(utility=GENERIC_ENHANCEMENT, sigil=GENERIC_SIGIL),
-            #     bounds=[
-            #         [12899, 5054],
-            #         [12854, 5007],
-            #         [12682, 4995],
-            #         [12669, 4995],
-            #         [12614, 5034],
-            #         [12614, 5074],
-            #         [12669, 5113],
-            #         [12681, 5113],
-            #         [12855, 5101],
-            #     ],
-            # ),
-            # NewSector(
-            #     sector_id=1485,
-            #     name="Golem Island 1",
-            #     buffs=Buffs(utility=GENERIC_ENHANCEMENT, sigil=GENERIC_SIGIL),
-            #     bounds=[
-            #         [13003, 5218],
-            #         [12962, 5205],
-            #         [12910, 5218],
-            #         [12921, 5233],
-            #         [12932, 5254],
-            #         [13004, 5228],
-            #     ],
-            # ),
-            # NewSector(
-            #     sector_id=1486,
-            #     name="Golem Island 2 (Ball)",
-            #     buffs=Buffs(utility=GENERIC_ENHANCEMENT, sigil=GENERIC_SIGIL),
-            #     bounds=[
-            #         [12862, 5200],
-            #         [12832, 5190],
-            #         [12803, 5193],
-            #         [12786, 5242],
-            #         [12785, 5277],
-            #         [12815, 5276],
-            #         [12862, 5250],
-            #         [12877, 5235],
-            #     ],
-            # ),
-            # NewSector(
-            #     sector_id=1487,
-            #     name="Golem Island 3",
-            #     buffs=Buffs(utility=GENERIC_ENHANCEMENT, sigil=GENERIC_SIGIL),
-            #     bounds=[
-            #         [12893, 5348],
-            #         [12933, 5343],
-            #         [12957, 5367],
-            #         [12995, 5406],
-            #         [12974, 5444],
-            #         [12941, 5463],
-            #         [12914, 5446],
-            #         [12892, 5416],
-            #         [12880, 5395],
-            #         [12880, 5370],
-            #     ],
-            # ),
-            # NewSector(
-            #     sector_id=1488,
-            #     name="Pre Artsariiv",
-            #     buffs=Buffs(utility=GENERIC_ENHANCEMENT, sigil=GENERIC_SIGIL),
-            #     bounds=[
-            #         [12828, 5465],
-            #         [12843, 5458],
-            #         [12850, 5442],
-            #         [12842, 5405],
-            #         [12830, 5390],
-            #         [12812, 5396],
-            #         [12798, 5402],
-            #         [12782, 5419],
-            #         [12772, 5436],
-            #         [12772, 5452],
-            #         [12814, 5488],
-            #         [12828, 5464],
-            #     ],
-            # ),
-            # NewSector(
-            #     sector_id=1489,
-            #     name="Artsariiv",
-            #     buffs=Buffs(utility=GENERIC_ENHANCEMENT, sigil=GENERIC_SIGIL),
-            #     bounds=[
-            #         [12716, 5433],
-            #         [12715, 5320],
-            #         [12602, 5320],
-            #         [12602, 5433],
-            #     ],
-            # ),
-            # NewSector(
-            #     sector_id=1490,
-            #     name="Pre Arkk",
-            #     buffs=Buffs(utility=GENERIC_ENHANCEMENT, sigil=GENERIC_SIGIL),
-            #     bounds=[
-            #         [11676, 6138],
-            #         [11648, 6133],
-            #         [11617, 6133],
-            #         [11617, 6153],
-            #         [11648, 6153],
-            #         [11676, 6149],
-            #     ],
-            # ),
-            # NewSector(
-            #     sector_id=1491,
-            #     name="Arkk",
-            #     buffs=Buffs(utility=GENERIC_ENHANCEMENT, sigil=GENERIC_SIGIL),
-            #     bounds=[
-            #         [11536, 6087],
-            #         [11425, 6086],
-            #         [11424, 6198],
-            #         [11536, 6198],
-            #     ],
-            # ),
         ],
     ),
     # ---------------------------- SILENT SURF FRACTAL --------------------------- #
@@ -293,175 +93,19 @@ PATCHES = [
     # ----------------------------- NIGHTMARE FRACTAL ---------------------------- #
     MapPatch(
         map_id=FractalMap.NIGHTMARE,
-        default=Buffs(utility=SCARLETS_ARMIES_SLAYING),
+        default=Buffs(utility=SCARLETS_ARMIES_SLAYING, sigil=SERPENT_SIGIL),
         sector_patches=[
             SectorPatch(
                 sector_id=1412,
-                name="Spawn",
-                buffs=Buffs(utility=SCARLETS_ARMIES_SLAYING, sigil=GENERIC_SIGIL),
+                name="Spawn + MAMA",
+                buffs=Buffs(sigil=GENERIC_SIGIL),
                 bounds=[
-                    [12040, 4519],
-                    [12001, 4508],
-                    [11981, 4544],
-                    [11989, 4569],
-                    [11996, 4591],
-                    [12029, 4573],
-                    [12018, 4556],
-                    [12044, 4538],
-                ],
-            ),
-            NewSector(
-                sector_id=1413,
-                name="Barriers",
-                buffs=Buffs(utility=SCARLETS_ARMIES_SLAYING),
-                floors=[16],
-                bounds=[
-                    [11993, 4597],
-                    [11992, 4622],
-                    [12006, 4644],
-                    [12041, 4642],
-                    [12081, 4619],
-                    [12091, 4586],
-                    [12111, 4559],
-                    [12144, 4542],
-                    [12133, 4514],
-                    [12104, 4536],
-                    [12074, 4570],
-                    [12044, 4570],
-                    [12013, 4585],
-                ],
-            ),
-            NewSector(
-                sector_id=1414,
-                name="MAMA",
-                buffs=Buffs(utility=SCARLETS_ARMIES_SLAYING),
-                floors=[16],
-                bounds=[
-                    [12146, 4542],
-                    [12186, 4584],
-                    [12212, 4597],
-                    [12247, 4593],
-                    [12269, 4565],
-                    [12295, 4522],
-                    [12257, 4505],
-                    [12210, 4500],
-                    [12136, 4516],
-                ],
-            ),
-            NewSector(
-                sector_id=1415,
-                name="Balls 1",
-                buffs=Buffs(sigil=SERPENT_SIGIL, utility=SCARLETS_ARMIES_SLAYING),
-                floors=[16],
-                bounds=[
-                    [12273, 4562],
-                    [12306, 4590],
-                    [12330, 4608],
-                    [12333, 4646],
-                    [12313, 4639],
-                    [12275, 4650],
-                    [12280, 4686],
-                    [12306, 4691],
-                    [12330, 4669],
-                    [12347, 4678],
-                    [12362, 4680],
-                    [12388, 4686],
-                    [12417, 4670],
-                    [12410, 4641],
-                    [12385, 4636],
-                    [12370, 4649],
-                    [12349, 4645],
-                    [12361, 4590],
-                    [12314, 4538],
-                ],
-            ),
-            NewSector(
-                sector_id=1416,
-                name="Balls 2",
-                buffs=Buffs(sigil=SERPENT_SIGIL, utility=SCARLETS_ARMIES_SLAYING),
-                floors=[16],
-                bounds=[
-                    [12347, 4678],
-                    [12346, 4702],
-                    [12302, 4702],
-                    [12299, 4724],
-                    [12275, 4725],
-                    [12272, 4777],
-                    [12286, 4777],
-                    [12304, 4787],
-                    [12320, 4777],
-                    [12335, 4808],
-                    [12364, 4812],
-                    [12379, 4801],
-                    [12382, 4778],
-                    [12405, 4786],
-                    [12423, 4778],
-                    [12429, 4726],
-                    [12407, 4725],
-                    [12409, 4700],
-                    [12361, 4700],
-                    [12360, 4683],
-                ],
-            ),
-            NewSector(
-                sector_id=1417,
-                name="Carolabruecke",
-                buffs=Buffs(sigil=SERPENT_SIGIL, utility=SCARLETS_ARMIES_SLAYING),
-                floors=[16],
-                bounds=[
-                    [12177, 4971],
-                    [12216, 4973],
-                    [12272, 4960],
-                    [12319, 4929],
-                    [12375, 4877],
-                    [12391, 4847],
-                    [12379, 4802],
-                    [12367, 4815],
-                    [12372, 4843],
-                    [12354, 4872],
-                    [12301, 4923],
-                    [12250, 4951],
-                    [12206, 4958],
-                    [12177, 4957],
-                ],
-            ),
-            NewSector(
-                sector_id=1418,
-                name="Siax",
-                buffs=Buffs(sigil=SERPENT_SIGIL, utility=SCARLETS_ARMIES_SLAYING),
-                floors=[16],
-                bounds=[
-                    [12176, 4956],
-                    [12168, 4953],
-                    [12174, 4899],
-                    [12167, 4888],
-                    [12136, 4862],
-                    [12135, 4842],
-                    [12116, 4846],
-                    [12097, 4889],
-                    [12089, 4932],
-                    [12095, 4962],
-                    [12176, 4971],
-                ],
-            ),
-            NewSector(
-                sector_id=1419,
-                name="Ensolyss",
-                buffs=Buffs(sigil=SERPENT_SIGIL, utility=SCARLETS_ARMIES_SLAYING),
-                floors=[16],
-                bounds=[
-                    [12124, 4781],
-                    [12149, 4774],
-                    [12164, 4758],
-                    [12170, 4733],
-                    [12161, 4712],
-                    [12145, 4696],
-                    [12123, 4691],
-                    [12098, 4701],
-                    [12082, 4720],
-                    [12079, 4745],
-                    [12090, 4765],
-                    [12109, 4779],
+                    [11964, 4483],
+                    [12172, 4461],
+                    [12364, 4505],
+                    [12245, 4632],
+                    [12087, 4644],
+                    [11960, 4665],
                 ],
             ),
         ],
@@ -470,54 +114,10 @@ PATCHES = [
     MapPatch(
         map_id=FractalMap.SUNQUA_PEAK,
         default=Buffs(sigil=NIGHT_SIGIL, utility=GENERIC_ENHANCEMENT),
-        sector_patches=[
-            SectorPatch(
-                sector_id=1840,
-                buffs=Buffs(sigil=NIGHT_SIGIL),
-                name="CM Spawn",
-                bounds=[
-                    [11982, 4708],
-                    [11981, 4725],
-                    [11994, 4747],
-                    [11990, 4776],
-                    [11971, 4790],
-                    [11985, 4798],
-                    [11993, 4809],
-                    [12011, 4808],
-                    [12027, 4801],
-                    [12031, 4778],
-                    [12014, 4775],
-                    [12014, 4738],
-                    [11997, 4709],
-                    [11994, 4705],
-                ],
-            ),
-            NewSector(
-                sector_id=1841,
-                name="Boss Arena",
-                buffs=Buffs(sigil=NIGHT_SIGIL),
-                floors=[51],
-                bounds=[
-                    [11997, 4810],
-                    [11974, 4819],
-                    [11956, 4836],
-                    [11947, 4858],
-                    [11947, 4881],
-                    [11957, 4902],
-                    [11974, 4917],
-                    [11998, 4925],
-                    [12022, 4922],
-                    [12042, 4910],
-                    [12057, 4892],
-                    [12062, 4870],
-                    [12059, 4848],
-                    [12046, 4827],
-                    [12028, 4813],
-                    [12009, 4810],
-                ],
-            ),
-        ],
+        sector_patches=[],
     ),
+    # ---------------------------------------------------------------------------- #
+    #                                   DUNGEONS                                   #
     # ---------------------------------------------------------------------------- #
     # ----------------------------- Ascalon Catacombs ---------------------------- #
     MapPatch(
@@ -535,12 +135,12 @@ PATCHES = [
     # ----------------------------- Caudecus's Manor ----------------------------- #
     MapPatch(
         DungeonMap.CM_STORY,
-        Buffs(utility=OUTLAW_SLAYING),
+        Buffs(utility=OUTLAW_SLAYING),  # TODO sigil
         [],
     ),
     MapPatch(
         DungeonMap.CM_EXPLORABLE,
-        Buffs(utility=OUTLAW_SLAYING),
+        Buffs(utility=OUTLAW_SLAYING),  # TODO sigil
         [],
     ),
     # ------------------------------ Twilight Arbor ------------------------------ #
@@ -593,7 +193,7 @@ PATCHES = [
     # ---------------------------- Honor of the Waves ---------------------------- #
     MapPatch(
         DungeonMap.HotW_STORY,
-        Buffs(utility=SONS_OF_SVANIR_SLAYING),
+        Buffs(utility=SONS_OF_SVANIR_SLAYING),  # TODO sigil?
         [
             # Honor's Voice
             SectorPatch(660, Buffs(utility=ICEBROOD_SLAYING)),
@@ -612,20 +212,20 @@ PATCHES = [
     # --------------------------- Crucible of Eternity --------------------------- #
     MapPatch(
         DungeonMap.CoE_STORY,
-        Buffs(utility=SHARPENING_STONE),
+        Buffs(utility=SHARPENING_STONE),  # TODO
         [],
     ),
     MapPatch(
         DungeonMap.CoE_EXPLORABLE,
-        Buffs(utility=SHARPENING_STONE),
+        Buffs(utility=SHARPENING_STONE),  # TODO
         [],
     ),
     # ----------------------------------- Arah ----------------------------------- #
     MapPatch(
         DungeonMap.ARAH_EXPLORABLE,
-        Buffs(utility=UNDEAD_SLAYING),
+        Buffs(utility=UNDEAD_SLAYING),  # TODO
         [
-            # P1 Shoggroth
+            # TODO P1 Shoggroth
             # SectorPatch(0, Buffs(utility=ELEMENTAL_SLAYING)),
         ],
     ),
@@ -776,7 +376,7 @@ if __name__ == "__main__":
     maps = load_raw_maps(src_file, map_ids)
     maps = derive_dungeon_story_maps(maps)
     maps = apply_patches(PATCHES, maps)
-    # maps = strip_unpatched_sectors(maps)
+    maps = strip_unpatched_sectors(maps)
     maps = convert_sectors_to_list(maps)
 
     with open(dest_file, "w", encoding="utf-8") as f:

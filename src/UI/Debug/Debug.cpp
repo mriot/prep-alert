@@ -9,7 +9,7 @@
 
 namespace DebugOverlay
 {
-    void OnDebugRender(const std::vector<Buff> &buffReminders)
+    void RenderDebugOverlay(const std::vector<Buff> &buffReminders)
     {
         auto getMapName = []() -> std::string {
             if (!G::IsOnSupportedMap)
@@ -61,7 +61,7 @@ namespace DebugOverlay
             ImGui::Text("Sector ID: %d", G::CurrentSectorID);
             ImGui::SameLine();
             ImGui::TextDisabled("(%s)", getSectorName().c_str());
-            ImGui::Text("Floor Level: %s", (G::CurrentMapFloor != 0 ? std::to_string(G::CurrentMapFloor) : "Not yet detected").c_str());
+            ImGui::Text("Floor Level: %s", (G::CurrentMapFloor != 0 ? std::to_string(G::CurrentMapFloor) : "0 (not yet detected)").c_str());
             ImGui::Separator();
             ImGui::Text("Buff Reminders: %zu", buffReminders.size());
             for (const Buff &buff : buffReminders)

@@ -3,5 +3,5 @@
 
 namespace DebugOverlay
 {
-    void OnDebugRender(const std::vector<Buff> &buffReminders);
+    void RenderDebugOverlay(const std::vector<Buff> &buffReminders);
 }
