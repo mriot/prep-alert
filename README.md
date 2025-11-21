@@ -1,49 +1,46 @@
 # Prep Alert
 
 A Guild Wars 2 Nexus addon that alerts the player when important buffs such as
-<sub><img src="./docs/utility.png" height="20" /></sub> Enhancements,
-<sub><img src="./docs/sigil.png" height="20" /></sub> Sigils or
-<sub><img src="./docs/food.png" height="20" /></sub> Food
-are missing.
+<sub><img src="./docs/utility.png" height="20" /></sub> Enhancements and
+<sub><img src="./docs/sigil.png" height="20" /></sub> Sigils or are missing.
 
 <img src="./docs/preview.png?" alt="Preview of Prep Alert in action" />
 
 ## Features
 
 Reminders for
-<sub><img src="./docs/utility.png" height="20" /></sub> Enhancements,
-<sub><img src="./docs/sigil.png" height="20" /></sub> Sigils and
-<sub><img src="./docs/food.png" height="20" /></sub> Food show up dynamically based on the player's current position in
-supported maps.  
+<sub><img src="./docs/utility.png" height="20" /></sub> Enhancements and
+<sub><img src="./docs/sigil.png" height="20" /></sub> Sigils
+show up dynamically based on the player's current position in supported maps.  
 The reminder will only show up when the respective buff is missing.
+
+### Supported Maps
+
+- All 8 Dungeons (Story and Explorable)
+  - Ascalonian Catacombs
+  - Caudecus's Manor
+  - Twilight Arbor
+  - Sorrow's Embrace
+  - Citadel of Flame
+  - Honor of the Waves
+  - Crucible of Eternity
+  - Arah
+
+- Fractal CMs
+  - Kinfall
+  - Nightmare
+  - Shattered Observatory
+  - Sunqua Peak
+  - Silent Surf
+  - Lonely Tower
 
 ## Options
 
-...
+<img src="./docs/options.png?" alt="Options menu of Prep Alert" />
 
-### Supported maps
+## Technical Stuff
 
-- All 8 Dungeons (Story and Explorable)
-    - Ascalonian Catacombs
-    - Caudecus's Manor
-    - Twilight Arbor
-    - Sorrow's Embrace
-    - Citadel of Flame
-    - Honor of the Waves
-    - Crucible of Eternity
-    - Arah
-
-- Fractals (CMs only)
-    - Kinfall
-    - Nightmare
-    - Shattered Observatory
-    - Sunqua Peak
-    - Silent Surf
-    - Lonely Tower
-
-## Technical Details
-
-The addon itself is written in C++ 20 for the Nexus addon host.  
+The addon itself is written in C++ 20 for the [Nexus platform](https://raidcore.gg/Nexus).  
 The scripts for map data fetching and processing are written in Python 3.11+.
 
 ### Map Data
@@ -57,8 +54,67 @@ The official API endpoint contains several inconsistencies that make it difficul
 
 The retrieved map data is stored in `data/maps_raw.json`.
 
-Afterward, the data is processed with `scripts/map_data_patcher/main.py` to generate `src/maps.json` which is then
-packed into the addon DLL.
+The data is then processed with `scripts/map_data_patcher/main.py` to generate `src/maps.json` which is then finally packed into the addon DLL.
+
+#### Sector Data
+
+For dungeon maps the existing sector data was used as-is.  
+Fractal maps contain only a single large sector spanning the entire map, so custom sectors were manually created using a slightly modified version of the wiki’s [Zone Widget](https://wiki.guildwars2.com/wiki/Widget:Zone_map_v3).  
+By enabling DevTools local overrides for the main `index.php`, the modifications below were applied to the wiki page directly.
+
+<details>
+<summary>The modified Widget</summary>
+
+`{{#Widget:Zone map v3 | continent = 2 | map = 1205 | size = huge-map}}`
+
+```javascript
+let polygonPoints = [];
+let polygonLayer = null;
+let tempLineLayer = null;
+
+leaflet_map.on('mousemove', onMapMouseMove);
+
+function onMapClick(e) {
+    polygonPoints.push(e.latlng);
+
+    const projected = leaflet_map.project(e.latlng, leaflet_map.getMaxZoom());
+    const coords = `[${Math.floor(projected.x)}, ${Math.floor(projected.y)}],`; // python list format
+
+    $(`#${options.container_id} #coordsbox`).val(coords);
+
+    navigator.clipboard.writeText(coords)
+        .then(() => console.log('Copied coords:', coords))
+        .catch(err => console.error('Error copying coords:', err));
+
+    if (polygonLayer) {
+        leaflet_map.removeLayer(polygonLayer);
+    }
+
+    if (tempLineLayer) {
+        leaflet_map.removeLayer(tempLineLayer);
+        tempLineLayer = null;
+    }
+
+    if (polygonPoints.length >= 3) {
+        polygonLayer = L.polygon(polygonPoints, {color: 'red'}).addTo(leaflet_map);
+    } else {
+        polygonLayer = L.polyline(polygonPoints, {color: 'red'}).addTo(leaflet_map);
+    }
+}
+
+function onMapMouseMove(e) {
+    if (polygonPoints.length > 0) {
+        if (tempLineLayer) {
+            leaflet_map.removeLayer(tempLineLayer);
+        }
+
+        const lastPoint = polygonPoints[polygonPoints.length - 1];
+        tempLineLayer = L.polyline([lastPoint, e.latlng], {color: 'red', dashArray: '4,8'}).addTo(leaflet_map);
+    }
+}
+```
+
+</details>
 
 ### Memory Reading
 
@@ -78,6 +134,6 @@ Should be safe but as always, use at your own risk.
 ## Credits
 
 - Raidcore's Nexus addon platform and community (especially Delta)
-- The Gw2 Wiki, for a usable map data API
-- Elis and Baste, for support while mapping fractals
-- The `[TY]` guild, for all the fun we have in dungeons
+- The Gw2 Wiki, for a usable map data API and map widgets
+- Elis, Baste and Bird for support and testing
+- The `[TY]` guild, for all the fun we have in dungeons :)
