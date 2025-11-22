@@ -135,12 +135,12 @@ PATCHES = [
     # ----------------------------- Caudecus's Manor ----------------------------- #
     MapPatch(
         DungeonMap.CM_STORY,
-        Buffs(utility=OUTLAW_SLAYING),  # TODO sigil
+        Buffs(utility=OUTLAW_SLAYING, sigil=GENERIC_SIGIL),
         [],
     ),
     MapPatch(
         DungeonMap.CM_EXPLORABLE,
-        Buffs(utility=OUTLAW_SLAYING),  # TODO sigil
+        Buffs(utility=OUTLAW_SLAYING, sigil=GENERIC_SIGIL),
         [],
     ),
     # ------------------------------ Twilight Arbor ------------------------------ #
@@ -193,7 +193,7 @@ PATCHES = [
     # ---------------------------- Honor of the Waves ---------------------------- #
     MapPatch(
         DungeonMap.HotW_STORY,
-        Buffs(utility=SONS_OF_SVANIR_SLAYING),  # TODO sigil?
+        Buffs(utility=SONS_OF_SVANIR_SLAYING, sigil=GENERIC_SIGIL),
         [
             # Honor's Voice
             SectorPatch(660, Buffs(utility=ICEBROOD_SLAYING)),
@@ -203,7 +203,7 @@ PATCHES = [
     ),
     MapPatch(
         DungeonMap.HotW_EXPLORABLE,
-        Buffs(utility=ICEBROOD_SLAYING),
+        Buffs(utility=ICEBROOD_SLAYING, sigil=GENERIC_SIGIL),
         [
             # Aldus Stormbringer (p1)
             SectorPatch(658, Buffs(utility=SONS_OF_SVANIR_SLAYING))
@@ -231,13 +231,13 @@ PATCHES = [
     ),
     MapPatch(
         DungeonMap.CoE_EXPLORABLE,
-        Buffs(utility=SHARPENING_STONE),  # TODO
+        Buffs(utility=SHARPENING_STONE, sigil=GENERIC_SIGIL),
         [],
     ),
     # ----------------------------------- Arah ----------------------------------- #
     MapPatch(
         DungeonMap.ARAH_EXPLORABLE,
-        Buffs(utility=UNDEAD_SLAYING),  # TODO
+        Buffs(utility=UNDEAD_SLAYING, sigil=GENERIC_SIGIL),
         [
             # TODO P1 Shoggroth
             # SectorPatch(0, Buffs(utility=ELEMENTAL_SLAYING)),
