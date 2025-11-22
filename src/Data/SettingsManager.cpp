@@ -33,6 +33,10 @@ namespace
             .utility = true,
             .sigil = true,
             .defaultBuffs = true
+        },
+        .mapTypes = {
+            .dungeons = true,
+            .fractals = true
         }
     };
     Settings settings = defaultSettings;
@@ -65,6 +69,18 @@ namespace
 /// ----------------------------------------------------------------------------------------------------
 /// SETTINGS SERIALIZATION
 /// ----------------------------------------------------------------------------------------------------
+
+// map types
+void to_json(json &j, const MapTypes &t)
+{
+    j = {{"dungeons", t.dungeons}, {"fractals", t.fractals}};
+}
+
+void from_json(const json &j, MapTypes &t)
+{
+    t.dungeons = j.value("dungeons", true);
+    t.fractals = j.value("fractals", true);
+}
 
 // shown buff types
 void to_json(json &j, const ShownBuffTypes &t)
@@ -102,7 +118,8 @@ void to_json(json &j, const Settings &s)
         {"horizontal", s.horizontal},
         {"flash_duration", s.flashDuration},
         {"image_size", s.imageSize},
-        {"shown_buffs", s.shownBuffTypes}
+        {"shown_buffs", s.shownBuffTypes},
+        {"map_types", s.mapTypes}
     };
 }
 
@@ -115,6 +132,7 @@ void from_json(const json &j, Settings &s)
     s.flashDuration  = j.value("flash_duration", defaultSettings.flashDuration);
     s.imageSize      = j.value("image_size", defaultSettings.imageSize);
     s.shownBuffTypes = j.value("shown_buffs", json(defaultSettings.shownBuffTypes)).get<ShownBuffTypes>();
+    s.mapTypes       = j.value("map_types", json(defaultSettings.mapTypes)).get<MapTypes>();
 }
 
 
@@ -169,6 +187,16 @@ namespace SettingsManager
         settings.shownBuffTypes.utility      = types.utility;
         settings.shownBuffTypes.sigil        = types.sigil;
         settings.shownBuffTypes.defaultBuffs = types.defaultBuffs;
+        DebouncedSave();
+    }
+
+    // Shown buff types
+    MapTypes GetMapTypes() { return settings.mapTypes; }
+
+    void SetMapTypes(const MapTypes &types)
+    {
+        settings.mapTypes.dungeons = types.dungeons;
+        settings.mapTypes.fractals = types.fractals;
         DebouncedSave();
     }
 

@@ -10,30 +10,51 @@ void OnOptionsRender()
     UIState::IsOptionsPaneOpen = true;
 
     ///----------------------------------------------------------------------------------------------------
-    /// buff types to show
+    /// buff types and map types
     ///----------------------------------------------------------------------------------------------------
 
-    ImGui::Text("Buff reminders");
-    ShownBuffTypes shownBuffs = SettingsManager::GetShownBuffTypes();
-
-    if (ImGui::Checkbox("Enhancement", &shownBuffs.utility))
+    if (ImGui::BeginTable("BuffReminderTable", 3, ImGuiTableFlags_SizingFixedFit))
     {
-        SettingsManager::SetShownBuffTypes(shownBuffs);
-    }
+        ImGui::TableSetupColumn("Left");
+        ImGui::TableSetupColumn("Spacer", ImGuiTableColumnFlags_WidthFixed, 30.0f);
+        ImGui::TableSetupColumn("Right");
+        ImGui::TableNextRow();
 
-    if (ImGui::Checkbox("Sigil", &shownBuffs.sigil))
-    {
-        SettingsManager::SetShownBuffTypes(shownBuffs);
-    }
+        // headings row
+        ImGui::TableSetColumnIndex(0);
+        ImGui::Text("Reminder types to show:");
 
-    if (ImGui::Checkbox("Default buffs", &shownBuffs.defaultBuffs))
-    {
-        SettingsManager::SetShownBuffTypes(shownBuffs);
-    }
+        ImGui::TableSetColumnIndex(2); // skip spacer
+        ImGui::Text("Show reminders in:");
 
-    ImGui::SameLine();
-    ImGui::TextDisabled("(i)");
-    ImGui::HoverTooltip("Default buffs are shown when no special buffs are available");
+        // checkboxes row
+        ImGui::TableNextRow();
+
+        // left column checkboxes
+        ImGui::TableSetColumnIndex(0);
+        ShownBuffTypes shownBuffs = SettingsManager::GetShownBuffTypes();
+        if (ImGui::Checkbox("Enhancements", &shownBuffs.utility))
+            SettingsManager::SetShownBuffTypes(shownBuffs);
+        if (ImGui::Checkbox("Sigils", &shownBuffs.sigil))
+            SettingsManager::SetShownBuffTypes(shownBuffs);
+        if (ImGui::Checkbox("Default buffs", &shownBuffs.defaultBuffs))
+            SettingsManager::SetShownBuffTypes(shownBuffs);
+        ImGui::SameLine();
+        ImGui::TextDisabled("(i)");
+        ImGui::HoverTooltip("Default buffs are shown when no special buffs are available");
+
+        // right column checkboxes
+        ImGui::TableSetColumnIndex(2); // skip spacer
+        MapTypes mapTypes = SettingsManager::GetMapTypes();
+        if (ImGui::Checkbox("Dungeons", &mapTypes.dungeons))
+            SettingsManager::SetMapTypes(mapTypes);
+        if (ImGui::Checkbox("Fractals", &mapTypes.fractals))
+            SettingsManager::SetMapTypes(mapTypes);
+        ImGui::Spacing();
+        ImGui::TextDisabled("(requires map change to take effect)");
+
+        ImGui::EndTable();
+    }
 
     ImGui::Spacing();
     ImGui::Separator();
@@ -93,9 +114,9 @@ void OnOptionsRender()
     /// buff reminder flash animation duration
     ///----------------------------------------------------------------------------------------------------
 
-    ImGui::Text("Buff reminder flash animation duration");
+    ImGui::Text("Buff animation duration");
     int flashingDuration = SettingsManager::GetFlashingDuration();
-    if (ImGui::SliderInt("Animation seconds", &flashingDuration, 0, 60))
+    if (ImGui::SliderInt("Seconds", &flashingDuration, 0, 60))
     {
         SettingsManager::SetFlashingDuration(flashingDuration);
     }
@@ -108,7 +129,7 @@ void OnOptionsRender()
 
     ImGui::Text("Reminder position");
     ImGui::SameLine();
-    ImGui::TextDisabled("(dragging is also supported)");
+    ImGui::TextDisabled("(can also be dragged)");
 
     ImVec2 pos = SettingsManager::GetOverlayPosition();
     if (ImGui::InputFloat("Position X", &pos.x, 1.0f, 10.0f, "%.1f"))

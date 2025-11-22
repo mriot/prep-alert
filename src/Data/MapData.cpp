@@ -65,6 +65,8 @@ void from_json(const json &data, MapData &map_data)
     {
         if (data.contains("id"))
             data.at("id").get_to(map_data.id);
+        if (data.contains("continent_id"))
+            data.at("continent_id").get_to(map_data.continent_id);
         if (data.contains("name"))
             data.at("name").get_to(map_data.name);
         if (data.contains("default_buffs"))

@@ -54,6 +54,11 @@ namespace SettingsManager
 
     void SetShownBuffTypes(const ShownBuffTypes &types);
 
+    // map types
+    MapTypes GetMapTypes();
+
+    void SetMapTypes(const MapTypes &types);
+
     // debug window
     bool IsDebugWindowEnabled();
 

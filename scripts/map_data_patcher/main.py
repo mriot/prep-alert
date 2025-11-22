@@ -244,7 +244,7 @@ def load_raw_maps(file_path: Path, map_ids: list[int]) -> dict:
     for continent_id, continent in data.items():
         for map_id, map_data in continent["maps"].items():
             if int(map_id) in map_ids:
-                # map_data["continent_id"] = int(continent_id)
+                map_data["continent_id"] = int(continent_id)
                 # map_data["continent_name"] = continent["name"]
                 # map_data["continent_dims"] = continent["continent_dims"]
                 del map_data["continent_rect"]

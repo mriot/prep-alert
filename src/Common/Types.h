@@ -40,6 +40,7 @@ struct Sector
 struct MapData
 {
     int id;
+    int continent_id;
     std::vector<Vec2> map_rect;
     std::string name;
     std::vector<Sector> sectors;
@@ -50,6 +51,12 @@ struct MapData
 ///----------------------------------------------------------------------------------------------------
 /// SETTINGS TYPES
 ///----------------------------------------------------------------------------------------------------
+
+struct MapTypes
+{
+    bool dungeons;
+    bool fractals;
+};
 
 struct ShownBuffTypes
 {
@@ -74,4 +81,5 @@ struct Settings
     int flashDuration;
     int imageSize;
     ShownBuffTypes shownBuffTypes;
+    MapTypes mapTypes;
 };
