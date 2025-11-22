@@ -8,31 +8,17 @@ A Guild Wars 2 Nexus addon that alerts the player when important buffs such as
 
 ## Features
 
-Reminders for
-<sub><img src="./docs/utility.png" height="20" /></sub> Enhancements and
-<sub><img src="./docs/sigil.png" height="20" /></sub> Sigils
-show up dynamically based on the player's current position in supported maps.  
-The reminder will only show up when the respective buff is missing.
+In **Dungeons** and **Fractal CMs** these reminders show up dynamically based on the player's current position.  
+They will only show up when the respective buff is missing.
 
-### Supported Maps
+If no special buff is defined a so-called "default" buff reminder shows up until the player enters combat.
 
-- All 8 Dungeons (Story and Explorable)
-  - Ascalonian Catacombs
-  - Caudecus's Manor
-  - Twilight Arbor
-  - Sorrow's Embrace
-  - Citadel of Flame
-  - Honor of the Waves
-  - Crucible of Eternity
-  - Arah
+<img src="./docs/default_buff.png?" alt="Default buff reminder" align="" />
 
-- Fractal CMs
-  - Kinfall
-  - Nightmare
-  - Shattered Observatory
-  - Sunqua Peak
-  - Silent Surf
-  - Lonely Tower
+### A Note on Buff Choices
+
+Some of the buffs shown may be a bit opinionated and focus on general usefulness rather than going for the absolute tryhard setup.  
+The choices are based on the [Instanced Species List](https://docs.google.com/spreadsheets/d/135Iac7sWfB55kn3kFXWULneu4VfqmK8JqCHCrx3_ZMo/). If you think some of the suggested buffs could be better, feel free to contact me and we can talk about it.
 
 ## Options
 
@@ -58,8 +44,8 @@ The data is then processed with `scripts/map_data_patcher/main.py` to generate `
 
 #### Sector Data
 
-For dungeon maps the existing sector data was used as-is.  
-Fractal maps contain only a single large sector spanning the entire map, so custom sectors were manually created using a slightly modified version of the wiki’s [Zone Widget](https://wiki.guildwars2.com/wiki/Widget:Zone_map_v3).  
+For dungeon maps the existing sector data was mostly used as-is.  
+Fractal maps contain only a single large sector spanning the entire map, so custom sectors were created using a slightly modified version of the wiki’s [Zone Widget](https://wiki.guildwars2.com/wiki/Widget:Zone_map_v3).  
 By enabling DevTools local overrides for the main `index.php`, the modifications below were applied to the wiki page directly.
 
 <details>
@@ -135,5 +121,6 @@ Should be safe but as always, use at your own risk.
 
 - Raidcore's Nexus addon platform and community (especially Delta)
 - The Gw2 Wiki, for a usable map data API and map widgets
+- The folks who created the [Instanced Species List](https://docs.google.com/spreadsheets/d/135Iac7sWfB55kn3kFXWULneu4VfqmK8JqCHCrx3_ZMo/)
 - Elis, Baste and Bird for support and testing
 - The `[TY]` guild, for all the fun we have in dungeons :)
