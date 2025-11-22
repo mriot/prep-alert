@@ -61,7 +61,12 @@ namespace DebugOverlay
             ImGui::Text("Sector ID: %d", G::CurrentSectorID);
             ImGui::SameLine();
             ImGui::TextDisabled("(%s)", getSectorName().c_str());
-            ImGui::Text("Floor Level: %s", (G::CurrentMapFloor != 0 ? std::to_string(G::CurrentMapFloor) : "0 (not yet detected)").c_str());
+            ImGui::Text("Floor Level: %d", G::CurrentMapFloor);
+            if (G::CurrentMapFloor == 0)
+            {
+                ImGui::SameLine();
+                ImGui::TextDisabled("(not yet detected)");
+            }
             ImGui::Separator();
             ImGui::Text("Buff Reminders: %zu", buffReminders.size());
             for (const Buff &buff : buffReminders)
