@@ -1,5 +1,6 @@
 #include "Controller.h"
 
+#include "Common/Constants.h"
 #include "Common/Utils.h"
 #include "UI/Debug/Debug.h"
 #include <Common/Globals.h>
@@ -36,6 +37,26 @@ namespace
             isGenericDismissed = false;
         }
     };
+
+    // artificially adjust the floor level based on map ID and player Y position if needed
+    std::optional<int> getFloorLevelOverride(const int mapId, const float playerY)
+    {
+        switch (mapId)
+        {
+        case MapIds::LONELY_TOWER_FRACTAL:
+            if (playerY > 890.0f)
+                return 64; // the lower default floor is 63
+            break;
+        case MapIds::CRUCIBLE_OF_ETERNITY_STORY:
+            if (playerY < 140.0f)
+                return -12; // the default floor is -11
+            break;
+        default:
+            break;
+        }
+
+        return std::nullopt;
+    }
 
     std::unordered_set<int> buildActiveBuffIdSet()
     {
@@ -194,12 +215,9 @@ void OnRender()
     sigilReminder.showGenericBuff = showGenericBuffs;
     sigilReminder.playerInCombat  = playerInCombat;
 
-    // special case for Lonely Tower Fractal - despite actually having multiple floors, the game treats it as a single floor
-    if (currentMap.id == 1538 && playerY > 890.0f)
-    {
-        // artificially adjust the floor level when the player is on the upper floor (end boss)
-        G::CurrentMapFloor = 64; // the lower default floor is 63
-    }
+    // certain maps need special floor level overrides based on player Y position
+    if (const auto override = getFloorLevelOverride(currentMap.id, playerY))
+        G::CurrentMapFloor  = *override;
 
     G::CurrentSectorID = 0;
 
