@@ -1,5 +1,5 @@
 #include "MapData.h"
-#include "../resource.h"
+#include "../Resource.h"
 #include <Common/Globals.h>
 #include <Common/Types.h>
 #include <Common/Utils.h>
@@ -121,7 +121,7 @@ static std::optional<std::vector<char>> LoadResourceBytes(HMODULE hModule, int r
 
 std::unordered_map<int, MapData> LoadMapData()
 {
-    const std::optional<std::vector<char>> resourceBytes = LoadResourceBytes(G::ModuleHandle, MAP_DATA);
+    const std::optional<std::vector<char>> resourceBytes = LoadResourceBytes(G::ModuleHandle, RC_MAP_DATA);
 
     if (!resourceBytes)
     {
