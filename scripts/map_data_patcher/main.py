@@ -212,8 +212,22 @@ PATCHES = [
     # --------------------------- Crucible of Eternity --------------------------- #
     MapPatch(
         DungeonMap.CoE_STORY,
-        Buffs(utility=SHARPENING_STONE),  # TODO
-        [],
+        Buffs(utility=INQUEST_SLAYING, sigil=GENERIC_SIGIL),
+        floors=[-11, -12],  # TODO not currently patched into map data (not really needed either)
+        sector_patches=[
+            NewSector(
+                sector_id=2001,
+                name="Kudu",
+                floors=[-12],  # custom floor
+                buffs=Buffs(utility=SHARPENING_STONE),
+                bounds=[
+                    [53699, 38218],
+                    [53695, 38324],
+                    [53822, 38324],
+                    [53818, 38215],
+                ],
+            )
+        ],
     ),
     MapPatch(
         DungeonMap.CoE_EXPLORABLE,
