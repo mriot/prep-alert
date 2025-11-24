@@ -70,8 +70,8 @@ namespace Overlay
             // when not in options pane make the overlay non-interactive
             flags |= ImGuiWindowFlags_NoNav | ImGuiWindowFlags_NoFocusOnAppearing;
 
-            // disable all inputs only if tooltips option is disabled
-            if (!SettingsManager::IsTooltipsEnabled())
+            // disable all inputs only if tooltips option is disabled (can only be active in compact mode)
+            if (!SettingsManager::IsCompactMode() || !SettingsManager::IsTooltipsEnabled())
                 flags |= ImGuiWindowFlags_NoInputs;
 
             // gather current buff IDs to check for changes (used for flashing effect)

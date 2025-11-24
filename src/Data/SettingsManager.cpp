@@ -24,7 +24,7 @@ namespace
     Settings defaultSettings{
         .position = {85.0f, 33.0f},
         .compact = false,
-        .tooltips = false,
+        .tooltips = true,
         .horizontal = false,
         .flashDuration = 10,
         .imageSize = 40,
