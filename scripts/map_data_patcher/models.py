@@ -16,6 +16,7 @@ class Buff:
 class Buffs:
     utility: Buff | None = None
     sigil: Buff | None = None
+    sigil_secondary: Buff | None = None
 
 
 @dataclass

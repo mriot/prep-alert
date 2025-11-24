@@ -44,6 +44,11 @@ void from_json(const json &j, Buffs &b)
         b.sigil = j["sigil"].get<Buff>();
     else
         b.sigil.reset();
+
+    if (j.contains("sigil_secondary") && !j["sigil_secondary"].is_null())
+        b.sigilSecondary = j["sigil_secondary"].get<Buff>();
+    else
+        b.sigilSecondary.reset();
 }
 
 // Sector

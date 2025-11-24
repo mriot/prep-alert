@@ -144,6 +144,7 @@ void OnRender()
     static std::vector<Buff> buffReminders;
     static BuffReminder utilityReminder;
     static BuffReminder sigilReminder;
+    static BuffReminder sigilSecondaryReminder;
 
     if (SettingsManager::IsDebugWindowEnabled())
         DebugOverlay::RenderDebugOverlay(buffReminders);
@@ -157,10 +158,13 @@ void OnRender()
         buffReminders.clear();
 
         if (SettingsManager::GetShownBuffTypes().utility)
-            buffReminders.push_back(Buff(-1, "\"Potion of Calibration\""));
+            buffReminders.push_back(Buff(BuffIds::GENERIC_ENHANCEMENT, "\"Potion of Calibration\""));
 
         if (SettingsManager::GetShownBuffTypes().sigil)
-            buffReminders.push_back(Buff(-2, "\"Sigil of the Tinkerer\""));
+            buffReminders.push_back(Buff(BuffIds::GENERIC_SIGIL, "\"Sigil of the Tinkerer\""));
+
+        if (SettingsManager::GetShownBuffTypes().sigilSecondary)
+            buffReminders.push_back(Buff(BuffIds::GENERIC_SIGIL, "\"Sigil of the Elite\""));
     }
 
     // to prevent flicker, the previous frame’s data is rendered since map/sector checks are throttled below
@@ -215,6 +219,10 @@ void OnRender()
     sigilReminder.showGenericBuff = showGenericBuffs;
     sigilReminder.playerInCombat  = playerInCombat;
 
+    sigilSecondaryReminder.clearBuff();
+    sigilSecondaryReminder.showGenericBuff = showGenericBuffs;
+    sigilSecondaryReminder.playerInCombat  = playerInCombat;
+
     // certain maps need special floor level overrides based on player Y position
     if (const auto override = getFloorLevelOverride(currentMap.id, playerY))
         G::CurrentMapFloor  = *override;
@@ -235,6 +243,9 @@ void OnRender()
         if (SettingsManager::GetShownBuffTypes().sigil)
             sigilReminder.buff = sector.buffs.sigil;
 
+        if (SettingsManager::GetShownBuffTypes().sigilSecondary)
+            sigilSecondaryReminder.buff = sector.buffs.sigilSecondary;
+
         break; // player can be in only one sector at a time
     }
 
@@ -246,6 +257,9 @@ void OnRender()
     if (!sigilReminder.buff.has_value() && SettingsManager::GetShownBuffTypes().sigil)
         sigilReminder.buff = currentMap.default_buffs.sigil;
 
+    if (!sigilSecondaryReminder.buff.has_value() && SettingsManager::GetShownBuffTypes().sigilSecondary)
+        sigilSecondaryReminder.buff = currentMap.default_buffs.sigilSecondary;
+
     // build final buff reminder list
 
     if (shouldAddBuffReminder(utilityReminder, activeBuffIds))
@@ -253,4 +267,7 @@ void OnRender()
 
     if (shouldAddBuffReminder(sigilReminder, activeBuffIds))
         buffReminders.push_back(sigilReminder.buff.value());
+
+    if (shouldAddBuffReminder(sigilSecondaryReminder, activeBuffIds))
+        buffReminders.push_back(sigilSecondaryReminder.buff.value());
 }

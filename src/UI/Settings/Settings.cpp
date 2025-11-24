@@ -37,6 +37,8 @@ void OnOptionsRender()
             SettingsManager::SetShownBuffTypes(shownBuffs);
         if (ImGui::Checkbox("Sigils", &shownBuffs.sigil))
             SettingsManager::SetShownBuffTypes(shownBuffs);
+        if (ImGui::Checkbox("Secondary Sigil", &shownBuffs.sigilSecondary))
+            SettingsManager::SetShownBuffTypes(shownBuffs);
         if (ImGui::Checkbox("Default buffs", &shownBuffs.defaultBuffs))
             SettingsManager::SetShownBuffTypes(shownBuffs);
         ImGui::SameLine();

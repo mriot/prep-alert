@@ -26,6 +26,7 @@ struct Buffs
     std::optional<Buff> food;
     std::optional<Buff> utility;
     std::optional<Buff> sigil;
+    std::optional<Buff> sigilSecondary;
 };
 
 struct Sector
@@ -63,6 +64,7 @@ struct ShownBuffTypes
     bool food;
     bool utility;
     bool sigil;
+    bool sigilSecondary;
     bool defaultBuffs;
 };
 

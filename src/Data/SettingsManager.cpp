@@ -32,6 +32,7 @@ namespace
             .food = true,
             .utility = true,
             .sigil = true,
+            .sigilSecondary = false,
             .defaultBuffs = true
         },
         .mapTypes = {
@@ -85,15 +86,22 @@ void from_json(const json &j, MapTypes &t)
 // shown buff types
 void to_json(json &j, const ShownBuffTypes &t)
 {
-    j = {{"food", t.food}, {"utility", t.utility}, {"sigil", t.sigil}, {"default_buffs", t.defaultBuffs}};
+    j = {
+        {"food", t.food},
+        {"utility", t.utility},
+        {"sigil", t.sigil},
+        {"sigil_secondary", t.sigilSecondary},
+        {"default_buffs", t.defaultBuffs}
+    };
 }
 
 void from_json(const json &j, ShownBuffTypes &t)
 {
-    t.food         = j.value("food", true);
-    t.utility      = j.value("utility", true);
-    t.sigil        = j.value("sigil", true);
-    t.defaultBuffs = j.value("default_buffs", true);
+    t.food           = j.value("food", true);
+    t.utility        = j.value("utility", true);
+    t.sigil          = j.value("sigil", true);
+    t.sigilSecondary = j.value("sigil_secondary", false);
+    t.defaultBuffs   = j.value("default_buffs", true);
 }
 
 // overlay position
@@ -183,10 +191,11 @@ namespace SettingsManager
 
     void SetShownBuffTypes(const ShownBuffTypes &types)
     {
-        settings.shownBuffTypes.food         = types.food;
-        settings.shownBuffTypes.utility      = types.utility;
-        settings.shownBuffTypes.sigil        = types.sigil;
-        settings.shownBuffTypes.defaultBuffs = types.defaultBuffs;
+        settings.shownBuffTypes.food           = types.food;
+        settings.shownBuffTypes.utility        = types.utility;
+        settings.shownBuffTypes.sigil          = types.sigil;
+        settings.shownBuffTypes.sigilSecondary = types.sigilSecondary;
+        settings.shownBuffTypes.defaultBuffs   = types.defaultBuffs;
         DebouncedSave();
     }
 
