@@ -33,13 +33,13 @@ void OnOptionsRender()
         // left column checkboxes
         ImGui::TableSetColumnIndex(0);
         ShownBuffTypes shownBuffs = SettingsManager::GetShownBuffTypes();
-        if (ImGui::Checkbox("Enhancements", &shownBuffs.utility))
+        if (ImGui::Checkbox("Enhancement", &shownBuffs.utility))
             SettingsManager::SetShownBuffTypes(shownBuffs);
-        if (ImGui::Checkbox("Sigils", &shownBuffs.sigil))
+        if (ImGui::Checkbox("Primary Sigil", &shownBuffs.sigil))
             SettingsManager::SetShownBuffTypes(shownBuffs);
-        if (ImGui::Checkbox("Secondary Sigil", &shownBuffs.sigilSecondary))
+        if (ImGui::Checkbox("Slaying Sigil", &shownBuffs.sigilSlaying))
             SettingsManager::SetShownBuffTypes(shownBuffs);
-        if (ImGui::Checkbox("Default buffs", &shownBuffs.defaultBuffs))
+        if (ImGui::Checkbox("Default buff", &shownBuffs.defaultBuffs))
             SettingsManager::SetShownBuffTypes(shownBuffs);
         ImGui::SameLine();
         ImGui::TextDisabled("(i)");

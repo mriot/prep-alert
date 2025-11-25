@@ -6,10 +6,12 @@ from enum import Enum
 from typing import List
 
 
+# synced with cpp enum
 class BuffType(Enum):
     UTILITY = 0
     SIGIL = 1
     FOOD = 2
+    RESET = 3
 
 
 @dataclass
@@ -23,7 +25,7 @@ class Buff:
 class Buffs:
     utility: Buff | None = None
     sigil: Buff | None = None
-    sigil_secondary: Buff | None = None
+    sigil_slaying: Buff | None = None
 
 
 @dataclass

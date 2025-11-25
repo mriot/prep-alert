@@ -140,6 +140,21 @@ namespace Overlay
                         ImGui::Image(texture->Resource, imageSize);
                     else
                         ImGui::Dummy(imageSize);
+
+                    // TODO refactor + ADD support for compact mode!!!
+                    if (buff.type == BuffType::Reset)
+                    {
+                        ImVec2 iconMin = ImGui::GetItemRectMin();
+                        ImVec2 iconMax = ImGui::GetItemRectMax();
+
+                        ImDrawList *drawList = ImGui::GetWindowDrawList();
+                        float thickness      = 3.0f;
+                        ImU32 red            = IM_COL32(255, 0, 0, windowAlpha * 255.0f);
+
+                        drawList->AddLine(iconMin, iconMax, red, thickness);
+                        drawList->AddLine(ImVec2(iconMax.x, iconMin.y), ImVec2(iconMin.x, iconMax.y), red, thickness);
+                    }
+
                     ImGui::TableNextColumn();
 
                     // center text vertically in cell

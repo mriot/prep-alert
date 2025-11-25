@@ -104,12 +104,13 @@ namespace
             return false;
         }
 
-        // specific buff is already active
+        // player has buff - now check whether it SHOULD be active
         if (activeBuffIds.contains(reminder.buff->id))
-            return false;
+            return reminder.buff->type == BuffType::Reset; // show reminder only if the player should remove it
 
-        return true;
-    };
+        // buff not active - show reminder
+        return reminder.buff->type != BuffType::Reset; // don't show reminder to remove a buff that's not active
+    }
 
     bool IsPlayerInSector(const Vec2 &pos, const Sector &sector, const int floorLevel)
     {
@@ -149,7 +150,7 @@ void OnRender()
     static std::vector<Buff> buffReminders;
     static BuffReminder utilityReminder;
     static BuffReminder sigilReminder;
-    static BuffReminder sigilSecondaryReminder;
+    static BuffReminder sigilSlayingReminder;
 
     if (SettingsManager::IsDebugWindowEnabled())
         DebugOverlay::RenderDebugOverlay(buffReminders);
@@ -168,7 +169,7 @@ void OnRender()
         if (SettingsManager::GetShownBuffTypes().sigil)
             buffReminders.push_back(Buff(BuffIds::GENERIC_SIGIL, "\"Sigil of the Tinkerer\""));
 
-        if (SettingsManager::GetShownBuffTypes().sigilSecondary)
+        if (SettingsManager::GetShownBuffTypes().sigilSlaying)
             buffReminders.push_back(Buff(BuffIds::GENERIC_SIGIL, "\"Sigil of the Elite\""));
     }
 
@@ -225,9 +226,9 @@ void OnRender()
     sigilReminder.hasGenericRemindersEnabled = showGenericBuffs;
     sigilReminder.isPlayerInCombat           = playerInCombat;
 
-    sigilSecondaryReminder.clearBuff();
-    sigilSecondaryReminder.hasGenericRemindersEnabled = showGenericBuffs;
-    sigilSecondaryReminder.isPlayerInCombat           = playerInCombat;
+    sigilSlayingReminder.clearBuff();
+    sigilSlayingReminder.hasGenericRemindersEnabled = showGenericBuffs;
+    sigilSlayingReminder.isPlayerInCombat           = playerInCombat;
 
     // certain maps need special floor level overrides based on player Y position
     if (const auto override = getFloorLevelOverride(currentMap.id, playerY))
@@ -249,8 +250,8 @@ void OnRender()
         if (SettingsManager::GetShownBuffTypes().sigil)
             sigilReminder.buff = sector.buffs.sigil;
 
-        if (SettingsManager::GetShownBuffTypes().sigilSecondary)
-            sigilSecondaryReminder.buff = sector.buffs.sigilSecondary;
+        if (SettingsManager::GetShownBuffTypes().sigilSlaying)
+            sigilSlayingReminder.buff = sector.buffs.sigilSlaying;
 
         break; // player can be in only one sector at a time
     }
@@ -263,8 +264,8 @@ void OnRender()
     if (!sigilReminder.buff.has_value() && SettingsManager::GetShownBuffTypes().sigil)
         sigilReminder.buff = currentMap.default_buffs.sigil;
 
-    if (!sigilSecondaryReminder.buff.has_value() && SettingsManager::GetShownBuffTypes().sigilSecondary)
-        sigilSecondaryReminder.buff = currentMap.default_buffs.sigilSecondary;
+    if (!sigilSlayingReminder.buff.has_value() && SettingsManager::GetShownBuffTypes().sigilSlaying)
+        sigilSlayingReminder.buff = currentMap.default_buffs.sigilSlaying;
 
     // build final buff reminder list
 
@@ -274,6 +275,6 @@ void OnRender()
     if (shouldAddBuffReminder(sigilReminder, activeBuffIds))
         buffReminders.push_back(sigilReminder.buff.value());
 
-    if (shouldAddBuffReminder(sigilSecondaryReminder, activeBuffIds))
-        buffReminders.push_back(sigilSecondaryReminder.buff.value());
+    if (shouldAddBuffReminder(sigilSlayingReminder, activeBuffIds))
+        buffReminders.push_back(sigilSlayingReminder.buff.value());
 }

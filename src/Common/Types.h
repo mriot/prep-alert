@@ -21,6 +21,7 @@ enum BuffType
     Utility,
     Sigil,
     Food,
+    Reset
 };
 
 struct Buff
@@ -35,7 +36,7 @@ struct Buffs
     std::optional<Buff> food;
     std::optional<Buff> utility;
     std::optional<Buff> sigil;
-    std::optional<Buff> sigilSecondary;
+    std::optional<Buff> sigilSlaying;
 };
 
 struct Sector
@@ -73,7 +74,7 @@ struct ShownBuffTypes
     bool food;
     bool utility;
     bool sigil;
-    bool sigilSecondary;
+    bool sigilSlaying;
     bool defaultBuffs;
 };
 
