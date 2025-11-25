@@ -15,10 +15,19 @@ struct Vec2
     double y;
 };
 
+// do NOT change order - must match python enum
+enum BuffType
+{
+    Utility,
+    Sigil,
+    Food,
+};
+
 struct Buff
 {
     int id;
     std::string name;
+    BuffType type;
 };
 
 struct Buffs

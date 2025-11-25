@@ -1,6 +1,7 @@
 import json
 from copy import deepcopy
 from dataclasses import asdict, is_dataclass
+from enum import Enum
 from pathlib import Path
 
 from buffs import (
@@ -20,7 +21,6 @@ from buffs import (
     OUTLAW_SLAYING,
     SCARLETS_ARMIES_SLAYING,
     SERPENT_SIGIL,
-    SHARPENING_STONE,
     SONS_OF_SVANIR_SLAYING,
     UNDEAD_SLAYING,
 )
@@ -127,7 +127,7 @@ PATCHES = [
     ),
     MapPatch(
         DungeonMap.AC_EXPLORABLE,
-        Buffs(utility=SHARPENING_STONE, sigil=NIGHT_SIGIL),
+        Buffs(utility=GENERIC_ENHANCEMENT, sigil=NIGHT_SIGIL),
         [
             SectorPatch(9, Buffs(utility=GHOST_SLAYING)),
         ],
@@ -219,7 +219,7 @@ PATCHES = [
                 sector_id=2001,
                 name="Kudu",
                 floors=[-12],  # custom floor
-                buffs=Buffs(utility=SHARPENING_STONE),
+                buffs=Buffs(utility=GENERIC_ENHANCEMENT),
                 bounds=[
                     [53699, 38218],
                     [53695, 38324],
@@ -231,7 +231,7 @@ PATCHES = [
     ),
     MapPatch(
         DungeonMap.CoE_EXPLORABLE,
-        Buffs(utility=SHARPENING_STONE, sigil=GENERIC_SIGIL),
+        Buffs(utility=GENERIC_ENHANCEMENT, sigil=GENERIC_SIGIL),
         [],
     ),
     # ----------------------------------- Arah ----------------------------------- #
@@ -367,12 +367,21 @@ def convert_sectors_to_list(maps: dict) -> dict:
 
 
 # ---------------------------------------------------------------------------- #
-#                            DATACLASS JSON ENCODER                            #
+#                              CUSTOM JSON ENCODER                             #
 # ---------------------------------------------------------------------------- #
-class DataclassJSONEncoder(json.JSONEncoder):
+class CustomJSONEncoder(json.JSONEncoder):
     def default(self, o):
+        # Dataclasses
         if is_dataclass(o) and not isinstance(o, type):
-            return asdict(o)
+            result = asdict(o)
+            for k, v in result.items():
+                # Enums inside dataclasses
+                if isinstance(v, Enum):
+                    result[k] = v.value
+            return result
+        # Enums
+        if isinstance(o, Enum):
+            return o.value
         return super().default(o)
 
 
@@ -400,7 +409,7 @@ if __name__ == "__main__":
             indent=None,
             separators=(",", ":"),
             ensure_ascii=False,
-            cls=DataclassJSONEncoder,
+            cls=CustomJSONEncoder,
         )
 
     print(f"Patched map data written to {dest_file}")

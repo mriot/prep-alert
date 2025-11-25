@@ -25,6 +25,7 @@ void from_json(const json &j, Buff &b)
 {
     j.at("id").get_to(b.id);
     j.at("name").get_to(b.name);
+    j.at("type").get_to(b.type);
 }
 
 // Buffs

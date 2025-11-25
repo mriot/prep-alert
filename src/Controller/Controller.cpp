@@ -1,5 +1,6 @@
 #include "Controller.h"
 
+#include "Common/BuffData.h"
 #include "Common/Constants.h"
 #include "Common/Utils.h"
 #include "UI/Debug/Debug.h"
@@ -23,9 +24,9 @@ namespace
     struct BuffReminder
     {
         std::optional<Buff> buff;
-        bool isGenericDismissed = false;
-        bool showGenericBuff    = true;
-        bool playerInCombat     = false;
+        bool isGenericDismissed         = false;
+        bool hasGenericRemindersEnabled = true;
+        bool isPlayerInCombat           = false;
 
         bool isGenericBuff() { return buff.has_value() && buff->id < 0; }
 
@@ -87,19 +88,23 @@ namespace
 
         if (reminder.isGenericBuff())
         {
-            // player disabled generic buff reminders
-            if (!reminder.showGenericBuff)
+            if (!reminder.hasGenericRemindersEnabled)
                 return false;
 
-            // hide generic buff upon entering combat and then keep it hidden
-            if (reminder.playerInCombat)
+            // check if any specific buff of the same type is active
+            for (const auto &[buffId, buffDef] : BuffDefs)
             {
-                reminder.isGenericDismissed = true;
-                return false;
+                if (buffDef.type != reminder.buff->type)
+                    continue;
+
+                if (activeBuffIds.contains(buffId))
+                    return true; // some specific buff active, show reminder
+
             }
-            return !reminder.isGenericDismissed;
+            return false;
         }
 
+        // specific buff is already active
         if (activeBuffIds.contains(reminder.buff->id))
             return false;
 

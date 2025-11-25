@@ -71,7 +71,7 @@ namespace DebugOverlay
             ImGui::Text("Buff Reminders: %zu", buffReminders.size());
             for (const Buff &buff : buffReminders)
             {
-                ImGui::BulletText("ID: %d, Name: %s", buff.id, buff.name.c_str());
+                ImGui::BulletText("ID: %d, Name: %s, Type: %d", buff.id, buff.name.c_str(), buff.type);
             }
         }
     }

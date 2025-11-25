@@ -6,10 +6,17 @@ from enum import Enum
 from typing import List
 
 
+class BuffType(Enum):
+    UTILITY = 0
+    SIGIL = 1
+    FOOD = 2
+
+
 @dataclass
 class Buff:
     id: int
     name: str
+    type: BuffType
 
 
 @dataclass
