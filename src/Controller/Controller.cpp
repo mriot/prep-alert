@@ -157,7 +157,7 @@ void OnRender()
     if (!G::NexusLink->IsGameplay)
         return;
 
-    // render settings overlay regardless of map support status to be able to drag it on any map
+    // set up the draggable overlay when options are open
     if (UIState::IsOptionsPaneOpen)
     {
         buffReminders.clear();
@@ -172,7 +172,7 @@ void OnRender()
             buffReminders.push_back(Buff(BuffIds::GENERIC_SIGIL, "\"Sigil of the Elite\""));
     }
 
-    // to prevent flicker, the previous frame’s data is rendered since map/sector checks are throttled below
+    // to prevent flicker, the previous frame’s data is rendered (map/sector checks are throttled below)
     if (!buffReminders.empty())
         Overlay::RenderOverlay(buffReminders);
 
@@ -214,19 +214,20 @@ void OnRender()
     const auto &currentMap      = mapIt->second;
     const float mapX            = G::MumbleLink->Context.Compass.PlayerPosition.X;
     const float mapY            = G::MumbleLink->Context.Compass.PlayerPosition.Y;
-    const float playerY         = G::MumbleLink->AvatarPosition.Y; // vertical position (there is no vertical position in compass)
+    const float playerY         = G::MumbleLink->AvatarPosition.Y; // there is no vertical position in compass
 
+    // TODO refactor this
     utilityReminder.clearBuff();
-    utilityReminder.showGenericBuff = showGenericBuffs;
-    utilityReminder.playerInCombat  = playerInCombat;
+    utilityReminder.hasGenericRemindersEnabled = showGenericBuffs;
+    utilityReminder.isPlayerInCombat           = playerInCombat;
 
     sigilReminder.clearBuff();
-    sigilReminder.showGenericBuff = showGenericBuffs;
-    sigilReminder.playerInCombat  = playerInCombat;
+    sigilReminder.hasGenericRemindersEnabled = showGenericBuffs;
+    sigilReminder.isPlayerInCombat           = playerInCombat;
 
     sigilSecondaryReminder.clearBuff();
-    sigilSecondaryReminder.showGenericBuff = showGenericBuffs;
-    sigilSecondaryReminder.playerInCombat  = playerInCombat;
+    sigilSecondaryReminder.hasGenericRemindersEnabled = showGenericBuffs;
+    sigilSecondaryReminder.isPlayerInCombat           = playerInCombat;
 
     // certain maps need special floor level overrides based on player Y position
     if (const auto override = getFloorLevelOverride(currentMap.id, playerY))
