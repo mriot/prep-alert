@@ -229,9 +229,9 @@ PATCHES = [
         ),
         [
             # Honor's Voice
-            SectorPatch(660, Buffs(utility=ICEBROOD_SLAYING, sigil_slaying=ICEBROOD_SIGIL)),
+            SectorPatch(665, Buffs(utility=ICEBROOD_SLAYING, sigil_slaying=ICEBROOD_SIGIL)),
             # Kodan's Bane
-            SectorPatch(659, Buffs(utility=ICEBROOD_SLAYING, sigil_slaying=ICEBROOD_SIGIL)),
+            SectorPatch(666, Buffs(utility=ICEBROOD_SLAYING, sigil_slaying=ICEBROOD_SIGIL)),
         ],
     ),
     MapPatch(
