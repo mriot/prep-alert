@@ -73,15 +73,13 @@ void AddonLoad(AddonAPI_t *api)
                                  (void (*)(void *, void *))G::APIDefs->ImguiFree);
 
     for (const auto &[id, data] : G::MapDataMap)
-    {
         G::SupportedMaps.insert(id);
-    }
 
     Log::Info(std::format("{} supported maps", G::SupportedMaps.size()));
 
     G::APIDefs->GUI_Register(RT_Render, OnRender);
     G::APIDefs->GUI_Register(RT_OptionsRender, OnOptionsRender);
-    G::APIDefs->Events_Subscribe(EV_MUMBLE_IDENTITY_UPDATED, OnMumbleIdentityUpdated);
+    G::APIDefs->Events_Subscribe(EV_MUMBLE_IDENTITY_UPDATED, Events::OnMumbleIdentityUpdated);
 
 #ifdef DEBUG
     G::APIDefs->InputBinds_RegisterWithString("KB_COORD_DUMPER", CoordDumper, "CTRL+B");
@@ -97,7 +95,7 @@ void AddonUnload()
     Hooks::Destroy();
     G::APIDefs->GUI_Deregister(OnRender);
     G::APIDefs->GUI_Deregister(OnOptionsRender);
-    G::APIDefs->Events_Unsubscribe(EV_MUMBLE_IDENTITY_UPDATED, OnMumbleIdentityUpdated);
+    G::APIDefs->Events_Unsubscribe(EV_MUMBLE_IDENTITY_UPDATED, Events::OnMumbleIdentityUpdated);
 
 #ifdef DEBUG
     G::APIDefs->InputBinds_Deregister("KB_COORD_DUMPER");

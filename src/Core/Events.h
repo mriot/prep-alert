@@ -1,3 +1,6 @@
 #pragma once
 
-void OnMumbleIdentityUpdated(void* eventData);
+namespace Events
+{
+    void OnMumbleIdentityUpdated(void *eventData);
+}
