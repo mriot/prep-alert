@@ -17,7 +17,7 @@ void OnOptionsRender()
 
     if (ImGui::BeginTable("BuffReminderTable", 3, ImGuiTableFlags_SizingFixedFit))
     {
-        ImGui::TableSetupColumn("Left");
+        ImGui::TableSetupColumn("Left", ImGuiTableColumnFlags_WidthFixed, 200.0f);
         ImGui::TableSetupColumn("Spacer", ImGuiTableColumnFlags_WidthFixed, 50.0f);
         ImGui::TableSetupColumn("Right");
 
@@ -37,13 +37,13 @@ void OnOptionsRender()
                 SettingsManager::SetReminders(reminders);
             if (ImGui::Checkbox("Night Sigil##dungeons", &reminders.dungeons.sigil))
                 SettingsManager::SetReminders(reminders);
-            ImGui::HoverTooltip("Also reminds when you should NOT use it");
+            ImGuiUtil::InlineHelp("Also reminds when NOT to use it");
             if (ImGui::Checkbox("Slaying Sigil##dungeons", &reminders.dungeons.sigilSlaying))
                 SettingsManager::SetReminders(reminders);
             ImGui::Spacing();
-            if (ImGui::Checkbox("Default buffs##dungeons", &reminders.dungeons.defaultBuffs))
+            if (ImGui::Checkbox("Build Defaults##dungeons", &reminders.dungeons.defaultBuffs))
                 SettingsManager::SetReminders(reminders);
-            ImGui::HoverTooltip("Shown when you should use your build’s default buff");
+            ImGuiUtil::InlineHelp("Shown when you should use your build’s normal Enhancement, Sigil, etc.");
             ImGui::Unindent();
         }
         else
@@ -67,17 +67,24 @@ void OnOptionsRender()
                 SettingsManager::SetReminders(reminders);
             if (ImGui::Checkbox("Night Sigil##fractals", &reminders.fractals.sigil))
                 SettingsManager::SetReminders(reminders);
-            ImGui::HoverTooltip("Also reminds when you should NOT use it");
+            ImGuiUtil::InlineHelp("Also reminds when NOT to use it");
             if (ImGui::Checkbox("Slaying Sigil##fractals", &reminders.fractals.sigilSlaying))
                 SettingsManager::SetReminders(reminders);
             ImGui::Spacing();
-            if (ImGui::Checkbox("Default buffs##fractals", &reminders.fractals.defaultBuffs))
+            if (ImGui::Checkbox("Build Defaults##fractals", &reminders.fractals.defaultBuffs))
                 SettingsManager::SetReminders(reminders);
-            ImGui::HoverTooltip("Shown when you should use your build’s default buff");
+            ImGuiUtil::InlineHelp("Shown when you should use your build’s normal Enhancement, Sigil, etc.");
             ImGui::Unindent();
         }
 
         ImGui::EndTable();
+    }
+
+    if (!G::IsOnSupportedMap)
+    {
+        ImGui::Spacing();
+        ImGui::TextColored(ImVec4(1.0f, 0.4f, 0.4f, 1.0f), "You are on an unsupported map, all reminder types are shown regardless of configuration.\nEnter a dungeon or fractal to see only the reminders you selected.");
+        ImGui::Spacing();
     }
 
     ImGui::Spacing();
@@ -104,7 +111,7 @@ void OnOptionsRender()
         {
             SettingsManager::SetTooltipsEnabled(isTooltipsEnabled);
         }
-        ImGui::HoverTooltip("Mouse events aren't passed through to the game if enabled");
+        ImGuiUtil::InlineHelp("Mouse events aren't passed through to the game if enabled");
 
         // horizontal mode
         bool horizontalMode = SettingsManager::IsHorizontalMode();
@@ -180,7 +187,7 @@ void OnOptionsRender()
     ///----------------------------------------------------------------------------------------------------
 
     bool debugWindowEnabled = SettingsManager::IsDebugWindowEnabled();
-    if (ImGui::Checkbox("Enable debug window", &debugWindowEnabled))
+    if (ImGui::Checkbox("Debug window", &debugWindowEnabled))
     {
         SettingsManager::SetDebugWindowEnabled(debugWindowEnabled);
     }
