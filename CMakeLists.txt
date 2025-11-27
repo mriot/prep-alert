@@ -94,7 +94,7 @@
 
         # patch map data before build
         add_custom_target(patch_map_data ALL
-                COMMAND cmd /C "uv run ${CMAKE_SOURCE_DIR}/scripts/map_data_patcher/main.py"
+                COMMAND cmd /C "uv run ${CMAKE_SOURCE_DIR}/scripts/map_data_patcher/main.py $<$<CONFIG:Debug>:--debug>"
                 WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
         )
         add_dependencies(${PROJECT_NAME} patch_map_data)

@@ -1,3 +1,4 @@
+import argparse
 import json
 from copy import deepcopy
 from dataclasses import asdict, is_dataclass
@@ -425,6 +426,10 @@ class CustomJSONEncoder(json.JSONEncoder):
 #                                     MAIN                                     #
 # ---------------------------------------------------------------------------- #
 if __name__ == "__main__":
+    arg_pargser = argparse.ArgumentParser()
+    arg_pargser.add_argument("--debug", action="store_true")
+    args = arg_pargser.parse_args()
+
     root = Path(__file__).parents[2]
 
     src_file = root / "data" / "maps_raw.json"
@@ -435,7 +440,8 @@ if __name__ == "__main__":
     maps = load_raw_maps(src_file, map_ids)
     maps = derive_dungeon_story_maps(maps)
     maps = apply_patches(PATCHES, maps)
-    maps = strip_unpatched_sectors(maps)
+    if not args.debug:
+        maps = strip_unpatched_sectors(maps)
     maps = convert_sectors_to_list(maps)
 
     with open(dest_file, "w", encoding="utf-8") as f:
@@ -448,4 +454,5 @@ if __name__ == "__main__":
             cls=CustomJSONEncoder,
         )
 
-    print(f"Patched map data written to {dest_file}")
+    file_size = dest_file.stat().st_size // 1024
+    print(f"Patched map data written to {dest_file} ({file_size} KB)")
