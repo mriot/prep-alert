@@ -168,8 +168,7 @@ void OnRender()
     }
 
     // to prevent flicker, the previous frame’s data is rendered (map/sector checks are throttled below)
-    if (!buffReminders.empty())
-        Overlay::RenderOverlay(buffReminders);
+    Overlay::RenderOverlay(buffReminders);
 
     // skip further processing if options pane is open
     if (UIState::IsOptionsPaneOpen)
