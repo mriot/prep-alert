@@ -20,8 +20,15 @@ struct Vec2
 /// MAP / BUFF DATA TYPES
 /// ----------------------------------------------------------------------------------------------------
 
+enum class Continent
+{
+    Tyria,
+    Mists,
+    Unknown
+};
+
 // do NOT change order - must match python enum
-enum BuffType
+enum class BuffType
 {
     Utility,
     Sigil,

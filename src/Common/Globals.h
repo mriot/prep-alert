@@ -18,7 +18,8 @@ namespace G
     extern Mumble::Identity *MumbleIdentity;
 
     extern bool IsOnSupportedMap;
-    extern uint32_t CurrentMapID;
+    extern Continent CurrentContinent;
+    extern MapData CurrentMapData;
     extern uint32_t CurrentSectorID;
     extern int CurrentMapFloor;
     extern std::unordered_set<uint32_t> SupportedMaps;

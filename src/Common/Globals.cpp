@@ -1,6 +1,7 @@
 #include "Globals.h"
 #include <mumble/Mumble.h>
 #include <nexus/Nexus.h>
+#include "Types.h"
 
 namespace G
 {
@@ -11,10 +12,11 @@ namespace G
     Mumble::Data *MumbleLink         = nullptr;
     Mumble::Identity *MumbleIdentity = nullptr;
 
-    bool IsOnSupportedMap    = false;
-    uint32_t CurrentMapID    = 0;
-    uint32_t CurrentSectorID = 0;
-    int CurrentMapFloor      = 0;
+    bool IsOnSupportedMap      = false;
+    Continent CurrentContinent = Continent::Unknown;
+    MapData CurrentMapData     = {};
+    uint32_t CurrentSectorID   = 0;
+    int CurrentMapFloor        = 0;
     std::unordered_set<uint32_t> SupportedMaps;
     std::unordered_map<int, MapData> MapDataMap;
 }
