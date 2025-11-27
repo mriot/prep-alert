@@ -28,7 +28,7 @@ namespace
         bool hasGenericRemindersEnabled = true;
         bool isPlayerInCombat           = false;
 
-        bool isGenericBuff() { return buff.has_value() && buff->id < 0; }
+        bool isGenericBuff() const { return buff.has_value() && buff->id < 0; }
 
         void clearBuff() { buff = {}; }
 
@@ -81,7 +81,7 @@ namespace
         return ids;
     }
 
-    bool shouldAddBuffReminder(BuffReminder &reminder, const std::unordered_set<int> &activeBuffIds)
+    bool shouldAddBuffReminder(const BuffReminder &reminder, const std::unordered_set<int> &activeBuffIds)
     {
         if (!reminder.buff.has_value())
             return false;
@@ -158,13 +158,34 @@ void OnRender()
     if (!G::NexusLink->IsGameplay)
         return;
 
+    const MapTypeReminder reminderCfg = SettingsManager::GetReminder(G::CurrentContinent);
+
     // set up the draggable overlay when options are open
     if (UIState::IsOptionsPaneOpen)
     {
         buffReminders.clear();
-        buffReminders.push_back(Buff(BuffIds::GENERIC_ENHANCEMENT, "\"Potion of Calibration\""));
-        buffReminders.push_back(Buff(BuffIds::GENERIC_SIGIL, "\"Sigil of the Tinkerer\""));
-        buffReminders.push_back(Buff(BuffIds::GENERIC_SIGIL, "\"Sigil of the Elite\""));
+
+        const Buff genericUtilityBuff(BuffIds::GENERIC_ENHANCEMENT, "\"Potion of Calibration\"");
+        const Buff genericSigilBuff(BuffIds::NIGHT_SIGIL, "\"Sigil of the Night\"");
+        const Buff genericSigilSlayingBuff(BuffIds::GENERIC_SIGIL, "\"Sigil of Slaying\"");
+
+        if (G::CurrentContinent == Continent::Unknown)
+        {
+            buffReminders.push_back(genericUtilityBuff);
+            buffReminders.push_back(genericSigilBuff);
+            buffReminders.push_back(genericSigilSlayingBuff);
+        }
+        else
+        {
+            if (!reminderCfg.enabled)
+                return;
+            if (reminderCfg.utility)
+                buffReminders.push_back(genericUtilityBuff);
+            if (reminderCfg.sigil)
+                buffReminders.push_back(genericSigilBuff);
+            if (reminderCfg.sigilSlaying)
+                buffReminders.push_back(genericSigilSlayingBuff);
+        }
     }
 
     // to prevent flicker, the previous frame’s data is rendered (map/sector checks are throttled below)
@@ -177,9 +198,8 @@ void OnRender()
         return;
     }
 
-    // reset everything if not on a supported map
-    // TODO we should reset on every map change actually
-    if (!G::IsOnSupportedMap)
+    // reset reminders if not on supported map or reminders disabled
+    if (!G::IsOnSupportedMap || !reminderCfg.enabled)
     {
         sigilReminder.reset();
         utilityReminder.reset();
@@ -198,19 +218,9 @@ void OnRender()
 
     buffReminders.clear(); // clear for new data
 
-    const auto mapIt = G::MapDataMap.find(G::CurrentMapID);
-    if (mapIt == G::MapDataMap.end()) // sanity check for map data - should never happen
-        return;
-
-    const auto &currentMap            = mapIt->second;
-    const MapTypeReminder reminderCfg = currentMap.continent_id == 1 ? SettingsManager::GetReminders().dungeons : SettingsManager::GetReminders().fractals;
-
-    // TODO should clear state here too
-    if (!reminderCfg.enabled)
-        return;
-
-    const bool playerInCombat = (bool)G::MumbleLink->Context.IsInCombat;
     const auto activeBuffIds  = buildActiveBuffIdSet();
+    const bool playerInCombat = static_cast<bool>(G::MumbleLink->Context.IsInCombat);
+    const auto &currentMap    = G::CurrentMapData;
     const float mapX          = G::MumbleLink->Context.Compass.PlayerPosition.X;
     const float mapY          = G::MumbleLink->Context.Compass.PlayerPosition.Y;
     const float playerY       = G::MumbleLink->AvatarPosition.Y; // there is no vertical position in compass
