@@ -1,20 +1,7 @@
 #include "Events.h"
-#include "Data/SettingsManager.h"
 #include <Common/Globals.h>
 #include <mumble/Mumble.h>
 
-
-bool isMapSupported(const MapData &mapData)
-{
-    const MapTypes mapTypes = SettingsManager::GetMapTypes();
-
-    if (!mapTypes.dungeons && mapData.continent_id == 1)
-        return false;
-    if (!mapTypes.fractals && mapData.continent_id == 2)
-        return false;
-
-    return G::SupportedMaps.contains(G::CurrentMapID);
-}
 
 void OnMumbleIdentityUpdated(void *eventData)
 {
@@ -36,5 +23,5 @@ void OnMumbleIdentityUpdated(void *eventData)
         return;
     }
 
-    G::IsOnSupportedMap = isMapSupported(mapIt->second);
+    G::IsOnSupportedMap = G::SupportedMaps.contains(G::CurrentMapID);
 }

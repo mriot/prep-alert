@@ -5,15 +5,20 @@
 #include <vector>
 
 
-///----------------------------------------------------------------------------------------------------
-/// MAP DATA TYPES
-///----------------------------------------------------------------------------------------------------
+/// ----------------------------------------------------------------------------------------------------
+/// GENERAL TYPES
+/// ----------------------------------------------------------------------------------------------------
 
 struct Vec2
 {
     double x;
     double y;
 };
+
+
+/// ----------------------------------------------------------------------------------------------------
+/// MAP / BUFF DATA TYPES
+/// ----------------------------------------------------------------------------------------------------
 
 // do NOT change order - must match python enum
 enum BuffType
@@ -63,19 +68,20 @@ struct MapData
 /// SETTINGS TYPES
 ///----------------------------------------------------------------------------------------------------
 
-struct MapTypes
+struct MapTypeReminder
 {
-    bool dungeons;
-    bool fractals;
-};
-
-struct ShownBuffTypes
-{
+    bool enabled;
     bool food;
     bool utility;
     bool sigil;
     bool sigilSlaying;
     bool defaultBuffs;
+};
+
+struct Reminders
+{
+    MapTypeReminder dungeons;
+    MapTypeReminder fractals;
 };
 
 struct Position
@@ -92,6 +98,5 @@ struct Settings
     bool horizontal;
     int flashDuration;
     int imageSize;
-    ShownBuffTypes shownBuffTypes;
-    MapTypes mapTypes;
+    Reminders reminders;
 };

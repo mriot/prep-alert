@@ -49,15 +49,10 @@ namespace SettingsManager
 
     void SetFlashingDuration(int seconds);
 
-    // shown buffs
-    ShownBuffTypes GetShownBuffTypes();
+    // reminders
+    Reminders GetReminders();
 
-    void SetShownBuffTypes(const ShownBuffTypes &types);
-
-    // map types
-    MapTypes GetMapTypes();
-
-    void SetMapTypes(const MapTypes &types);
+    void SetReminders(const Reminders &reminders);
 
     // debug window
     bool IsDebugWindowEnabled();

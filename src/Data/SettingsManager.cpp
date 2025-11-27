@@ -28,17 +28,24 @@ namespace
         .horizontal = false,
         .flashDuration = 10,
         .imageSize = 40,
-        .shownBuffTypes = {
-            .food = true,
-            .utility = true,
-            .sigil = true,
-            .sigilSlaying = false,
-            .defaultBuffs = true
+        .reminders = {
+            .dungeons = {
+                .enabled = true,
+                .food = true,
+                .utility = true,
+                .sigil = true,
+                .sigilSlaying = true,
+                .defaultBuffs = true
+            },
+            .fractals = {
+                .enabled = true,
+                .food = true,
+                .utility = true,
+                .sigil = true,
+                .sigilSlaying = true,
+                .defaultBuffs = true
+            }
         },
-        .mapTypes = {
-            .dungeons = true,
-            .fractals = true
-        }
     };
     Settings settings = defaultSettings;
 
@@ -71,22 +78,11 @@ namespace
 /// SETTINGS SERIALIZATION
 /// ----------------------------------------------------------------------------------------------------
 
-// map types
-void to_json(json &j, const MapTypes &t)
-{
-    j = {{"dungeons", t.dungeons}, {"fractals", t.fractals}};
-}
-
-void from_json(const json &j, MapTypes &t)
-{
-    t.dungeons = j.value("dungeons", true);
-    t.fractals = j.value("fractals", true);
-}
-
-// shown buff types
-void to_json(json &j, const ShownBuffTypes &t)
+// map type reminders
+void to_json(json &j, const MapTypeReminder &t)
 {
     j = {
+        {"enabled", t.enabled},
         {"food", t.food},
         {"utility", t.utility},
         {"sigil", t.sigil},
@@ -95,13 +91,29 @@ void to_json(json &j, const ShownBuffTypes &t)
     };
 }
 
-void from_json(const json &j, ShownBuffTypes &t)
+void from_json(const json &j, MapTypeReminder &t)
 {
+    t.enabled      = j.value("enabled", true);
     t.food         = j.value("food", true);
     t.utility      = j.value("utility", true);
     t.sigil        = j.value("sigil", true);
-    t.sigilSlaying = j.value("sigil_slaying", false);
+    t.sigilSlaying = j.value("sigil_slaying", true);
     t.defaultBuffs = j.value("default_buffs", true);
+}
+
+// reminders
+void to_json(json &j, const Reminders &r)
+{
+    j = {
+        {"dungeons", r.dungeons},
+        {"fractals", r.fractals}
+    };
+}
+
+void from_json(const json &j, Reminders &r)
+{
+    r.dungeons = j.value("dungeons", json(defaultSettings.reminders.dungeons)).get<MapTypeReminder>();
+    r.fractals = j.value("fractals", json(defaultSettings.reminders.fractals)).get<MapTypeReminder>();
 }
 
 // overlay position
@@ -126,21 +138,19 @@ void to_json(json &j, const Settings &s)
         {"horizontal", s.horizontal},
         {"flash_duration", s.flashDuration},
         {"image_size", s.imageSize},
-        {"shown_buffs", s.shownBuffTypes},
-        {"map_types", s.mapTypes}
+        {"reminders", s.reminders}
     };
 }
 
 void from_json(const json &j, Settings &s)
 {
-    s.position       = j.value("position", json(defaultSettings.position)).get<Position>();
-    s.compact        = j.value("compact", defaultSettings.compact);
-    s.tooltips       = j.value("tooltips", defaultSettings.tooltips);
-    s.horizontal     = j.value("horizontal", defaultSettings.horizontal);
-    s.flashDuration  = j.value("flash_duration", defaultSettings.flashDuration);
-    s.imageSize      = j.value("image_size", defaultSettings.imageSize);
-    s.shownBuffTypes = j.value("shown_buffs", json(defaultSettings.shownBuffTypes)).get<ShownBuffTypes>();
-    s.mapTypes       = j.value("map_types", json(defaultSettings.mapTypes)).get<MapTypes>();
+    s.position      = j.value("position", json(defaultSettings.position)).get<Position>();
+    s.compact       = j.value("compact", defaultSettings.compact);
+    s.tooltips      = j.value("tooltips", defaultSettings.tooltips);
+    s.horizontal    = j.value("horizontal", defaultSettings.horizontal);
+    s.flashDuration = j.value("flash_duration", defaultSettings.flashDuration);
+    s.imageSize     = j.value("image_size", defaultSettings.imageSize);
+    s.reminders     = j.value("reminders", json(defaultSettings.reminders)).get<Reminders>();
 }
 
 
@@ -186,26 +196,12 @@ namespace SettingsManager
         DebouncedSave();
     }
 
-    // Shown buff types
-    ShownBuffTypes GetShownBuffTypes() { return settings.shownBuffTypes; }
+    // Reminders
+    Reminders GetReminders() { return settings.reminders; }
 
-    void SetShownBuffTypes(const ShownBuffTypes &types)
+    void SetReminders(const Reminders &reminders)
     {
-        settings.shownBuffTypes.food         = types.food;
-        settings.shownBuffTypes.utility      = types.utility;
-        settings.shownBuffTypes.sigil        = types.sigil;
-        settings.shownBuffTypes.sigilSlaying = types.sigilSlaying;
-        settings.shownBuffTypes.defaultBuffs = types.defaultBuffs;
-        DebouncedSave();
-    }
-
-    // Shown buff types
-    MapTypes GetMapTypes() { return settings.mapTypes; }
-
-    void SetMapTypes(const MapTypes &types)
-    {
-        settings.mapTypes.dungeons = types.dungeons;
-        settings.mapTypes.fractals = types.fractals;
+        settings.reminders = reminders;
         DebouncedSave();
     }
 

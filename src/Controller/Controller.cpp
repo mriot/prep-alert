@@ -162,15 +162,9 @@ void OnRender()
     if (UIState::IsOptionsPaneOpen)
     {
         buffReminders.clear();
-
-        if (SettingsManager::GetShownBuffTypes().utility)
-            buffReminders.push_back(Buff(BuffIds::GENERIC_ENHANCEMENT, "\"Potion of Calibration\""));
-
-        if (SettingsManager::GetShownBuffTypes().sigil)
-            buffReminders.push_back(Buff(BuffIds::GENERIC_SIGIL, "\"Sigil of the Tinkerer\""));
-
-        if (SettingsManager::GetShownBuffTypes().sigilSlaying)
-            buffReminders.push_back(Buff(BuffIds::GENERIC_SIGIL, "\"Sigil of the Elite\""));
+        buffReminders.push_back(Buff(BuffIds::GENERIC_ENHANCEMENT, "\"Potion of Calibration\""));
+        buffReminders.push_back(Buff(BuffIds::GENERIC_SIGIL, "\"Sigil of the Tinkerer\""));
+        buffReminders.push_back(Buff(BuffIds::GENERIC_SIGIL, "\"Sigil of the Elite\""));
     }
 
     // to prevent flicker, the previous frame’s data is rendered (map/sector checks are throttled below)
@@ -209,25 +203,30 @@ void OnRender()
     if (mapIt == G::MapDataMap.end()) // sanity check for map data - should never happen
         return;
 
-    const bool showGenericBuffs = SettingsManager::GetShownBuffTypes().defaultBuffs;
-    const bool playerInCombat   = (bool)G::MumbleLink->Context.IsInCombat;
-    const auto activeBuffIds    = buildActiveBuffIdSet();
-    const auto &currentMap      = mapIt->second;
-    const float mapX            = G::MumbleLink->Context.Compass.PlayerPosition.X;
-    const float mapY            = G::MumbleLink->Context.Compass.PlayerPosition.Y;
-    const float playerY         = G::MumbleLink->AvatarPosition.Y; // there is no vertical position in compass
+    const auto &currentMap            = mapIt->second;
+    const MapTypeReminder reminderCfg = currentMap.continent_id == 1 ? SettingsManager::GetReminders().dungeons : SettingsManager::GetReminders().fractals;
+
+    // TODO should clear state here too
+    if (!reminderCfg.enabled)
+        return;
+
+    const bool playerInCombat = (bool)G::MumbleLink->Context.IsInCombat;
+    const auto activeBuffIds  = buildActiveBuffIdSet();
+    const float mapX          = G::MumbleLink->Context.Compass.PlayerPosition.X;
+    const float mapY          = G::MumbleLink->Context.Compass.PlayerPosition.Y;
+    const float playerY       = G::MumbleLink->AvatarPosition.Y; // there is no vertical position in compass
 
     // TODO refactor this
     utilityReminder.clearBuff();
-    utilityReminder.hasGenericRemindersEnabled = showGenericBuffs;
+    utilityReminder.hasGenericRemindersEnabled = reminderCfg.defaultBuffs;
     utilityReminder.isPlayerInCombat           = playerInCombat;
 
     sigilReminder.clearBuff();
-    sigilReminder.hasGenericRemindersEnabled = showGenericBuffs;
+    sigilReminder.hasGenericRemindersEnabled = reminderCfg.defaultBuffs;
     sigilReminder.isPlayerInCombat           = playerInCombat;
 
     sigilSlayingReminder.clearBuff();
-    sigilSlayingReminder.hasGenericRemindersEnabled = showGenericBuffs;
+    sigilSlayingReminder.hasGenericRemindersEnabled = reminderCfg.defaultBuffs;
     sigilSlayingReminder.isPlayerInCombat           = playerInCombat;
 
     // certain maps need special floor level overrides based on player Y position
@@ -244,13 +243,13 @@ void OnRender()
 
         G::CurrentSectorID = sector.id;
 
-        if (SettingsManager::GetShownBuffTypes().utility)
+        if (reminderCfg.utility)
             utilityReminder.buff = sector.buffs.utility;
 
-        if (SettingsManager::GetShownBuffTypes().sigil)
+        if (reminderCfg.sigil)
             sigilReminder.buff = sector.buffs.sigil;
 
-        if (SettingsManager::GetShownBuffTypes().sigilSlaying)
+        if (reminderCfg.sigilSlaying)
             sigilSlayingReminder.buff = sector.buffs.sigilSlaying;
 
         break; // player can be in only one sector at a time
@@ -258,13 +257,13 @@ void OnRender()
 
     // handle map's default buffs if no sector buffs found
 
-    if (!utilityReminder.buff.has_value() && SettingsManager::GetShownBuffTypes().utility)
+    if (!utilityReminder.buff.has_value() && reminderCfg.utility)
         utilityReminder.buff = currentMap.default_buffs.utility;
 
-    if (!sigilReminder.buff.has_value() && SettingsManager::GetShownBuffTypes().sigil)
+    if (!sigilReminder.buff.has_value() && reminderCfg.sigil)
         sigilReminder.buff = currentMap.default_buffs.sigil;
 
-    if (!sigilSlayingReminder.buff.has_value() && SettingsManager::GetShownBuffTypes().sigilSlaying)
+    if (!sigilSlayingReminder.buff.has_value() && reminderCfg.sigilSlaying)
         sigilSlayingReminder.buff = currentMap.default_buffs.sigilSlaying;
 
     // build final buff reminder list
