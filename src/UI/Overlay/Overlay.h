@@ -5,5 +5,5 @@
 
 namespace Overlay
 {
-    void RenderOverlay(const std::vector<Buff> &buffs);
+    void RenderOverlay(const std::vector<Buff> &buffReminders);
 }

@@ -9,44 +9,71 @@
 #include <nexus/Nexus.h>
 #include <string>
 
-namespace
-{
-    void HandleOverlayDrag()
-    {
-        static ImVec2 prevPos = SettingsManager::GetOverlayPosition();
-        static bool wasMoving = false;
-
-        const ImVec2 currentPos = ImGui::GetWindowPos();
-
-        if (currentPos.x != prevPos.x || currentPos.y != prevPos.y)
-        {
-            wasMoving = true;
-        }
-
-        if (wasMoving && !ImGui::IsMouseDown(ImGuiMouseButton_Left))
-        {
-            SettingsManager::SetOverlayPosition(currentPos);
-            wasMoving = false;
-            prevPos   = currentPos;
-        }
-    }
-
-    float RotateAlpha()
-    {
-        const float t = ImGui::GetTime() * 10.0f; // time since imgui initialized
-        return 0.5f + 0.5f * sinf(t);             // oscillates between 0 and 1 (sinf -1 to 1)
-    }
-}
-
 namespace Overlay
 {
-    void RenderOverlay(const std::vector<Buff> &buffs)
+    namespace
+    {
+        void HandleOverlayDrag()
+        {
+            static ImVec2 prevPos = SettingsManager::GetOverlayPosition();
+            static bool wasMoving = false;
+
+            const ImVec2 currentPos = ImGui::GetWindowPos();
+
+            if (currentPos.x != prevPos.x || currentPos.y != prevPos.y)
+            {
+                wasMoving = true;
+            }
+
+            if (wasMoving && !ImGui::IsMouseDown(ImGuiMouseButton_Left))
+            {
+                SettingsManager::SetOverlayPosition(currentPos);
+                wasMoving = false;
+                prevPos   = currentPos;
+            }
+        }
+
+        void RenderBuffIcon(const Buff &buff, const ImVec2 &imageSize, const float &windowAlpha)
+        {
+            if (const Texture_t *texture = LoadTexture(buff.id))
+                ImGui::Image(texture->Resource, imageSize);
+            else
+                ImGui::Dummy(imageSize);
+
+            // draw red X over reset-type buffs
+            if (buff.type == BuffType::Reset)
+            {
+                {
+                    ImDrawList *drawList      = ImGui::GetWindowDrawList();
+                    const ImVec2 iconMin      = ImGui::GetItemRectMin();
+                    const ImVec2 iconMax      = ImGui::GetItemRectMax();
+                    const ImU32 red           = IM_COL32(255, 0, 0, windowAlpha * 255.0f);
+                    constexpr float thickness = 5.0f;
+                    constexpr float padding   = 3.0f;
+
+                    const ImVec2 paddedMin = ImVec2(iconMin.x + padding, iconMin.y + padding);
+                    const ImVec2 paddedMax = ImVec2(iconMax.x - padding, iconMax.y - padding);
+
+                    drawList->AddLine(paddedMin, paddedMax, red, thickness);
+                    drawList->AddLine(ImVec2(paddedMax.x, paddedMin.y), ImVec2(paddedMin.x, paddedMax.y), red, thickness);
+                }
+            }
+        }
+
+        float RotateAlpha()
+        {
+            const float t = ImGui::GetTime() * 10.0f;
+            return 0.5f + 0.5f * sinf(t); // oscillates between 0 and 1 (sinf -1 to 1)
+        }
+    }
+
+    void RenderOverlay(const std::vector<Buff> &buffReminders)
     {
         static std::vector<int> prevBuffIDs = {};
         static float windowAlpha            = 1.0f;
         static auto lastFrameTime           = std::chrono::steady_clock::now();
 
-        if (buffs.empty())
+        if (buffReminders.empty())
         {
             prevBuffIDs.clear(); // cleanup when no buffs to show anymore
             return;
@@ -67,6 +94,9 @@ namespace Overlay
 
         if (!UIState::IsOptionsPaneOpen)
         {
+            const auto currentFrameTime = std::chrono::steady_clock::now();
+            const auto elapsed          = std::chrono::duration_cast<std::chrono::milliseconds>(currentFrameTime - lastFrameTime).count();
+
             // when not in options pane make the overlay non-interactive
             flags |= ImGuiWindowFlags_NoNav | ImGuiWindowFlags_NoFocusOnAppearing;
 
@@ -76,10 +106,8 @@ namespace Overlay
 
             // gather current buff IDs to check for changes (used for flashing effect)
             std::vector<int> currentBuffIDs;
-            for (const Buff &buff : buffs)
-            {
+            for (const Buff &buff : buffReminders)
                 currentBuffIDs.push_back(buff.id);
-            }
 
             // check if buff list changed for flashing effect
             if (prevBuffIDs != currentBuffIDs)
@@ -88,10 +116,8 @@ namespace Overlay
                 lastFrameTime = std::chrono::steady_clock::now();
             }
 
-            const auto currentFrameTime = std::chrono::steady_clock::now();
-            const auto elapsed          = std::chrono::duration_cast<std::chrono::milliseconds>(currentFrameTime - lastFrameTime).count();
-
-            windowAlpha = elapsed <= SettingsManager::GetFlashingDuration() * 1000 ? RotateAlpha() : 1.0f; // flashing effect
+            // calculate alpha for flashing effect
+            windowAlpha = elapsed <= SettingsManager::GetFlashingDuration() * 1000 ? RotateAlpha() : 1.0f;
         }
 
         // only set position on first use to allow dragging and precise position simultaneously
@@ -104,29 +130,24 @@ namespace Overlay
 
         if (ImGui::Begin(G::ADDON_NAME, nullptr, flags))
         {
+            const ImVec2 imageSize(SettingsManager::GetImageSize(), SettingsManager::GetImageSize());
+
             if (UIState::IsOptionsPaneOpen)
                 HandleOverlayDrag();
 
             // render buff reminders
-            for (const Buff &buff : buffs)
+            for (const Buff &buff : buffReminders)
             {
-                const ImVec2 imageSize(SettingsManager::GetImageSize(), SettingsManager::GetImageSize());
-
                 // compact mode (icons only)
                 if (SettingsManager::IsCompactMode())
                 {
-                    if (const Texture_t *texture = LoadTexture(buff.id))
-                        ImGui::Image(texture->Resource, imageSize);
-                    else
-                        ImGui::Dummy(imageSize);
+                    RenderBuffIcon(buff, imageSize, windowAlpha);
 
                     if (SettingsManager::IsTooltipsEnabled())
                         ImGui::HoverTooltip(buff.name);
 
                     if (SettingsManager::IsHorizontalMode())
-                    {
                         ImGui::SameLine();
-                    }
                 }
                 // normal mode (with names)
                 else if (ImGui::BeginTable(std::format("{} Reminders", G::ADDON_NAME).c_str(), 2, ImGuiTableFlags_SizingFixedFit))
@@ -136,24 +157,8 @@ namespace Overlay
                     ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_WidthStretch);
 
                     ImGui::TableNextColumn();
-                    if (const Texture_t *texture = LoadTexture(buff.id))
-                        ImGui::Image(texture->Resource, imageSize);
-                    else
-                        ImGui::Dummy(imageSize);
 
-                    // TODO refactor + ADD support for compact mode!!!
-                    if (buff.type == BuffType::Reset)
-                    {
-                        ImVec2 iconMin = ImGui::GetItemRectMin();
-                        ImVec2 iconMax = ImGui::GetItemRectMax();
-
-                        ImDrawList *drawList = ImGui::GetWindowDrawList();
-                        float thickness      = 3.0f;
-                        ImU32 red            = IM_COL32(255, 0, 0, windowAlpha * 255.0f);
-
-                        drawList->AddLine(iconMin, iconMax, red, thickness);
-                        drawList->AddLine(ImVec2(iconMax.x, iconMin.y), ImVec2(iconMin.x, iconMax.y), red, thickness);
-                    }
+                    RenderBuffIcon(buff, imageSize, windowAlpha);
 
                     ImGui::TableNextColumn();
 
@@ -163,9 +168,7 @@ namespace Overlay
                     const float yOffset  = (imageSize.y - textHeight) * 0.5f;
 
                     ImGui::SetCursorScreenPos(ImVec2(cellMin.x, cellMin.y + yOffset));
-
                     ImGui::TextOutlined("%s", buff.name.c_str());
-
                     ImGui::SetCursorScreenPos(ImVec2(cellMin.x, cellMax.y));
 
                     ImGui::EndTable();
