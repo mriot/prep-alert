@@ -49,4 +49,5 @@ inline std::unordered_map<int, BuffInfo> BuffDefs = {
     {BuffIds::FLAME_LEGION_SIGIL, {RC_FLAME_LEGION_SIGIL, "FLAME_LEGION_SIGIL", BuffType::Sigil}},
     {BuffIds::SONS_OF_SVANIR_SIGIL, {RC_SONS_OF_SVANIR_SIGIL, "SONS_OF_SVANIR_SIGIL", BuffType::Sigil}},
     {BuffIds::UNDEAD_SIGIL, {RC_UNDEAD_SIGIL, "UNDEAD_SIGIL", BuffType::Sigil}},
+    {BuffIds::ELEMENTAL_SIGIL, {RC_ELEMENTAL_SIGIL, "ELEMENTAL_SIGIL", BuffType::Sigil}},
 };

@@ -12,6 +12,8 @@ from buffs import (
     DESTROYER_SLAYING,
     DREDGE_SIGIL,
     DREDGE_SLAYING,
+    ELEMENTAL_SIGIL,
+    ELEMENTAL_SLAYING,
     FLAME_LEGION_SIGIL,
     FLAME_LEGION_SLAYING,
     GENERIC_ENHANCEMENT,
@@ -184,6 +186,8 @@ PATCHES = [
             sigil_slaying=NIGHTMARE_COURT_SIGIL,
         ),
         [
+            # Up/Fwd edboss
+            SectorPatch(1135, Buffs(utility=GENERIC_ENHANCEMENT, sigil_slaying=GENERIC_SIGIL)),
             # Aether
             SectorPatch(1129, Buffs(utility=SCARLETS_ARMIES_SLAYING, sigil_slaying=GENERIC_SIGIL)),
             SectorPatch(1130, Buffs(utility=SCARLETS_ARMIES_SLAYING, sigil_slaying=GENERIC_SIGIL)),
@@ -206,6 +210,8 @@ PATCHES = [
             SectorPatch(179, Buffs(utility=INQUEST_SLAYING, sigil_slaying=INQUEST_SIGIL)),
             SectorPatch(180, Buffs(utility=INQUEST_SLAYING, sigil_slaying=INQUEST_SIGIL)),
             SectorPatch(181, Buffs(utility=INQUEST_SLAYING, sigil_slaying=INQUEST_SIGIL)),
+            # p3 cart
+            SectorPatch(172, Buffs(utility=GENERIC_ENHANCEMENT, sigil_slaying=GENERIC_SIGIL)),
             # p3 endboss
             SectorPatch(173, Buffs(utility=DESTROYER_SLAYING, sigil_slaying=DESTORYER_SIGIL)),
         ],
@@ -277,8 +283,8 @@ PATCHES = [
         DungeonMap.ARAH_EXPLORABLE,
         Buffs(utility=UNDEAD_SLAYING, sigil=NOT_NIGHT_SIGIL, sigil_slaying=UNDEAD_SIGIL),
         [
-            # TODO P1 Shoggroth
-            # SectorPatch(0, Buffs(utility=ELEMENTAL_SLAYING)),
+            # P1 Shoggroth
+            SectorPatch(787, Buffs(utility=ELEMENTAL_SLAYING, sigil_slaying=ELEMENTAL_SIGIL)),
         ],
     ),
 ]

@@ -36,3 +36,4 @@
 #define RC_FLAME_LEGION_SIGIL         28
 #define RC_SONS_OF_SVANIR_SIGIL       29
 #define RC_UNDEAD_SIGIL               30
+#define RC_ELEMENTAL_SIGIL            31

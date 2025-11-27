@@ -41,6 +41,7 @@ namespace BuffIds
     constexpr int FLAME_LEGION_SIGIL    = 9362;
     constexpr int SONS_OF_SVANIR_SIGIL  = 9356;
     constexpr int UNDEAD_SIGIL          = 9331;
+    constexpr int ELEMENTAL_SIGIL       = 9352;
 
     // FOOD
     constexpr int GENERIC_FOOD = -3;
