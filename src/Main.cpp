@@ -28,12 +28,12 @@ AddonDefinition_t addonDef;
 
 extern "C" __declspec(dllexport) AddonDefinition_t *GetAddonDef()
 {
-    addonDef.Signature   = static_cast<uint32_t>(-1);
+    addonDef.Signature   = static_cast<uint32_t>(0xBADA55);
     addonDef.APIVersion  = NEXUS_API_VERSION;
     addonDef.Name        = G::ADDON_NAME;
     addonDef.Version     = {V_MAJOR, V_MINOR, V_BUILD, V_REVISION};
     addonDef.Author      = "Eredin.4187";
-    addonDef.Description = "Reminds you of missing buffs in Dungeons and Fractal CMs.";
+    addonDef.Description = "Location-aware damage buff reminders for Dungeons & Fractals";
     addonDef.Load        = AddonLoad;
     addonDef.Unload      = AddonUnload;
     addonDef.Flags       = AF_None;
