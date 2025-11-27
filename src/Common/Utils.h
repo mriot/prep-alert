@@ -15,11 +15,13 @@ namespace Log
     void Critical(const std::string &message);
 }
 
-namespace ImGui
+namespace ImGuiUtil
 {
     void HoverTooltip(const std::string &text);
 
     void TextOutlined(const char *fmt, ...);
+
+    void InlineHelp(const char *desc);
 }
 
 #ifdef DEBUG

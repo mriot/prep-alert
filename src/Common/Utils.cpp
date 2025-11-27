@@ -44,7 +44,7 @@ namespace Log
 /// ImGui utilities
 /// ----------------------------------------------------------------------------------------------------
 
-namespace ImGui
+namespace ImGuiUtil
 {
     void HoverTooltip(const std::string &text)
     {
@@ -59,22 +59,29 @@ namespace ImGui
 
     void TextOutlined(const char *fmt, ...)
     {
-        ImVec2 pos = GetCursorPos();
+        ImVec2 pos = ImGui::GetCursorPos();
 
         va_list args;
         va_start(args, fmt);
         pos.x += 1;
         pos.y += 1;
-        SetCursorPos(pos);
+        ImGui::SetCursorPos(pos);
 
         const float alpha = ImGui::GetStyle().Alpha;
-        TextColoredV(ImVec4(0, 0, 0, alpha), fmt, args);
+        ImGui::TextColoredV(ImVec4(0, 0, 0, alpha), fmt, args);
 
         pos.x -= 1;
         pos.y -= 1;
-        SetCursorPos(pos);
-        TextV(fmt, args);
+        ImGui::SetCursorPos(pos);
+        ImGui::TextV(fmt, args);
         va_end(args);
+    }
+
+    void InlineHelp(const char *desc)
+    {
+        ImGui::SameLine();
+        ImGui::TextDisabled("(?)");
+        HoverTooltip(desc);
     }
 }
 

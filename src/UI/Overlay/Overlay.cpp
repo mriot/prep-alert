@@ -144,7 +144,7 @@ namespace Overlay
                     RenderBuffIcon(buff, imageSize, windowAlpha);
 
                     if (SettingsManager::IsTooltipsEnabled())
-                        ImGui::HoverTooltip(buff.name);
+                        ImGuiUtil::HoverTooltip(buff.name);
 
                     if (SettingsManager::IsHorizontalMode())
                         ImGui::SameLine();
@@ -168,7 +168,7 @@ namespace Overlay
                     const float yOffset  = (imageSize.y - textHeight) * 0.5f;
 
                     ImGui::SetCursorScreenPos(ImVec2(cellMin.x, cellMin.y + yOffset));
-                    ImGui::TextOutlined("%s", buff.name.c_str());
+                    ImGuiUtil::TextOutlined("%s", buff.name.c_str());
                     ImGui::SetCursorScreenPos(ImVec2(cellMin.x, cellMax.y));
 
                     ImGui::EndTable();
