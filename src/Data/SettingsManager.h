@@ -50,6 +50,8 @@ namespace SettingsManager
     void SetFlashingDuration(int seconds);
 
     // reminders
+    MapTypeReminder GetReminder(Continent continent);
+
     Reminders GetReminders();
 
     void SetReminders(const Reminders &reminders);
@@ -59,4 +61,4 @@ namespace SettingsManager
 
     void SetDebugWindowEnabled(bool enabled);
 
-} // namespace SettingsManager
+}

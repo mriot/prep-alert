@@ -197,6 +197,19 @@ namespace SettingsManager
     }
 
     // Reminders
+    MapTypeReminder GetReminder(const Continent continent)
+    {
+        switch (continent)
+        {
+        case Continent::Tyria:
+            return settings.reminders.dungeons;
+        case Continent::Mists:
+            return settings.reminders.fractals;
+        default:
+            return MapTypeReminder{};
+        }
+    }
+
     Reminders GetReminders() { return settings.reminders; }
 
     void SetReminders(const Reminders &reminders)
