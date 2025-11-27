@@ -32,6 +32,7 @@ from buffs import (
     SERPENT_SIGIL,
     SONS_OF_SVANIR_SIGIL,
     SONS_OF_SVANIR_SLAYING,
+    UNDEAD_SIGIL,
     UNDEAD_SLAYING,
 )
 from models import Buffs, DungeonMap, FractalMap, MapPatch, NewSector, SectorPatch
@@ -274,7 +275,7 @@ PATCHES = [
     # ----------------------------------- Arah ----------------------------------- #
     MapPatch(
         DungeonMap.ARAH_EXPLORABLE,
-        Buffs(utility=UNDEAD_SLAYING, sigil=NOT_NIGHT_SIGIL, sigil_slaying=UNDEAD_SLAYING),
+        Buffs(utility=UNDEAD_SLAYING, sigil=NOT_NIGHT_SIGIL, sigil_slaying=UNDEAD_SIGIL),
         [
             # TODO P1 Shoggroth
             # SectorPatch(0, Buffs(utility=ELEMENTAL_SLAYING)),
