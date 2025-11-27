@@ -6,45 +6,44 @@
 #include <chrono>
 #include <imgui/imgui.h>
 #include <string>
+#include <format>
+#include <vector>
 
 namespace DebugOverlay
 {
+    std::string GetMapName()
+    {
+        return G::IsOnSupportedMap ? G::CurrentMapData.name : "n/a";
+    }
+
+    std::string GetSectorName()
+    {
+        if (!G::IsOnSupportedMap)
+            return "n/a";
+
+        auto const it = std::ranges::find_if(G::CurrentMapData.sectors, [](const Sector &sector) {
+            return sector.id == G::CurrentSectorID;
+        });
+        return it != G::CurrentMapData.sectors.end() ? it->name : "n/a";
+    }
+
+    std::string GetContinentName()
+    {
+        switch (G::CurrentContinent)
+        {
+        case Continent::Tyria:
+            return "Tyria";
+        case Continent::Mists:
+            return "Mists";
+        default:
+            return "Unknown";
+        }
+    }
+
     void RenderDebugOverlay(const std::vector<Buff> &buffReminders)
     {
-        auto getMapName = []() -> std::string {
-            if (!G::IsOnSupportedMap)
-                return "n/a";
-            try
-            {
-                return G::MapDataMap.at(G::CurrentMapID).name;
-            }
-            catch (const std::exception &)
-            {
-                return "n/a";
-            }
-        };
-
-        auto getSectorName = []() -> std::string {
-            if (!G::IsOnSupportedMap)
-                return "n/a";
-            try
-            {
-                for (const Sector &sector : G::MapDataMap.at(G::CurrentMapID).sectors)
-                {
-                    if (sector.id == G::CurrentSectorID)
-                    {
-                        return sector.name;
-                    }
-                }
-                return "n/a";
-            }
-            catch (const std::exception &e)
-            {
-                return e.what();
-            }
-        };
-
-        if (ImGui::Begin(std::format("{} DEBUG", G::ADDON_NAME).c_str(), nullptr, ImGuiWindowFlags_AlwaysAutoResize))
+        bool isVisible = SettingsManager::IsDebugWindowEnabled();
+        if (ImGui::Begin(std::format("{} DEBUG", G::ADDON_NAME).c_str(), &isVisible, ImGuiWindowFlags_AlwaysAutoResize))
         {
             if (UIState::IsOptionsPaneOpen)
             {
@@ -54,13 +53,14 @@ namespace DebugOverlay
                 ImGui::Separator();
             }
 
-            ImGui::Text("Supported map: %s", G::IsOnSupportedMap ? "Yes" : "No");
-            ImGui::Text("Map ID: %d", G::CurrentMapID);
+            ImGui::Text("Supported Map: %s", G::IsOnSupportedMap ? "Yes" : "No");
+            ImGui::Text("Continent: %s", GetContinentName().c_str());
+            ImGui::Text("Map ID: %d", G::CurrentMapData.id);
             ImGui::SameLine();
-            ImGui::TextDisabled("(%s)", getMapName().c_str());
+            ImGui::TextDisabled("(%s)", GetMapName().c_str());
             ImGui::Text("Sector ID: %d", G::CurrentSectorID);
             ImGui::SameLine();
-            ImGui::TextDisabled("(%s)", getSectorName().c_str());
+            ImGui::TextDisabled("(%s)", GetSectorName().c_str());
             ImGui::Text("Floor Level: %d", G::CurrentMapFloor);
             if (G::CurrentMapFloor == 0)
             {
@@ -71,10 +71,30 @@ namespace DebugOverlay
             ImGui::Text("Buff Reminders: %zu", buffReminders.size());
             for (const Buff &buff : buffReminders)
             {
-                ImGui::BulletText("ID: %d, Name: %s, Type: %d", buff.id, buff.name.c_str(), buff.type);
+                std::string buffTypeStr;
+                switch (buff.type)
+                {
+                case BuffType::Utility:
+                    buffTypeStr = "Utility";
+                    break;
+                case BuffType::Sigil:
+                    buffTypeStr = "Sigil";
+                    break;
+                case BuffType::Food:
+                    buffTypeStr = "Food";
+                    break;
+                case BuffType::Reset:
+                    buffTypeStr = "Reset";
+                    break;
+                default:
+                    buffTypeStr = "Unknown";
+                    break;
+                }
+                ImGui::BulletText("ID: %d, Name: %s, Type: %s", buff.id, buff.name.c_str(), buffTypeStr.c_str());
             }
+            ImGui::End();
         }
+        if (!isVisible)
+            SettingsManager::SetDebugWindowEnabled(isVisible);
     }
 }
-
-
