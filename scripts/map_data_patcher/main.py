@@ -236,6 +236,20 @@ PATCHES = [
             sigil_slaying=SONS_OF_SVANIR_SIGIL,
         ),
         [
+            # Entrance Waypoint (waiting for skip)
+            SectorPatch(
+                653,
+                Buffs(
+                    utility=ICEBROOD_SLAYING,
+                    sigil_slaying=ICEBROOD_SIGIL,
+                ),
+                bounds=[
+                    [55066, 25159],
+                    [55068, 25157],
+                    [55065, 25155],
+                    [55064, 25157],
+                ],
+            ),
             # Honor's Voice
             SectorPatch(665, Buffs(utility=ICEBROOD_SLAYING, sigil_slaying=ICEBROOD_SIGIL)),
             # Kodan's Bane
