@@ -1,5 +1,7 @@
 #pragma once
 
+#include "imgui/imgui.h"
+#include <Common/Types.h>
 #include <string>
 
 namespace Log
@@ -22,6 +24,13 @@ namespace ImGuiUtil
     void TextOutlined(const char *fmt, ...);
 
     void InlineHelp(const char *desc);
+
+    void TextInBox(const char *msg, const ImVec4 &bgColor, const ImVec4 &borderColor);
+}
+
+namespace Utils
+{
+    ImVec2 PivotToVec2(Pivot pivot);
 }
 
 #ifdef DEBUG

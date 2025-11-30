@@ -13,6 +13,26 @@ namespace Overlay
 {
     namespace
     {
+        ImVec2 GetPivotRelativePosition(const ImVec2 &offset, const Pivot &pivot)
+        {
+            const ImGuiIO &io     = ImGui::GetIO();
+            const ImVec2 viewport = io.DisplaySize;
+
+            switch (pivot)
+            {
+            case Pivot::TopLeft:
+                return {offset.x, offset.y};
+            case Pivot::TopRight:
+                return {viewport.x - offset.x, offset.y};
+            case Pivot::BottomLeft:
+                return {offset.x, viewport.y - offset.y};
+            case Pivot::BottomRight:
+                return {viewport.x - offset.x, viewport.y - offset.y};
+            default:
+                return {offset.x, offset.y};
+            }
+        }
+
         void HandleOverlayDrag()
         {
             static ImVec2 prevPos = SettingsManager::GetOverlayPosition();
@@ -60,6 +80,18 @@ namespace Overlay
             }
         }
 
+        void RenderBuffName(const Buff &buff, const ImVec2 &imageSize, const float &textHeight)
+        {
+            // center text vertically in cell
+            const ImVec2 cellMin = ImGui::GetCursorScreenPos();
+            const ImVec2 cellMax = ImVec2(cellMin.x + ImGui::GetColumnWidth(), cellMin.y + imageSize.y);
+            const float yOffset  = (imageSize.y - textHeight) * 0.5f;
+
+            ImGui::SetCursorScreenPos(ImVec2(cellMin.x, cellMin.y + yOffset));
+            ImGuiUtil::TextOutlined("%s", buff.name.c_str());
+            ImGui::SetCursorScreenPos(ImVec2(cellMin.x, cellMax.y));
+        }
+
         float RotateAlpha()
         {
             const float t = ImGui::GetTime() * 10.0f;
@@ -85,24 +117,21 @@ namespace Overlay
             return;
         }
 
-        // default window flags
-        ImGuiWindowFlags flags = ImGuiWindowFlags_NoFocusOnAppearing |
-                                 ImGuiWindowFlags_NoBackground |
-                                 ImGuiWindowFlags_NoCollapse |
-                                 ImGuiWindowFlags_AlwaysAutoResize |
-                                 ImGuiWindowFlags_NoTitleBar;
+        ImGuiWindowFlags winFlags = ImGuiWindowFlags_NoFocusOnAppearing |
+                                    ImGuiWindowFlags_NoBackground |
+                                    ImGuiWindowFlags_NoCollapse |
+                                    ImGuiWindowFlags_AlwaysAutoResize |
+                                    ImGuiWindowFlags_NoNav |
+                                    ImGuiWindowFlags_NoTitleBar;
 
         if (!UIState::IsOptionsPaneOpen)
         {
             const auto currentFrameTime = std::chrono::steady_clock::now();
             const auto elapsed          = std::chrono::duration_cast<std::chrono::milliseconds>(currentFrameTime - lastFrameTime).count();
 
-            // when not in options pane make the overlay non-interactive
-            flags |= ImGuiWindowFlags_NoNav | ImGuiWindowFlags_NoFocusOnAppearing;
-
             // disable all inputs only if tooltips option is disabled (can only be active in compact mode)
             if (!SettingsManager::IsCompactMode() || !SettingsManager::IsTooltipsEnabled())
-                flags |= ImGuiWindowFlags_NoInputs;
+                winFlags |= ImGuiWindowFlags_NoInputs;
 
             // gather current buff IDs to check for changes (used for flashing effect)
             std::vector<int> currentBuffIDs;
@@ -120,26 +149,27 @@ namespace Overlay
             windowAlpha = elapsed <= SettingsManager::GetFlashingDuration() * 1000 ? RotateAlpha() : 1.0f;
         }
 
-        // only set position on first use to allow dragging and precise position simultaneously
-        ImGui::SetNextWindowPos(SettingsManager::GetOverlayPosition(), UIState::IsOptionsPaneOpen && !SettingsManager::IsOverlayPositionDirty() ? ImGuiCond_FirstUseEver : ImGuiCond_Always);
+        const ImVec2 offset       = SettingsManager::GetOverlayPosition();
+        const Pivot windowAnchor  = SettingsManager::GetWindowAnchor();
+        const Pivot overlayOrigin = SettingsManager::GetOverlayOrigin();
 
-        ImGui::PushStyleVar(ImGuiStyleVar_Alpha, UIState::IsOptionsPaneOpen ? 1.0f : windowAlpha); // full alpha in options pane (no flashing effect)
-        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
-        ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(5.0f, 5.0f));
+        ImGui::SetNextWindowPos(GetPivotRelativePosition(offset, windowAnchor), ImGuiCond_Always, Utils::PivotToVec2(overlayOrigin));
+
+        ImGui::PushStyleVar(ImGuiStyleVar_Alpha, UIState::IsOptionsPaneOpen ? 1.0f : windowAlpha);     // always full alpha in options pane (no flashing effect)
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));                                // no padding around the content
+        ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0.0f, 0.0f));                            // no spacing between icons/names
         ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(ImGui::GetStyle().CellPadding.x, 0.0f)); // no vertical padding in table cells
 
-        if (ImGui::Begin(G::ADDON_NAME, nullptr, flags))
+        if (ImGui::Begin(G::ADDON_NAME, nullptr, winFlags))
         {
-            const ImVec2 imageSize(SettingsManager::GetImageSize(), SettingsManager::GetImageSize());
+            const bool iconFirst = SettingsManager::IsIconFirst();
+            const float size     = SettingsManager::GetImageSize();
+            const ImVec2 imageSize(size, size);
 
-            if (UIState::IsOptionsPaneOpen)
-                HandleOverlayDrag();
-
-            // render buff reminders
-            for (const Buff &buff : buffReminders)
+            if (SettingsManager::IsCompactMode())
             {
                 // compact mode (icons only)
-                if (SettingsManager::IsCompactMode())
+                for (const Buff &buff : buffReminders)
                 {
                     RenderBuffIcon(buff, imageSize, windowAlpha);
 
@@ -149,30 +179,33 @@ namespace Overlay
                     if (SettingsManager::IsHorizontalMode())
                         ImGui::SameLine();
                 }
-                // normal mode (with names)
-                else if (ImGui::BeginTable(std::format("{} Reminders", G::ADDON_NAME).c_str(), 2, ImGuiTableFlags_SizingFixedFit))
+            }
+            // normal mode (icons + names)
+            else if (ImGui::BeginTable("##RemindersTable", 2, ImGuiTableFlags_SizingFixedFit))
+            {
+                const float textHeight = ImGui::GetTextLineHeight();
+
+                ImGui::TableSetupColumn("##RemindersTableCol1");
+                ImGui::TableSetupColumn("##RemindersTableCol2");
+
+                for (const Buff &buff : buffReminders)
                 {
-                    const float textHeight = ImGui::GetTextLineHeight();
-                    ImGui::TableSetupColumn("Icon", ImGuiTableColumnFlags_WidthFixed, imageSize.x);
-                    ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_WidthStretch);
-
                     ImGui::TableNextColumn();
 
-                    RenderBuffIcon(buff, imageSize, windowAlpha);
-
-                    ImGui::TableNextColumn();
-
-                    // center text vertically in cell
-                    const ImVec2 cellMin = ImGui::GetCursorScreenPos();
-                    const ImVec2 cellMax = ImVec2(cellMin.x + ImGui::GetColumnWidth(), cellMin.y + imageSize.y);
-                    const float yOffset  = (imageSize.y - textHeight) * 0.5f;
-
-                    ImGui::SetCursorScreenPos(ImVec2(cellMin.x, cellMin.y + yOffset));
-                    ImGuiUtil::TextOutlined("%s", buff.name.c_str());
-                    ImGui::SetCursorScreenPos(ImVec2(cellMin.x, cellMax.y));
-
-                    ImGui::EndTable();
+                    if (iconFirst)
+                    {
+                        RenderBuffIcon(buff, imageSize, windowAlpha);
+                        ImGui::TableNextColumn();
+                        RenderBuffName(buff, imageSize, textHeight);
+                    }
+                    else
+                    {
+                        RenderBuffName(buff, imageSize, textHeight);
+                        ImGui::TableNextColumn();
+                        RenderBuffIcon(buff, imageSize, windowAlpha);
+                    }
                 }
+                ImGui::EndTable();
             }
         }
         ImGui::End();

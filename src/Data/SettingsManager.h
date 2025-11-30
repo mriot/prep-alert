@@ -12,6 +12,8 @@ namespace SettingsManager
 
     void ResetSettings();
 
+    void ResetPosition();
+
     std::filesystem::path GetSettingsPath();
 
     // image size
@@ -34,6 +36,11 @@ namespace SettingsManager
 
     void SetHorizontalMode(bool horizontal);
 
+    // icon first
+    bool IsIconFirst();
+
+    void SetIconFirst(bool iconFirst);
+
     // overlay position
     ImVec2 GetOverlayPosition();
 
@@ -43,6 +50,21 @@ namespace SettingsManager
     bool IsOverlayPositionDirty();
 
     void SetPreciseOverlayPosition(const ImVec2 &position);
+
+    // window anchor
+    Pivot GetWindowAnchor();
+
+    void SetWindowAnchor(const Pivot &pivot);
+
+    // overlay pivot
+    Pivot GetOverlayOrigin();
+
+    void SetOverlayOrigin(const Pivot &pivot);
+
+    // anchor origin sync
+    bool IsAnchorOriginSync();
+
+    void SetAnchorOriginSync(bool sync);
 
     // flashing duration
     int GetFlashingDuration();

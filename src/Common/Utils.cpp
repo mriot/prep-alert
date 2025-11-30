@@ -83,6 +83,55 @@ namespace ImGuiUtil
         ImGui::TextDisabled("(?)");
         HoverTooltip(desc);
     }
+
+    void TextInBox(const char *msg, const ImVec4 &bgColor, const ImVec4 &borderColor)
+    {
+        ImGui::Spacing();
+
+        constexpr float padX = 8.0f;
+        constexpr float padY = 6.0f;
+
+        const ImVec2 pos      = ImGui::GetCursorScreenPos();
+        const ImVec2 textSize = ImGui::CalcTextSize(msg, nullptr, false, -1.0f);
+        const ImVec2 boxSize(textSize.x + padX * 2.0f, textSize.y + padY * 2.0f);
+        const ImVec2 posEnd = ImVec2(pos.x + boxSize.x, pos.y + boxSize.y);
+
+        ImDrawList *draw = ImGui::GetWindowDrawList();
+
+        draw->AddRectFilled(pos, posEnd, ImGui::GetColorU32(bgColor), 5.0f);
+        draw->AddRect(pos, posEnd, ImGui::GetColorU32(borderColor), 5.0f, 0, 2.0f);
+
+        ImGui::SetCursorScreenPos(ImVec2(pos.x + padX, pos.y + padY));
+        ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 1.0f), "%s", msg);
+
+        ImGui::SetCursorScreenPos(posEnd);
+        ImGui::Spacing();
+    }
+}
+
+
+/// ----------------------------------------------------------------------------------------------------
+/// Other utilities
+/// ----------------------------------------------------------------------------------------------------
+
+namespace Utils
+{
+    ImVec2 PivotToVec2(const Pivot pivot)
+    {
+        switch (pivot)
+        {
+        case Pivot::TopLeft:
+            return {0.0f, 0.0f};
+        case Pivot::TopRight:
+            return {1.0f, 0.0f};
+        case Pivot::BottomLeft:
+            return {0.0f, 1.0f};
+        case Pivot::BottomRight:
+            return {1.0f, 1.0f};
+        default:
+            return {0.0f, 0.0f};
+        }
+    }
 }
 
 

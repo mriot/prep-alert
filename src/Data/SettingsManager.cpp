@@ -22,10 +22,14 @@ namespace
     std::mutex settingsMutex;
 
     Settings defaultSettings{
-        .position = {85.0f, 33.0f},
+        .position = {100.0f, 33.0f},
+        .window_anchor = Pivot::TopLeft,
+        .overlay_origin = Pivot::TopLeft,
+        .anchorOriginSync = true,
         .compact = false,
         .tooltips = true,
         .horizontal = false,
+        .iconFirst = true,
         .flashDuration = 10,
         .imageSize = 40,
         .reminders = {
@@ -63,7 +67,7 @@ namespace
         static std::atomic<uint64_t> token{0};
         unsigned long long threadToken = ++token; // invalidate previous tokens
 
-        std::thread([threadToken]() {
+        std::thread([threadToken] {
             std::this_thread::sleep_for(std::chrono::milliseconds(500));
             if (token.load(std::memory_order_acquire) == threadToken)
             {
@@ -117,12 +121,12 @@ void from_json(const json &j, Reminders &r)
 }
 
 // overlay position
-void to_json(json &j, const Position &p)
+void to_json(json &j, const ImVec2 &p)
 {
     j = {{"x", p.x}, {"y", p.y}};
 }
 
-void from_json(const json &j, Position &p)
+void from_json(const json &j, ImVec2 &p)
 {
     p.x = j.value("x", 0.0f);
     p.y = j.value("y", 0.0f);
@@ -133,9 +137,13 @@ void to_json(json &j, const Settings &s)
 {
     j = {
         {"position", s.position},
+        {"window_anchor", s.window_anchor},
+        {"overlay_origin", s.overlay_origin},
+        {"anchor_origin_sync", s.anchorOriginSync},
         {"compact", s.compact},
         {"tooltips", s.tooltips},
         {"horizontal", s.horizontal},
+        {"icon_first", s.iconFirst},
         {"flash_duration", s.flashDuration},
         {"image_size", s.imageSize},
         {"reminders", s.reminders}
@@ -144,13 +152,17 @@ void to_json(json &j, const Settings &s)
 
 void from_json(const json &j, Settings &s)
 {
-    s.position      = j.value("position", json(defaultSettings.position)).get<Position>();
-    s.compact       = j.value("compact", defaultSettings.compact);
-    s.tooltips      = j.value("tooltips", defaultSettings.tooltips);
-    s.horizontal    = j.value("horizontal", defaultSettings.horizontal);
-    s.flashDuration = j.value("flash_duration", defaultSettings.flashDuration);
-    s.imageSize     = j.value("image_size", defaultSettings.imageSize);
-    s.reminders     = j.value("reminders", json(defaultSettings.reminders)).get<Reminders>();
+    s.position         = j.value("position", json(defaultSettings.position)).get<ImVec2>();
+    s.window_anchor    = j.value("window_anchor", json(defaultSettings.window_anchor)).get<Pivot>();
+    s.overlay_origin   = j.value("overlay_origin", json(defaultSettings.overlay_origin)).get<Pivot>();
+    s.anchorOriginSync = j.value("anchor_origin_sync", defaultSettings.anchorOriginSync);
+    s.compact          = j.value("compact", defaultSettings.compact);
+    s.tooltips         = j.value("tooltips", defaultSettings.tooltips);
+    s.horizontal       = j.value("horizontal", defaultSettings.horizontal);
+    s.iconFirst        = j.value("icon_first", defaultSettings.iconFirst);
+    s.flashDuration    = j.value("flash_duration", defaultSettings.flashDuration);
+    s.imageSize        = j.value("image_size", defaultSettings.imageSize);
+    s.reminders        = j.value("reminders", json(defaultSettings.reminders)).get<Reminders>();
 }
 
 
@@ -196,6 +208,15 @@ namespace SettingsManager
         DebouncedSave();
     }
 
+    // Icon first
+    bool IsIconFirst() { return settings.iconFirst; }
+
+    void SetIconFirst(const bool iconFirst)
+    {
+        settings.iconFirst = iconFirst;
+        DebouncedSave();
+    }
+
     // Reminders
     MapTypeReminder GetReminder(const Continent continent)
     {
@@ -228,12 +249,11 @@ namespace SettingsManager
     }
 
     // Overlay position
-    ImVec2 GetOverlayPosition() { return {settings.position.x, settings.position.y}; }
+    ImVec2 GetOverlayPosition() { return settings.position; }
 
     void SetOverlayPosition(const ImVec2 &position)
     {
-        settings.position.x = position.x;
-        settings.position.y = position.y;
+        settings.position = position;
         DebouncedSave();
     }
 
@@ -253,7 +273,34 @@ namespace SettingsManager
         return isDirty;
     }
 
-    // debug window
+    // Window pivot
+    Pivot GetWindowAnchor() { return settings.window_anchor; }
+
+    void SetWindowAnchor(const Pivot &pivot)
+    {
+        settings.window_anchor = pivot;
+        DebouncedSave();
+    }
+
+    // Overlay pivot
+    Pivot GetOverlayOrigin() { return settings.overlay_origin; }
+
+    void SetOverlayOrigin(const Pivot &pivot)
+    {
+        settings.overlay_origin = pivot;
+        DebouncedSave();
+    }
+
+    // Anchor origin sync
+    bool IsAnchorOriginSync() { return settings.anchorOriginSync; }
+
+    void SetAnchorOriginSync(const bool sync)
+    {
+        settings.anchorOriginSync = sync;
+        DebouncedSave();
+    }
+
+    // Debug window
     bool IsDebugWindowEnabled() { return debugWindowEnabled; }
     void SetDebugWindowEnabled(const bool enabled) { debugWindowEnabled = enabled; }
 
@@ -269,13 +316,20 @@ namespace SettingsManager
         return dir / "settings.json";
     }
 
+    void ResetPosition()
+    {
+        SetOverlayPosition(defaultSettings.position);
+        SetWindowAnchor(defaultSettings.window_anchor);
+        SetOverlayOrigin(defaultSettings.overlay_origin);
+        SetAnchorOriginSync(defaultSettings.anchorOriginSync);
+    }
+
     void ResetSettings()
     {
         settings             = defaultSettings;
         overlayPositionDirty = true;
         DebouncedSave();
     }
-
 
     bool LoadSettings()
     {

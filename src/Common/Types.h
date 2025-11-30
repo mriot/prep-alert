@@ -1,5 +1,7 @@
 #pragma once
 
+#include "imgui/imgui.h"
+
 #include <optional>
 #include <string>
 #include <vector>
@@ -9,12 +11,20 @@
 /// GENERAL TYPES
 /// ----------------------------------------------------------------------------------------------------
 
+// TODO remove and use ImVec2 directly?
 struct Vec2
 {
     double x;
     double y;
 };
 
+enum class Pivot : int
+{
+    TopLeft,
+    TopRight,
+    BottomLeft,
+    BottomRight,
+};
 
 /// ----------------------------------------------------------------------------------------------------
 /// MAP / BUFF DATA TYPES
@@ -91,18 +101,16 @@ struct Reminders
     MapTypeReminder fractals;
 };
 
-struct Position
-{
-    float x;
-    float y;
-};
-
 struct Settings
 {
-    Position position;
+    ImVec2 position;
+    Pivot window_anchor;
+    Pivot overlay_origin;
+    bool anchorOriginSync;
     bool compact;
     bool tooltips;
     bool horizontal;
+    bool iconFirst;
     int flashDuration;
     int imageSize;
     Reminders reminders;
