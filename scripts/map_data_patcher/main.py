@@ -84,7 +84,7 @@ PATCHES = [
         sector_patches=[
             SectorPatch(
                 sector_id=1478,
-                buffs=Buffs(utility=SCARLETS_ARMIES_SLAYING),
+                buffs=Buffs(utility=SCARLETS_ARMIES_SLAYING, sigil_slaying=INQUEST_SIGIL),
                 bounds=[
                     [11348, 6063],
                     [11344, 6235],
@@ -143,10 +143,10 @@ PATCHES = [
     # ---------------------------------------------------------------------------- #
     #                                   DUNGEONS                                   #
     # ---------------------------------------------------------------------------- #
-    # ----------------------------- Ascalon Catacombs ---------------------------- #
+    # ----------------------------- Ascalonian Catacombs ---------------------------- #
     MapPatch(
         DungeonMap.AC_STORY,
-        Buffs(utility=GHOST_SLAYING, sigil=NIGHT_SIGIL, sigil_slaying=GENERIC_SIGIL),
+        Buffs(utility=GHOST_SLAYING, sigil=NIGHT_SIGIL, sigil_slaying=GHOST_SIGIL),
         [],
     ),
     MapPatch(
@@ -186,7 +186,7 @@ PATCHES = [
             sigil_slaying=NIGHTMARE_COURT_SIGIL,
         ),
         [
-            # Up/Fwd edboss
+            # Up/Fwd Endboss
             SectorPatch(1135, Buffs(utility=GENERIC_ENHANCEMENT, sigil_slaying=GENERIC_SIGIL)),
             # Aether
             SectorPatch(1129, Buffs(utility=SCARLETS_ARMIES_SLAYING, sigil_slaying=GENERIC_SIGIL)),
