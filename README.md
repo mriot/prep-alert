@@ -1,33 +1,115 @@
 # Prep Alert
 
-A Guild Wars 2 Nexus addon that alerts the player when important buffs such as
+A Guild Wars 2 Nexus addon that reminds you when important buffs such as
 <sub><img src="./docs/utility.png" height="20" /></sub> Enhancements and
-<sub><img src="./docs/sigil.png" height="20" /></sub> Sigils or are missing.
+<sub><img src="./docs/sigil.png" height="20" /></sub> Sigils are missing.
 
-<img src="./docs/preview.png?" alt="Preview of Prep Alert in action" />
+
+<img src="./docs/demo.png" alt="Buff reminders demo" height="350" />
+
 
 ## Features
 
-In **Dungeons** and **Fractal CMs** these reminders show up dynamically based on the player's current position.  
+In **Dungeons** and **Fractal CMs** these reminders show up dynamically based on your current position.  
 They will only show up when the respective buff is missing.
 
-If no special buff is defined a so-called "default" buff reminder shows up until the player enters combat.
+You can also pick which buffs to show, e.g. if you don't care about Slaying Sigils you can disable those reminders.
+
+If no special buffs are available for the current encounter, an alert reminds you to use your build's default buffs.
 
 <img src="./docs/default_buff.png?" alt="Default buff reminder" align="" />
 
 ### A Note on Buff Choices
 
-Some of the buffs shown may be a bit opinionated and focus on general usefulness rather than going for the absolute tryhard setup.  
-The choices are based on the [Instanced Species List](https://docs.google.com/spreadsheets/d/135Iac7sWfB55kn3kFXWULneu4VfqmK8JqCHCrx3_ZMo/). If you think some of the suggested buffs could be better, feel free to contact me and we can talk about it.
+The buff choices are based on the [Instanced Species List](https://docs.google.com/spreadsheets/d/135Iac7sWfB55kn3kFXWULneu4VfqmK8JqCHCrx3_ZMo/) and focus on general usefulness rather than going for the absolute tryhard setup.  
+Let me know if you think something should be changed.
+
+> [!Important]
+> WORK IN PROGRESS
+
+<details>
+    <summary>Dungeon buffs</summary>
+
+| Map                  | Mode       | Sector                  | Enhancement     | Slaying Sigil | Night Sigil |
+| -------------------- | ---------- | ----------------------- | --------------- | ------------- | ----------- |
+| Ascalonian Catacombs |            |                         |                 |               |             |
+|                      | Story      | All                     | Ghost           | ✅             | ✅           |
+|                      | Explorable | Kholer                  | Ghost           | ✅             | ✅           |
+| Caudecus's Manor     |            |                         |                 |               |             |
+|                      | Story      | All                     | Outlaw          | ✅             |             |
+|                      | Explorable | All                     | Outlaw          | ✅             |             |
+| Twilight Arbor       |            |                         |                 |               |             |
+|                      | Story      | All                     | Nightmare Court | ✅             | ✅           |
+|                      | Explorable | All                     | Nightmare Court | ✅             | ✅           |
+|                      | Explorable | Up/Fwd Endboss          | Default         |               | ✅           |
+|                      | Explorable | Aether                  | Scarlets Armies |               | ✅           |
+| Sorrow's Embrace     |            |                         |                 |               |             |
+|                      | Story      | All                     | Dredge          | ✅             | ✅           |
+|                      | Explorable | P1                      | Inquest         | ✅             | ✅           |
+|                      | Explorable | P3 cart                 | Default         |               | ✅           |
+|                      | Explorable | P3 endboss              | Destroyer       | ✅             | ✅           |
+| Citadel of Flame     |            |                         |                 |               |             |
+|                      | Story      | All                     | Flame Legion    | ✅             | ✅           |
+|                      | Explorable | All                     | Flame Legion    | ✅             | ✅           |
+| Honor of the Waves   |            |                         |                 |               |             |
+|                      | Story      | All                     | Sons of Svanir  | ✅             |             |
+|                      | Explorable | Entrance Waypoint       | Icebrood        | ✅             |             |
+|                      | Explorable | Honor's Voice           | Icebrood        | ✅             |             |
+|                      | Explorable | Kodan's Bane            | Icebrood        | ✅             |             |
+|                      | Explorable | Aldus Stormbringer (P1) | Sons of Svanir  | ✅             |             |
+| Crucible of Eternity |            |                         |                 |               |             |
+|                      | Story      | All                     | Inquest         | ✅             |             |
+|                      | Explorable | Kudu                    | Default         |               |             |
+| Arah                 |            |                         |                 |               |             |
+|                      | Explorable | All                     | Undead          | ✅             |             |
+|                      | Explorable | Shoggroth (P1)          | Elemental       | ✅             |             |
+
+</details>
+<details>
+    <summary>Fractal CM buffs</summary>
+
+| Map                   | Sector      | Enhancement     | Slaying Sigil | Night Sigil          |
+| --------------------- | ----------- | --------------- | ------------- | -------------------- |
+| Lonely Tower          |             |                 |               |                      |
+|                       | Lower floor | Default         |               |                      |
+|                       | Upper floor | Demon           | ✅             |                      |
+| Silent Surf           |             |                 |               |                      |
+|                       | All         | Default         |               |                      |
+| Sunqua Peak           |             |                 |               |                      |
+|                       | All         | Default         |               | (No effect on condi) |
+| Shattered Observatory |             |                 |               |                      |
+|                       | All         | Default         |               | (Does not work)      |
+|                       | Arkk        | Scarlets Armies | ✅ (Inquest)   |                      |
+| Nightmare             |             |                 |               |                      |
+|                       | All         | Scarlets Armies | ✅ (Serpent)   |                      |
+|                       | MAMA        | Scarlets Armies |               |                      |
+| Kinfall               |             |                 |               |                      |
+|                       | All         | Icebrood        | ✅             |                      |
+
+</details>
 
 ## Options
 
-<img src="./docs/options.png?" alt="Options menu of Prep Alert" />
+Hovering the `(?)` in-game will show additional information.
+
+<img src="./docs/options.png?" alt="Prep Alert Options" />
 
 ## Technical Stuff
 
-The addon itself is written in C++ 20 for the [Nexus platform](https://raidcore.gg/Nexus).  
+The addon is written in C++ 20 for the [Nexus addon platform](https://raidcore.gg/Nexus).  
 The scripts for map data fetching and processing are written in Python 3.11+.
+
+### Memory Reading ⚠️
+
+A small portion of the addon relies on memory reading to
+
+- retrieve currently active buffs on the player
+- get the current map floor the player is on
+
+Should be safe but as always, use at your own risk.
+
+> [!NOTE]
+> In order to keep the addon open source, game client internals were moved to a separate closed-source dependency.  
 
 ### Map Data
 
@@ -40,7 +122,7 @@ The official API endpoint contains several inconsistencies that make it difficul
 
 The retrieved map data is stored in `data/maps_raw.json`.
 
-The data is then processed with `scripts/map_data_patcher/main.py` to generate `src/maps.json` which is then finally packed into the addon DLL.
+The data is then processed with `scripts/map_data_patcher/main.py` to generate `src/maps.json` which is then packed into the addon DLL.
 
 #### Sector Data
 
@@ -49,7 +131,7 @@ Fractal maps contain only a single large sector spanning the entire map, so cust
 By enabling DevTools local overrides for the main `index.php`, the modifications below were applied to the wiki page directly.
 
 <details>
-<summary>The modified Widget</summary>
+<summary>Code</summary>
 
 `{{#Widget:Zone map v3 | continent = 2 | map = 1205 | size = huge-map}}`
 
@@ -101,15 +183,6 @@ function onMapMouseMove(e) {
 ```
 
 </details>
-
-### Memory Reading
-
-A small portion of the addon relies on memory reading to
-
-- retrieve currently active buffs on the player
-- get the current map floor the player is on
-
-Should be safe but as always, use at your own risk.
 
 ### Dependencies
 

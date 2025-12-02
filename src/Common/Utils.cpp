@@ -1,4 +1,3 @@
-#include "Data/SettingsManager.h"
 #include "imgui/imgui.h"
 #include <filesystem>
 #include <fstream>
