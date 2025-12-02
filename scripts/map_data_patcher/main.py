@@ -199,7 +199,58 @@ PATCHES = [
     MapPatch(
         DungeonMap.SE_STORY,
         Buffs(utility=DREDGE_SLAYING, sigil=NIGHT_SIGIL, sigil_slaying=DREDGE_SIGIL),
-        [],
+        [
+            NewSector(
+                199,
+                "Inspector Snik",
+                Buffs(utility=INQUEST_SLAYING, sigil_slaying=INQUEST_SIGIL),
+                [
+                    [52613, 34438],
+                    [52611, 34544],
+                    [52486, 34539],
+                    [52438, 34430],
+                ],
+                floors=[-7],
+            ),
+            NewSector(
+                200,
+                "Advanced Assault Golem",
+                Buffs(utility=INQUEST_SLAYING, sigil_slaying=INQUEST_SIGIL),
+                [
+                    [52609, 34433],
+                    [52608, 34565],
+                    [52869, 34565],
+                    [52868, 34439],
+                ],
+                floors=[-7],
+            ),
+            NewSector(
+                201,
+                "Inquest Base",
+                Buffs(utility=INQUEST_SLAYING, sigil_slaying=INQUEST_SIGIL),
+                [
+                    [53213, 34426],
+                    [53216, 34651],
+                    [53123, 34691],
+                    [53271, 35086],
+                    [53618, 34731],
+                    [53605, 34405],
+                ],
+                floors=[-7],
+            ),
+            NewSector(
+                202,
+                "Forgeman",
+                Buffs(utility=GENERIC_ENHANCEMENT, sigil_slaying=GENERIC_SIGIL),
+                [
+                    [52958, 34911],
+                    [53298, 34870],
+                    [53299, 35310],
+                    [52921, 35310],
+                ],
+                floors=[-7],
+            ),
+        ],
     ),
     MapPatch(
         DungeonMap.SE_EXPLORABLE,
