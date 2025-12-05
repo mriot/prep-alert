@@ -142,10 +142,7 @@ PATCHES = [
     MapPatch(
         DungeonMap.AC_EXPLORABLE,
         Buffs(utility=GENERIC_ENHANCEMENT, sigil=NIGHT_SIGIL, sigil_slaying=GENERIC_SIGIL),
-        [
-            # Kholer
-            SectorPatch(9, Buffs(utility=GHOST_SLAYING, sigil_slaying=GHOST_SIGIL)),
-        ],
+        [],
     ),
     # ----------------------------- Caudecus's Manor ----------------------------- #
     MapPatch(
@@ -182,7 +179,40 @@ PATCHES = [
             SectorPatch(1129, Buffs(utility=SCARLETS_ARMIES_SLAYING, sigil_slaying=GENERIC_SIGIL)),
             SectorPatch(1130, Buffs(utility=SCARLETS_ARMIES_SLAYING, sigil_slaying=GENERIC_SIGIL)),
             SectorPatch(1131, Buffs(utility=SCARLETS_ARMIES_SLAYING, sigil_slaying=GENERIC_SIGIL)),
-            SectorPatch(1139, Buffs(utility=SCARLETS_ARMIES_SLAYING, sigil_slaying=GENERIC_SIGIL)),
+            # Aether - excluding Clockheart
+            SectorPatch(
+                1139,
+                Buffs(utility=SCARLETS_ARMIES_SLAYING, sigil_slaying=GENERIC_SIGIL),
+                bounds=[
+                    [41471, 32382],
+                    [41471, 32577],
+                    [41499, 32591],
+                    [41544, 32590],
+                    [41552, 32759],
+                    [41592, 32776],
+                    [41598, 32803],
+                    [41828, 32720],
+                    [41826, 32613],
+                    [41757, 32616],
+                    [41758, 32585],
+                    [41680, 32587],
+                    [41680, 32383],
+                ],
+            ),
+            NewSector(
+                sector_id=1100,
+                name="Clockheart",
+                buffs=Buffs(utility=GENERIC_ENHANCEMENT, sigil_slaying=GENERIC_SIGIL),
+                floors=[-9],
+                bounds=[
+                    [41682, 32384],
+                    [41682, 32586],
+                    [41759, 32585],
+                    [41758, 32617],
+                    [41863, 32615],
+                    [41864, 32383],
+                ],
+            ),
         ],
     ),
     # ----------------------------- Sorrow's Embrace ----------------------------- #
@@ -272,29 +302,20 @@ PATCHES = [
     MapPatch(
         DungeonMap.HotW_STORY,
         Buffs(
-            utility=SONS_OF_SVANIR_SLAYING,
+            utility=ICEBROOD_SLAYING,
             sigil=NOT_NIGHT_SIGIL,
-            sigil_slaying=SONS_OF_SVANIR_SIGIL,
+            sigil_slaying=ICEBROOD_SIGIL,
         ),
-        [
-            # Entrance Waypoint (waiting for skip)
+        sector_patches=[
             SectorPatch(
-                653,
-                Buffs(
-                    utility=ICEBROOD_SLAYING,
-                    sigil_slaying=ICEBROOD_SIGIL,
-                ),
-                bounds=[
-                    [55066, 25159],
-                    [55068, 25157],
-                    [55065, 25155],
-                    [55064, 25157],
-                ],
+                661, Buffs(utility=SONS_OF_SVANIR_SLAYING, sigil_slaying=SONS_OF_SVANIR_SIGIL)
             ),
-            # Honor's Voice
-            SectorPatch(665, Buffs(utility=ICEBROOD_SLAYING, sigil_slaying=ICEBROOD_SIGIL)),
-            # Kodan's Bane
-            SectorPatch(666, Buffs(utility=ICEBROOD_SLAYING, sigil_slaying=ICEBROOD_SIGIL)),
+            SectorPatch(
+                669, Buffs(utility=SONS_OF_SVANIR_SLAYING, sigil_slaying=SONS_OF_SVANIR_SIGIL)
+            ),
+            SectorPatch(
+                667, Buffs(utility=SONS_OF_SVANIR_SLAYING, sigil_slaying=SONS_OF_SVANIR_SIGIL)
+            ),
         ],
     ),
     MapPatch(
@@ -339,7 +360,30 @@ PATCHES = [
         Buffs(utility=UNDEAD_SLAYING, sigil=NOT_NIGHT_SIGIL, sigil_slaying=UNDEAD_SIGIL),
         [
             # P1 Shoggroth
-            SectorPatch(787, Buffs(utility=ELEMENTAL_SLAYING, sigil_slaying=ELEMENTAL_SIGIL)),
+            SectorPatch(
+                787,
+                Buffs(utility=ELEMENTAL_SLAYING, sigil_slaying=ELEMENTAL_SIGIL),
+                bounds=[
+                    [45418, 43636],
+                    [45575, 43664],
+                    [45694, 43666],
+                    [45681, 43572],
+                    [45589, 43497],
+                ],
+            ),
+            # P1 Jotun
+            NewSector(
+                900,
+                "Jotun",
+                Buffs(utility=GHOST_SLAYING, sigil_slaying=GHOST_SIGIL),
+                floors=[9],
+                bounds=[
+                    [45809, 44685],
+                    [45807, 44919],
+                    [45350, 44921],
+                    [45405, 44675],
+                ],
+            ),
         ],
     ),
 ]
