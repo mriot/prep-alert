@@ -155,7 +155,7 @@ void OnRender()
     if (SettingsManager::IsDebugWindowEnabled())
         DebugOverlay::RenderDebugOverlay(buffReminders);
 
-    if (!G::NexusLink->IsGameplay)
+    if (!G::NexusLink->IsGameplay || G::MumbleLink->Context.IsMapOpen)
         return;
 
     const MapTypeReminder reminderCfg = SettingsManager::GetReminder(G::CurrentContinent);
