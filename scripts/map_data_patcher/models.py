@@ -33,16 +33,21 @@ class SectorPatch:
     sector_id: int
     buffs: Buffs | None = None
     name: str | None = None
-    bounds: List[List[float]] | None = None
 
 
 @dataclass
 class NewSector:
+    """
+    A new sector to be added to a map.
+    Must use a negative sector ID.
+    Floors default to the map's default floor if not specified.
+    """
+
     sector_id: int
     name: str
     buffs: Buffs
     bounds: List[List[float]]
-    floors: List[int]
+    floors: List[int] | None = None
 
 
 @dataclass

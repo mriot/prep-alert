@@ -1,5 +1,6 @@
 import argparse
 import json
+import sys
 from copy import deepcopy
 from dataclasses import asdict, is_dataclass
 from enum import Enum
@@ -13,6 +14,7 @@ from patches import PATCHES
 #                                  MAP LOADER                                  #
 # ---------------------------------------------------------------------------- #
 def load_raw_maps(file_path: Path, map_ids: list[int]) -> dict:
+    """Load and filter map data from raw JSON file."""
     with open(file_path, encoding="utf-8") as f:
         data = json.load(f)
 
@@ -24,7 +26,6 @@ def load_raw_maps(file_path: Path, map_ids: list[int]) -> dict:
                 map_data["continent_id"] = int(continent_id)
                 # map_data["continent_name"] = continent["name"]
                 # map_data["continent_dims"] = continent["continent_dims"]
-                del map_data["continent_rect"]
 
                 maps[int(map_id)] = map_data
 
@@ -35,6 +36,7 @@ def load_raw_maps(file_path: Path, map_ids: list[int]) -> dict:
 #                             STORY DUPLICATE MAPS                             #
 # ---------------------------------------------------------------------------- #
 def derive_dungeon_story_maps(maps: dict) -> dict:
+    """Create story mode map variants by cloning explorable dungeon maps."""
     story_map_links = {
         DungeonMap.AC_STORY: DungeonMap.AC_EXPLORABLE,
         DungeonMap.CM_STORY: DungeonMap.CM_EXPLORABLE,
@@ -61,11 +63,15 @@ def derive_dungeon_story_maps(maps: dict) -> dict:
 #                                    PATCHER                                   #
 # ---------------------------------------------------------------------------- #
 def apply_patches(patches, dungeon_maps: dict) -> dict:
+    """Apply sector patches and buffs to map data."""
     for patch in patches:
         map_data = dungeon_maps[patch.map_id]
 
         map_data.setdefault("default_buffs", patch.default)
-        # TODO patch in map floors
+
+        # usually only set when new floors are added
+        if patch.floors is not None:
+            map_data["floors"] = patch.floors
 
         for sector_patch in patch.sector_patches:
             sector = map_data["sectors"].get(str(sector_patch.sector_id))
@@ -74,29 +80,31 @@ def apply_patches(patches, dungeon_maps: dict) -> dict:
             if isinstance(sector_patch, NewSector):
                 if sector:
                     print(f"Sector {sector_patch.sector_id} already exists on map {patch.map_id}")
-                    continue
+                    sys.exit(1)
+                if sector_patch.sector_id >= 0:
+                    print(
+                        f"New sector {sector_patch.name} on map {patch.map_id} must use a negative ID"
+                    )
+                    sys.exit(1)
 
                 map_data["sectors"][str(sector_patch.sector_id)] = {
                     "id": sector_patch.sector_id,
                     "name": sector_patch.name,
                     "bounds": sector_patch.bounds,
                     "buffs": sector_patch.buffs,
-                    "floors": sector_patch.floors,
+                    "floors": sector_patch.floors or [map_data.get("default_floor")],
                 }
 
             # EXISTING SECTORS
             if isinstance(sector_patch, SectorPatch):
                 if not sector:
                     print(f"Sector {sector_patch.sector_id} not found on map {patch.map_id}")
-                    continue
+                    sys.exit(1)
 
                 sector["buffs"] = sector_patch.buffs
 
                 if sector_patch.name:
                     sector["name"] = sector_patch.name
-
-                if sector_patch.bounds:
-                    sector["bounds"] = sector_patch.bounds
 
     return dungeon_maps
 
@@ -105,6 +113,7 @@ def apply_patches(patches, dungeon_maps: dict) -> dict:
 #                            STRIP UNPATCHED SECTORS                           #
 # ---------------------------------------------------------------------------- #
 def strip_unpatched_sectors(maps: dict) -> dict:
+    """Remove sectors that don't have buff data."""
     for map_id, map_data in maps.items():
         for sector_id, sector_data in list(map_data["sectors"].items()):
             if "buffs" not in sector_data:
@@ -116,13 +125,14 @@ def strip_unpatched_sectors(maps: dict) -> dict:
 #                                SECTORS TO LIST                               #
 # ---------------------------------------------------------------------------- #
 def convert_sectors_to_list(maps: dict) -> dict:
+    """Convert sector dictionaries to sorted lists."""
     result = {}
 
     for map_id, map_data in maps.items():
         new_map = deepcopy(map_data)
 
         if isinstance(new_map.get("sectors"), dict):
-            new_map["sectors"] = list(new_map["sectors"].values())
+            new_map["sectors"] = sorted(list(new_map["sectors"].values()), key=lambda s: s["id"])
 
         result[map_id] = new_map
 

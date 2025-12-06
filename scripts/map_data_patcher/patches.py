@@ -39,23 +39,17 @@ PATCHES = [
         default=Buffs(
             utility=GENERIC_ENHANCEMENT, sigil=NOT_NIGHT_SIGIL, sigil_slaying=GENERIC_SIGIL
         ),
-        floors=[63, 64],  # TODO not currently patched into map data (not really needed either)
+        floors=[63, 64],
         sector_patches=[
             SectorPatch(
                 name="Lower floor",  # default floor 63
                 sector_id=2016,
-                bounds=[
-                    [12048, 4650],
-                    [12077, 5315],
-                    [13181, 5321],
-                    [13178, 4650],
-                ],
             ),
             NewSector(
-                sector_id=2017,
+                sector_id=-1,
                 name="Upper floor",
                 buffs=Buffs(utility=DEMON_SLAYING, sigil_slaying=DEMON_SIGIL),
-                floors=[64],  # this is a custom floor and handled in the addon
+                floors=[64],  # custom floor
                 bounds=[
                     [12048, 4650],
                     [12077, 5315],
@@ -72,8 +66,9 @@ PATCHES = [
             utility=GENERIC_ENHANCEMENT, sigil=NOT_NIGHT_SIGIL, sigil_slaying=GENERIC_SIGIL
         ),
         sector_patches=[
-            SectorPatch(
-                sector_id=1478,
+            NewSector(
+                sector_id=-1,
+                name="Arkk",
                 buffs=Buffs(utility=SCARLETS_ARMIES_SLAYING, sigil_slaying=INQUEST_SIGIL),
                 bounds=[
                     [11348, 6063],
@@ -107,8 +102,8 @@ PATCHES = [
             utility=SCARLETS_ARMIES_SLAYING, sigil=NOT_NIGHT_SIGIL, sigil_slaying=SERPENT_SIGIL
         ),
         sector_patches=[
-            SectorPatch(
-                sector_id=1412,
+            NewSector(
+                sector_id=-1,
                 name="Spawn + MAMA",
                 buffs=Buffs(sigil_slaying=GENERIC_SIGIL),
                 bounds=[
@@ -179,31 +174,12 @@ PATCHES = [
             SectorPatch(1129, Buffs(utility=SCARLETS_ARMIES_SLAYING, sigil_slaying=GENERIC_SIGIL)),
             SectorPatch(1130, Buffs(utility=SCARLETS_ARMIES_SLAYING, sigil_slaying=GENERIC_SIGIL)),
             SectorPatch(1131, Buffs(utility=SCARLETS_ARMIES_SLAYING, sigil_slaying=GENERIC_SIGIL)),
-            # Aether - excluding Clockheart
-            SectorPatch(
-                1139,
-                Buffs(utility=SCARLETS_ARMIES_SLAYING, sigil_slaying=GENERIC_SIGIL),
-                bounds=[
-                    [41471, 32382],
-                    [41471, 32577],
-                    [41499, 32591],
-                    [41544, 32590],
-                    [41552, 32759],
-                    [41592, 32776],
-                    [41598, 32803],
-                    [41828, 32720],
-                    [41826, 32613],
-                    [41757, 32616],
-                    [41758, 32585],
-                    [41680, 32587],
-                    [41680, 32383],
-                ],
-            ),
+            SectorPatch(1139, Buffs(utility=SCARLETS_ARMIES_SLAYING, sigil_slaying=GENERIC_SIGIL)),
+            # Clockheart
             NewSector(
-                sector_id=1100,
+                sector_id=-1,
                 name="Clockheart",
                 buffs=Buffs(utility=GENERIC_ENHANCEMENT, sigil_slaying=GENERIC_SIGIL),
-                floors=[-9],
                 bounds=[
                     [41682, 32384],
                     [41682, 32586],
@@ -221,7 +197,7 @@ PATCHES = [
         Buffs(utility=DREDGE_SLAYING, sigil=NIGHT_SIGIL, sigil_slaying=DREDGE_SIGIL),
         [
             NewSector(
-                199,
+                -1,
                 "Inspector Snik",
                 Buffs(utility=INQUEST_SLAYING, sigil_slaying=INQUEST_SIGIL),
                 [
@@ -230,10 +206,9 @@ PATCHES = [
                     [52486, 34539],
                     [52438, 34430],
                 ],
-                floors=[-7],
             ),
             NewSector(
-                200,
+                -2,
                 "Advanced Assault Golem",
                 Buffs(utility=INQUEST_SLAYING, sigil_slaying=INQUEST_SIGIL),
                 [
@@ -242,10 +217,9 @@ PATCHES = [
                     [52869, 34565],
                     [52868, 34439],
                 ],
-                floors=[-7],
             ),
             NewSector(
-                201,
+                -3,
                 "Inquest Base",
                 Buffs(utility=INQUEST_SLAYING, sigil_slaying=INQUEST_SIGIL),
                 [
@@ -256,10 +230,9 @@ PATCHES = [
                     [53618, 34731],
                     [53605, 34405],
                 ],
-                floors=[-7],
             ),
             NewSector(
-                202,
+                -4,
                 "Forgeman",
                 Buffs(utility=GENERIC_ENHANCEMENT, sigil_slaying=GENERIC_SIGIL),
                 [
@@ -268,7 +241,6 @@ PATCHES = [
                     [53299, 35310],
                     [52921, 35310],
                 ],
-                floors=[-7],
             ),
         ],
     ),
@@ -332,10 +304,10 @@ PATCHES = [
     MapPatch(
         DungeonMap.CoE_STORY,
         Buffs(utility=INQUEST_SLAYING, sigil=NOT_NIGHT_SIGIL, sigil_slaying=INQUEST_SIGIL),
-        floors=[-11, -12],  # TODO not currently patched into map data (not really needed either)
+        floors=[-11, -12],
         sector_patches=[
             NewSector(
-                sector_id=2001,
+                sector_id=-1,
                 name="Kudu",
                 floors=[-12],  # custom floor
                 buffs=Buffs(utility=GENERIC_ENHANCEMENT, sigil_slaying=GENERIC_SIGIL),
@@ -348,11 +320,16 @@ PATCHES = [
             )
         ],
     ),
-    # TODO
     MapPatch(
         DungeonMap.CoE_EXPLORABLE,
         Buffs(utility=GENERIC_ENHANCEMENT, sigil=NOT_NIGHT_SIGIL, sigil_slaying=GENERIC_SIGIL),
-        [],
+        [
+            # Alpha 1
+            SectorPatch(
+                sector_id=408,
+                buffs=Buffs(utility=UNDEAD_SLAYING, sigil_slaying=UNDEAD_SIGIL),
+            ),
+        ],
     ),
     # ----------------------------------- Arah ----------------------------------- #
     MapPatch(
@@ -360,9 +337,10 @@ PATCHES = [
         Buffs(utility=UNDEAD_SLAYING, sigil=NOT_NIGHT_SIGIL, sigil_slaying=UNDEAD_SIGIL),
         [
             # P1 Shoggroth
-            SectorPatch(
-                787,
-                Buffs(utility=ELEMENTAL_SLAYING, sigil_slaying=ELEMENTAL_SIGIL),
+            NewSector(
+                sector_id=-1,
+                name="Shoggroth",
+                buffs=Buffs(utility=ELEMENTAL_SLAYING, sigil_slaying=ELEMENTAL_SIGIL),
                 bounds=[
                     [45418, 43636],
                     [45575, 43664],
@@ -373,10 +351,9 @@ PATCHES = [
             ),
             # P1 Jotun
             NewSector(
-                900,
-                "Jotun",
-                Buffs(utility=GHOST_SLAYING, sigil_slaying=GHOST_SIGIL),
-                floors=[9],
+                sector_id=-2,
+                name="Jotun",
+                buffs=Buffs(utility=GHOST_SLAYING, sigil_slaying=GHOST_SIGIL),
                 bounds=[
                     [45809, 44685],
                     [45807, 44919],
