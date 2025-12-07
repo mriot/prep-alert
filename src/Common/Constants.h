@@ -25,7 +25,7 @@ namespace BuffIds
     constexpr int NIGHTMARE_COURT_SLAYING = 9941;
     constexpr int DREDGE_SLAYING          = 9949;
     constexpr int SCARLETS_ARMIES_SLAYING = 23228;
-    constexpr int GHOST_SLAYING           = 8493;
+    constexpr int GHOST_SLAYING           = 10115;
 
     // SIGILS
     constexpr int GENERIC_SIGIL         = -2;

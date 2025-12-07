@@ -17,7 +17,7 @@ OUTLAW_SLAYING = Buff(9933, "Potion of Outlaw Slaying", BuffType.UTILITY)
 NIGHTMARE_COURT_SLAYING = Buff(9941, "Potion of Nightmare Court Slaying", BuffType.UTILITY)
 DREDGE_SLAYING = Buff(9949, "Potion of Dredge Slaying", BuffType.UTILITY)
 SCARLETS_ARMIES_SLAYING = Buff(23228, "Potion of Slaying Scarlet's Armies", BuffType.UTILITY)
-GHOST_SLAYING = Buff(8493, "Potion of Ghost Slaying", BuffType.UTILITY)
+GHOST_SLAYING = Buff(10115, "Potion of Ghost Slaying", BuffType.UTILITY)
 
 
 # SIGILS
