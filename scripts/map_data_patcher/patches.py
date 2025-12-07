@@ -279,12 +279,15 @@ PATCHES = [
             sigil_slaying=ICEBROOD_SIGIL,
         ),
         sector_patches=[
+            # Kulag the Fallen
             SectorPatch(
                 661, Buffs(utility=SONS_OF_SVANIR_SLAYING, sigil_slaying=SONS_OF_SVANIR_SIGIL)
             ),
+            # Lani Winterfist
             SectorPatch(
                 669, Buffs(utility=SONS_OF_SVANIR_SLAYING, sigil_slaying=SONS_OF_SVANIR_SIGIL)
             ),
+            # Lani Winterfist (can move a lot)
             SectorPatch(
                 667, Buffs(utility=SONS_OF_SVANIR_SLAYING, sigil_slaying=SONS_OF_SVANIR_SIGIL)
             ),
@@ -297,7 +300,24 @@ PATCHES = [
             # Aldus Stormbringer (p1)
             SectorPatch(
                 658, Buffs(utility=SONS_OF_SVANIR_SLAYING, sigil_slaying=SONS_OF_SVANIR_SIGIL)
-            )
+            ),
+            # Andal The Thug (p2)
+            NewSector(
+                sector_id=-1,
+                name="Andal the Thug",
+                buffs=Buffs(utility=SONS_OF_SVANIR_SLAYING, sigil_slaying=SONS_OF_SVANIR_SIGIL),
+                floors=[6, 7],  # standing on the closed hole in the ground puts you on floor 6
+                bounds=[
+                    [55235, 25073],
+                    [55174, 25073],
+                    [55175, 24949],
+                    [55236, 24950],
+                ],
+            ),
+            # Fimbul (p3)
+            SectorPatch(
+                669, Buffs(utility=SONS_OF_SVANIR_SLAYING, sigil_slaying=SONS_OF_SVANIR_SIGIL)
+            ),
         ],
     ),
     # --------------------------- Crucible of Eternity --------------------------- #
