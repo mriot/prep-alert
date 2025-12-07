@@ -52,6 +52,10 @@ namespace
             if (playerY < 140.0f)
                 return -12; // the default floor is -11
             break;
+        case MapIds::CRUCIBLE_OF_ETERNITY:
+            if (playerY > 200.0f)
+                return -10; // the default floor is -11
+            break;
         default:
             break;
         }

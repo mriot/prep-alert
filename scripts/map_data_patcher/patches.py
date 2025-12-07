@@ -341,13 +341,108 @@ PATCHES = [
         ],
     ),
     MapPatch(
-        DungeonMap.CoE_EXPLORABLE,
-        Buffs(utility=GENERIC_ENHANCEMENT, sigil=NOT_NIGHT_SIGIL, sigil_slaying=GENERIC_SIGIL),
-        [
-            # Alpha 1
+        map_id=DungeonMap.CoE_EXPLORABLE,
+        default=Buffs(utility=UNDEAD_SLAYING, sigil=NOT_NIGHT_SIGIL, sigil_slaying=UNDEAD_SIGIL),
+        floors=[-10, -11],
+        sector_patches=[
+            # The Aquarium
             SectorPatch(
-                sector_id=408,
+                sector_id=407,
+                buffs=Buffs(utility=INQUEST_SLAYING, sigil_slaying=INQUEST_SIGIL),
+            ),
+            # Arcanic Reactor
+            SectorPatch(
+                sector_id=405,
+                buffs=Buffs(utility=INQUEST_SLAYING, sigil_slaying=INQUEST_SIGIL),
+            ),
+            # Path to Golem
+            NewSector(
+                sector_id=-1,
+                name="Path to Golem",
+                buffs=Buffs(utility=INQUEST_SLAYING, sigil_slaying=INQUEST_SIGIL),
+                bounds=[
+                    [53701, 38585],
+                    [53711, 38334],
+                    [53827, 38329],
+                    [53846, 38338],
+                    [53846, 38348],
+                    [53859, 38362],
+                    [53893, 38366],
+                    [53856, 38405],
+                    [53795, 38391],
+                    [53793, 38585],
+                ],
+            ),
+            # Golem
+            SectorPatch(
+                sector_id=400,
+                buffs=Buffs(utility=INQUEST_SLAYING, sigil_slaying=INQUEST_SIGIL),
+            ),
+            # Console Room
+            SectorPatch(
+                sector_id=401,
+                buffs=Buffs(utility=INQUEST_SLAYING, sigil_slaying=INQUEST_SIGIL),
+            ),
+            # Bjarl the Rampager
+            SectorPatch(
+                sector_id=403,
+                buffs=Buffs(utility=ICEBROOD_SLAYING, sigil_slaying=ICEBROOD_SIGIL),
+            ),
+            # Cannon
+            SectorPatch(
+                sector_id=399,
+                buffs=Buffs(utility=INQUEST_SLAYING, sigil_slaying=INQUEST_SIGIL),
+            ),
+            NewSector(
+                sector_id=-2,
+                name="Husk",
+                buffs=Buffs(utility=GENERIC_ENHANCEMENT, sigil_slaying=GENERIC_SIGIL),
+                bounds=[
+                    [53623, 37703],
+                    [53820, 37704],
+                    [53824, 37816],
+                    [53613, 37805],
+                ],
+            ),
+            # Destroyer path
+            SectorPatch(
+                sector_id=392,
+                buffs=Buffs(utility=DESTROYER_SLAYING, sigil_slaying=DESTORYER_SIGIL),
+            ),
+            SectorPatch(
+                sector_id=395,
+                buffs=Buffs(utility=DESTROYER_SLAYING, sigil_slaying=DESTORYER_SIGIL),
+            ),
+            NewSector(
+                sector_id=-3,
+                name="Thank you Anet for that gap",
+                buffs=Buffs(utility=DESTROYER_SLAYING, sigil_slaying=DESTORYER_SIGIL),
+                bounds=[
+                    [53610, 37939],
+                    [53633, 37940],
+                    [53633, 37966],
+                    [53610, 37967],
+                ],
+            ),
+            # Destroyer Boss
+            SectorPatch(
+                sector_id=394,
+                buffs=Buffs(utility=DESTROYER_SLAYING, sigil_slaying=DESTORYER_SIGIL),
+            ),
+            # Front Door
+            NewSector(
+                sector_id=-4,
+                name="Front Door",
+                floors=[-10],  # custom floor
                 buffs=Buffs(utility=UNDEAD_SLAYING, sigil_slaying=UNDEAD_SIGIL),
+                bounds=[
+                    [53859, 38306],
+                    [53846, 38337],
+                    [53846, 38347],
+                    [53859, 38360],
+                    [53882, 38363],
+                    [53913, 38330],
+                ],
             ),
         ],
     ),

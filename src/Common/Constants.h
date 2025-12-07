@@ -3,6 +3,7 @@
 namespace MapIds
 {
     constexpr int LONELY_TOWER_FRACTAL       = 1538;
+    constexpr int CRUCIBLE_OF_ETERNITY       = 82;
     constexpr int CRUCIBLE_OF_ETERNITY_STORY = 81;
 }
 
