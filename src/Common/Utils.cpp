@@ -60,7 +60,7 @@ namespace ImGuiUtil
     {
         ImVec2 pos = ImGui::GetCursorPos();
 
-        va_list args;
+        va_list args = nullptr;
         va_start(args, fmt);
         pos.x += 1;
         pos.y += 1;
@@ -115,7 +115,7 @@ namespace ImGuiUtil
 
 namespace Utils
 {
-    ImVec2 PivotToVec2(const Pivot pivot)
+    ImVec2 PivotToImVec2(const Pivot pivot)
     {
         switch (pivot)
         {

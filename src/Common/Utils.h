@@ -30,7 +30,7 @@ namespace ImGuiUtil
 
 namespace Utils
 {
-    ImVec2 PivotToVec2(Pivot pivot);
+    ImVec2 PivotToImVec2(Pivot pivot);
 }
 
 #ifdef DEBUG

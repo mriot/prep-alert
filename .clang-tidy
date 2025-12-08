@@ -1,2 +1,29 @@
-Checks: 'clang-analyzer-*,
-         misc-include-cleaner'
+Checks: '-*,
+         clang-analyzer-*,
+         bugprone-*,
+         cert-*,
+         cppcoreguidelines-*,
+         misc-include-cleaner,
+         modernize-*,
+         performance-*,
+         readability-*,
+
+         -bugprone-easily-swappable-parameters,
+         -cert-err58-cpp,
+         -cppcoreguidelines-avoid-magic-numbers,
+         -cppcoreguidelines-macro-usage,
+         -cppcoreguidelines-owning-memory,
+         -modernize-use-trailing-return-type,
+         -modernize-use-integer-sign-comparison,
+         -readability-uppercase-literal-suffix,
+         -readability-magic-numbers,
+         -readability-implicit-bool-conversion,
+         -readability-braces-around-statements,
+         -readability-identifier-length,
+         -cppcoreguidelines-avoid-c-arrays,
+         -cppcoreguidelines-pro-bounds-pointer-arithmetic,
+         -cppcoreguidelines-pro-type-vararg,
+         -hicpp-vararg'
+
+HeaderFilterRegex: '.*'
+FormatStyle: file

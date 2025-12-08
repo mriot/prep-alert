@@ -8,6 +8,9 @@
     <libraryRoots>
       <file path="$PROJECT_DIR$/src/External" />
     </libraryRoots>
+    <excludeRoots>
+      <file path="$PROJECT_DIR$/third-party" />
+    </excludeRoots>
   </component>
-  <component name="WestSettings"><![CDATA[{}]]></component>
+  <component name="WestSettings">{}</component>
 </project>

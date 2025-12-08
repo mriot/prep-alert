@@ -24,27 +24,22 @@ void from_json(const json &j, Vec2 &v)
 void from_json(const json &j, Buff &b)
 {
     j.at("id").get_to(b.id);
-    j.at("name").get_to(b.name);
+    // j.at("name").get_to(b.name);
     j.at("type").get_to(b.type);
 }
 
 // Buffs
 void from_json(const json &j, Buffs &b)
 {
-    if (j.contains("food") && !j["food"].is_null())
-        b.food = j["food"].get<Buff>();
-    else
-        b.food.reset();
-
     if (j.contains("utility") && !j["utility"].is_null())
         b.utility = j["utility"].get<Buff>();
     else
         b.utility.reset();
 
-    if (j.contains("sigil") && !j["sigil"].is_null())
-        b.sigil = j["sigil"].get<Buff>();
+    if (j.contains("sigil_night") && !j["sigil_night"].is_null())
+        b.sigilNight = j["sigil_night"].get<Buff>();
     else
-        b.sigil.reset();
+        b.sigilNight.reset();
 
     if (j.contains("sigil_slaying") && !j["sigil_slaying"].is_null())
         b.sigilSlaying = j["sigil_slaying"].get<Buff>();
@@ -65,7 +60,7 @@ void from_json(const json &j, Sector &s)
 }
 
 // Map
-void from_json(const json &data, MapData &map_data)
+void from_json(const json &data, MapDefinition &map_data)
 {
     try
     {
@@ -82,119 +77,82 @@ void from_json(const json &data, MapData &map_data)
     }
     catch (const std::exception &e)
     {
-        Log::Critical(std::format("from_json(MapData) failed: {}", e.what()).c_str());
+        Log::Critical(std::format("from_json(MapData) failed: {}", e.what()));
     }
 }
 
-// Load raw bytes of resource with given ID and type RT_RCDATA
-static std::optional<std::vector<char>> LoadResourceBytes(HMODULE hModule, int resourceId)
+namespace MapData
 {
-    if (!hModule)
-        return std::nullopt;
-
-    const HRSRC hRes = FindResourceW(hModule, MAKEINTRESOURCEW(resourceId), L"JSON");
-
-    if (!hRes)
+    namespace
     {
-        Log::Warning("Didnt find resource");
-        return std::nullopt;
+        std::optional<std::vector<char>> LoadResourceBytes(const HMODULE hModule, int resourceId)
+        {
+            if (!hModule)
+                return std::nullopt;
+
+            const HRSRC hRes = FindResourceW(hModule, MAKEINTRESOURCEW(resourceId), L"JSON");
+
+            if (!hRes)
+            {
+                Log::Warning("Didnt find resource");
+                return std::nullopt;
+            }
+
+            const HGLOBAL hGlobal = LoadResource(hModule, hRes);
+            if (!hGlobal)
+            {
+                Log::Warning("Unable to load");
+                return std::nullopt;
+            }
+
+            const DWORD size = SizeofResource(hModule, hRes);
+            if (size == 0)
+            {
+                Log::Warning("Size is 0");
+                return std::nullopt;
+            }
+
+            const void *pData = LockResource(hGlobal);
+            if (!pData)
+            {
+                Log::Warning("Could not lock");
+                return std::nullopt;
+            }
+
+            const char *bytes = static_cast<const char *>(pData);
+            return std::vector(bytes, bytes + size);
+        }
     }
 
-    const HGLOBAL hGlobal = LoadResource(hModule, hRes);
-    if (!hGlobal)
+    std::unordered_map<int, MapDefinition> Load()
     {
-        Log::Warning("Unable to load");
-        return std::nullopt;
-    }
+        const std::optional<std::vector<char>> resourceBytes = LoadResourceBytes(G::ModuleHandle, RC_MAP_DATA);
 
-    const DWORD size = SizeofResource(hModule, hRes);
-    if (size == 0)
-    {
-        Log::Warning("Size is 0");
-        return std::nullopt;
-    }
+        if (!resourceBytes)
+        {
+            Log::Critical("Failed to load resource bytes!");
+            return {};
+        }
 
-    const void *pData = LockResource(hGlobal);
-    if (!pData)
-    {
-        Log::Warning("Could not lock");
-        return std::nullopt;
-    }
+        json data;
+        try
+        {
+            data = json::parse(resourceBytes->begin(), resourceBytes->end());
+        }
+        catch (const std::exception &e)
+        {
+            Log::Critical(std::format("Failed to parse JSON: {}", e.what()));
+            return {};
+        }
 
-    const char *bytes = static_cast<const char *>(pData);
-    return std::vector<char>(bytes, bytes + size);
+        // maps "map_id -> MapData"
+        std::unordered_map<int, MapDefinition> mapData;
+        for (const auto &[key, value] : data.items())
+        {
+            int mapId      = std::stoi(key);
+            mapData[mapId] = value.get<MapDefinition>();
+        }
+
+        return mapData;
+    }
 }
-
-std::unordered_map<int, MapData> LoadMapData()
-{
-    const std::optional<std::vector<char>> resourceBytes = LoadResourceBytes(G::ModuleHandle, RC_MAP_DATA);
-
-    if (!resourceBytes)
-    {
-        Log::Critical("Failed to load resource bytes!");
-        return {};
-    }
-
-    json data;
-    try
-    {
-        data = json::parse(resourceBytes->begin(), resourceBytes->end());
-    }
-    catch (const std::exception &e)
-    {
-        Log::Critical(std::format("Failed to parse JSON: {}", e.what()).c_str());
-        return {};
-    }
-
-    // maps "map_id -> MapData"
-    std::unordered_map<int, MapData> mapData;
-    for (auto &[key, value] : data.items())
-    {
-        int id      = std::stoi(key);
-        mapData[id] = value.get<MapData>();
-    }
-
-    return mapData;
-}
-
-// Load from JSON file
-/*
- std::unordered_map<int, MapData> LoadMapData()
- {
-
-     std::filesystem::path path = G::APIDefs->Paths_GetAddonDirectory(G::ADDON_NAME);
-     std::filesystem::create_directories(path);
-
-     path /= "maps.json";
-     Log::Info(std::format("Loading config from {}", path.string()).c_str());
-
-     std::ifstream file(path);
-     if (!file.is_open())
-     {
-         Log::Critical("Failed to open json file!");
-         return {};
-     }
-
-     json data;
-     try
-     {
-         file >> data;
-         file.close();
-     }
-     catch (const std::exception &e)
-     {
-         Log::Critical(std::format("Failed to parse json file: {}", e.what()).c_str());
-         return {};
-     }
-
-     // maps map_id : MapData
-     std::unordered_map<int, MapData> result;
-     for (auto &[key, value] : data.items())
-     {
-         int id     = std::stoi(key);
-         result[id] = value.get<MapData>();
-     }
-
-     return result;
- }
- */

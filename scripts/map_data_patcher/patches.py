@@ -9,8 +9,6 @@ from buffs import (
     ELEMENTAL_SLAYING,
     FLAME_LEGION_SIGIL,
     FLAME_LEGION_SLAYING,
-    GENERIC_ENHANCEMENT,
-    GENERIC_SIGIL,
     GHOST_SIGIL,
     GHOST_SLAYING,
     ICEBROOD_SIGIL,
@@ -20,7 +18,9 @@ from buffs import (
     NIGHT_SIGIL,
     NIGHTMARE_COURT_SIGIL,
     NIGHTMARE_COURT_SLAYING,
-    NOT_NIGHT_SIGIL,
+    NO_NIGHT_SIGIL,
+    NO_SLAYING_POTION,
+    NO_SLAYING_SIGIL,
     OUTLAW_SIGIL,
     OUTLAW_SLAYING,
     SCARLETS_ARMIES_SLAYING,
@@ -37,7 +37,9 @@ PATCHES = [
     MapPatch(
         map_id=FractalMap.LONELY_TOWER,
         default=Buffs(
-            utility=GENERIC_ENHANCEMENT, sigil=NOT_NIGHT_SIGIL, sigil_slaying=GENERIC_SIGIL
+            utility=NO_SLAYING_POTION,
+            sigil_night=NO_NIGHT_SIGIL,
+            sigil_slaying=NO_SLAYING_SIGIL,
         ),
         floors=[63, 64],
         sector_patches=[
@@ -63,7 +65,9 @@ PATCHES = [
     MapPatch(
         map_id=FractalMap.SHATTERED_OBSERVATORY,
         default=Buffs(
-            utility=GENERIC_ENHANCEMENT, sigil=NOT_NIGHT_SIGIL, sigil_slaying=GENERIC_SIGIL
+            utility=NO_SLAYING_POTION,
+            sigil_night=NO_NIGHT_SIGIL,
+            sigil_slaying=NO_SLAYING_SIGIL,
         ),
         sector_patches=[
             NewSector(
@@ -83,7 +87,9 @@ PATCHES = [
     MapPatch(
         map_id=FractalMap.SILENT_SURF,
         default=Buffs(
-            utility=GENERIC_ENHANCEMENT, sigil=NOT_NIGHT_SIGIL, sigil_slaying=GENERIC_SIGIL
+            utility=NO_SLAYING_POTION,
+            sigil_night=NO_NIGHT_SIGIL,
+            sigil_slaying=NO_SLAYING_SIGIL,
         ),
         sector_patches=[],
     ),
@@ -91,7 +97,7 @@ PATCHES = [
     MapPatch(
         map_id=FractalMap.KINFALL,
         default=Buffs(
-            utility=ICEBROOD_SLAYING, sigil=NOT_NIGHT_SIGIL, sigil_slaying=ICEBROOD_SIGIL
+            utility=ICEBROOD_SLAYING, sigil_night=NO_NIGHT_SIGIL, sigil_slaying=ICEBROOD_SIGIL
         ),
         sector_patches=[],
     ),
@@ -99,13 +105,15 @@ PATCHES = [
     MapPatch(
         map_id=FractalMap.NIGHTMARE,
         default=Buffs(
-            utility=SCARLETS_ARMIES_SLAYING, sigil=NOT_NIGHT_SIGIL, sigil_slaying=SERPENT_SIGIL
+            utility=SCARLETS_ARMIES_SLAYING,
+            sigil_night=NO_NIGHT_SIGIL,
+            sigil_slaying=SERPENT_SIGIL,
         ),
         sector_patches=[
             NewSector(
                 sector_id=-1,
                 name="Spawn + MAMA",
-                buffs=Buffs(sigil_slaying=GENERIC_SIGIL),
+                buffs=Buffs(sigil_slaying=NO_SLAYING_SIGIL),
                 bounds=[
                     [11964, 4483],
                     [12172, 4461],
@@ -121,7 +129,9 @@ PATCHES = [
     MapPatch(
         map_id=FractalMap.SUNQUA_PEAK,
         default=Buffs(
-            utility=GENERIC_ENHANCEMENT, sigil=NOT_NIGHT_SIGIL, sigil_slaying=GENERIC_SIGIL
+            utility=NO_SLAYING_POTION,
+            sigil_night=NO_NIGHT_SIGIL,
+            sigil_slaying=NO_SLAYING_SIGIL,
         ),
         sector_patches=[],
     ),
@@ -130,56 +140,88 @@ PATCHES = [
     # ---------------------------------------------------------------------------- #
     # ----------------------------- Ascalonian Catacombs ---------------------------- #
     MapPatch(
-        DungeonMap.AC_STORY,
-        Buffs(utility=GHOST_SLAYING, sigil=NIGHT_SIGIL, sigil_slaying=GHOST_SIGIL),
-        [],
+        map_id=DungeonMap.AC_STORY,
+        default=Buffs(utility=GHOST_SLAYING, sigil_night=NIGHT_SIGIL, sigil_slaying=GHOST_SIGIL),
+        sector_patches=[],
     ),
     MapPatch(
-        DungeonMap.AC_EXPLORABLE,
-        Buffs(utility=GENERIC_ENHANCEMENT, sigil=NIGHT_SIGIL, sigil_slaying=GENERIC_SIGIL),
-        [],
+        map_id=DungeonMap.AC_EXPLORABLE,
+        default=Buffs(
+            utility=NO_SLAYING_POTION,
+            sigil_night=NIGHT_SIGIL,
+            sigil_slaying=NO_SLAYING_SIGIL,
+        ),
+        sector_patches=[],
     ),
     # ----------------------------- Caudecus's Manor ----------------------------- #
     MapPatch(
-        DungeonMap.CM_STORY,
-        Buffs(utility=OUTLAW_SLAYING, sigil=NOT_NIGHT_SIGIL, sigil_slaying=OUTLAW_SIGIL),
-        [],
+        map_id=DungeonMap.CM_STORY,
+        default=Buffs(
+            utility=OUTLAW_SLAYING, sigil_night=NO_NIGHT_SIGIL, sigil_slaying=OUTLAW_SIGIL
+        ),
+        sector_patches=[],
     ),
     MapPatch(
-        DungeonMap.CM_EXPLORABLE,
-        Buffs(utility=OUTLAW_SLAYING, sigil=NOT_NIGHT_SIGIL, sigil_slaying=OUTLAW_SIGIL),
-        [],
+        map_id=DungeonMap.CM_EXPLORABLE,
+        default=Buffs(
+            utility=OUTLAW_SLAYING, sigil_night=NO_NIGHT_SIGIL, sigil_slaying=OUTLAW_SIGIL
+        ),
+        sector_patches=[],
     ),
     # ------------------------------ Twilight Arbor ------------------------------ #
     MapPatch(
-        DungeonMap.TA_STORY,
-        Buffs(
+        map_id=DungeonMap.TA_STORY,
+        default=Buffs(
             utility=NIGHTMARE_COURT_SLAYING,
-            sigil=NIGHT_SIGIL,
+            sigil_night=NIGHT_SIGIL,
             sigil_slaying=NIGHTMARE_COURT_SIGIL,
         ),
-        [],
+        sector_patches=[],
     ),
     MapPatch(
-        DungeonMap.TA_EXPLORABLE,
-        Buffs(
+        map_id=DungeonMap.TA_EXPLORABLE,
+        default=Buffs(
             utility=NIGHTMARE_COURT_SLAYING,
-            sigil=NIGHT_SIGIL,
+            sigil_night=NIGHT_SIGIL,
             sigil_slaying=NIGHTMARE_COURT_SIGIL,
         ),
-        [
+        sector_patches=[
             # Up/Fwd Endboss
-            SectorPatch(1135, Buffs(utility=GENERIC_ENHANCEMENT, sigil_slaying=GENERIC_SIGIL)),
-            # Aether
-            SectorPatch(1129, Buffs(utility=SCARLETS_ARMIES_SLAYING, sigil_slaying=GENERIC_SIGIL)),
-            SectorPatch(1130, Buffs(utility=SCARLETS_ARMIES_SLAYING, sigil_slaying=GENERIC_SIGIL)),
-            SectorPatch(1131, Buffs(utility=SCARLETS_ARMIES_SLAYING, sigil_slaying=GENERIC_SIGIL)),
-            SectorPatch(1139, Buffs(utility=SCARLETS_ARMIES_SLAYING, sigil_slaying=GENERIC_SIGIL)),
-            # Clockheart
+            # SectorPatch(1135, Buffs(utility=NO_SLAYING_POTION, sigil_slaying=NO_SLAYING_SIGIL)),
             NewSector(
                 sector_id=-1,
+                name="Up/Fwd Endboss",
+                buffs=Buffs(utility=NO_SLAYING_POTION, sigil_slaying=NO_SLAYING_SIGIL),
+                bounds=[
+                    [42353, 32835],
+                    [42291, 32877],
+                    [42209, 32817],
+                    [42125, 32923],
+                    [42303, 33030],
+                    [42333, 33009],
+                    [42271, 32964],
+                    [42349, 32893],
+                    [42373, 32849],
+                ],
+            ),
+            # Aether
+            SectorPatch(
+                1129, Buffs(utility=SCARLETS_ARMIES_SLAYING, sigil_slaying=NO_SLAYING_SIGIL)
+            ),
+            SectorPatch(
+                1130, Buffs(utility=SCARLETS_ARMIES_SLAYING, sigil_slaying=NO_SLAYING_SIGIL)
+            ),
+            SectorPatch(
+                1131, Buffs(utility=SCARLETS_ARMIES_SLAYING, sigil_slaying=NO_SLAYING_SIGIL)
+            ),
+            SectorPatch(
+                1139, Buffs(utility=SCARLETS_ARMIES_SLAYING, sigil_slaying=NO_SLAYING_SIGIL)
+            ),
+            # Clockheart
+            NewSector(
+                sector_id=-2,
                 name="Clockheart",
-                buffs=Buffs(utility=GENERIC_ENHANCEMENT, sigil_slaying=GENERIC_SIGIL),
+                buffs=Buffs(utility=NO_SLAYING_POTION, sigil_slaying=NO_SLAYING_SIGIL),
                 bounds=[
                     [41682, 32384],
                     [41682, 32586],
@@ -193,14 +235,14 @@ PATCHES = [
     ),
     # ----------------------------- Sorrow's Embrace ----------------------------- #
     MapPatch(
-        DungeonMap.SE_STORY,
-        Buffs(utility=DREDGE_SLAYING, sigil=NIGHT_SIGIL, sigil_slaying=DREDGE_SIGIL),
-        [
+        map_id=DungeonMap.SE_STORY,
+        default=Buffs(utility=DREDGE_SLAYING, sigil_night=NIGHT_SIGIL, sigil_slaying=DREDGE_SIGIL),
+        sector_patches=[
             NewSector(
-                -1,
-                "Inspector Snik",
-                Buffs(utility=INQUEST_SLAYING, sigil_slaying=INQUEST_SIGIL),
-                [
+                sector_id=-1,
+                name="Inspector Snik",
+                buffs=Buffs(utility=INQUEST_SLAYING, sigil_slaying=INQUEST_SIGIL),
+                bounds=[
                     [52613, 34438],
                     [52611, 34544],
                     [52486, 34539],
@@ -208,10 +250,10 @@ PATCHES = [
                 ],
             ),
             NewSector(
-                -2,
-                "Advanced Assault Golem",
-                Buffs(utility=INQUEST_SLAYING, sigil_slaying=INQUEST_SIGIL),
-                [
+                sector_id=-2,
+                name="Advanced Assault Golem",
+                buffs=Buffs(utility=INQUEST_SLAYING, sigil_slaying=INQUEST_SIGIL),
+                bounds=[
                     [52609, 34433],
                     [52608, 34565],
                     [52869, 34565],
@@ -219,10 +261,10 @@ PATCHES = [
                 ],
             ),
             NewSector(
-                -3,
-                "Inquest Base",
-                Buffs(utility=INQUEST_SLAYING, sigil_slaying=INQUEST_SIGIL),
-                [
+                sector_id=-3,
+                name="Inquest Base",
+                buffs=Buffs(utility=INQUEST_SLAYING, sigil_slaying=INQUEST_SIGIL),
+                bounds=[
                     [53213, 34426],
                     [53216, 34651],
                     [53123, 34691],
@@ -232,10 +274,10 @@ PATCHES = [
                 ],
             ),
             NewSector(
-                -4,
-                "Forgeman",
-                Buffs(utility=GENERIC_ENHANCEMENT, sigil_slaying=GENERIC_SIGIL),
-                [
+                sector_id=-4,
+                name="Forgeman",
+                buffs=Buffs(utility=NO_SLAYING_POTION, sigil_slaying=NO_SLAYING_SIGIL),
+                bounds=[
                     [52958, 34911],
                     [53298, 34870],
                     [53299, 35310],
@@ -245,61 +287,84 @@ PATCHES = [
         ],
     ),
     MapPatch(
-        DungeonMap.SE_EXPLORABLE,
-        Buffs(utility=DREDGE_SLAYING, sigil=NIGHT_SIGIL, sigil_slaying=DREDGE_SIGIL),
-        [
+        map_id=DungeonMap.SE_EXPLORABLE,
+        default=Buffs(utility=DREDGE_SLAYING, sigil_night=NIGHT_SIGIL, sigil_slaying=DREDGE_SIGIL),
+        sector_patches=[
             # p1
-            SectorPatch(174, Buffs(utility=INQUEST_SLAYING, sigil_slaying=INQUEST_SIGIL)),
-            SectorPatch(179, Buffs(utility=INQUEST_SLAYING, sigil_slaying=INQUEST_SIGIL)),
-            SectorPatch(180, Buffs(utility=INQUEST_SLAYING, sigil_slaying=INQUEST_SIGIL)),
-            SectorPatch(181, Buffs(utility=INQUEST_SLAYING, sigil_slaying=INQUEST_SIGIL)),
+            SectorPatch(
+                sector_id=174, buffs=Buffs(utility=INQUEST_SLAYING, sigil_slaying=INQUEST_SIGIL)
+            ),
+            SectorPatch(
+                sector_id=179, buffs=Buffs(utility=INQUEST_SLAYING, sigil_slaying=INQUEST_SIGIL)
+            ),
+            SectorPatch(
+                sector_id=180, buffs=Buffs(utility=INQUEST_SLAYING, sigil_slaying=INQUEST_SIGIL)
+            ),
+            SectorPatch(
+                sector_id=181, buffs=Buffs(utility=INQUEST_SLAYING, sigil_slaying=INQUEST_SIGIL)
+            ),
             # p3 cart
-            SectorPatch(172, Buffs(utility=GENERIC_ENHANCEMENT, sigil_slaying=GENERIC_SIGIL)),
+            SectorPatch(
+                sector_id=172,
+                buffs=Buffs(utility=NO_SLAYING_POTION, sigil_slaying=NO_SLAYING_SIGIL),
+            ),
             # p3 endboss
-            SectorPatch(173, Buffs(utility=DESTROYER_SLAYING, sigil_slaying=DESTORYER_SIGIL)),
+            SectorPatch(
+                sector_id=173, buffs=Buffs(utility=DESTROYER_SLAYING, sigil_slaying=DESTORYER_SIGIL)
+            ),
         ],
     ),
     # ----------------------------- Citadel of Flame ----------------------------- #
     MapPatch(
-        DungeonMap.CoF_STORY,
-        Buffs(utility=FLAME_LEGION_SLAYING, sigil=NIGHT_SIGIL, sigil_slaying=FLAME_LEGION_SIGIL),
-        [],
+        map_id=DungeonMap.CoF_STORY,
+        default=Buffs(
+            utility=FLAME_LEGION_SLAYING, sigil_night=NIGHT_SIGIL, sigil_slaying=FLAME_LEGION_SIGIL
+        ),
+        sector_patches=[],
     ),
     MapPatch(
-        DungeonMap.CoF_EXPLORABLE,
-        Buffs(utility=FLAME_LEGION_SLAYING, sigil=NIGHT_SIGIL, sigil_slaying=FLAME_LEGION_SIGIL),
-        [],
+        map_id=DungeonMap.CoF_EXPLORABLE,
+        default=Buffs(
+            utility=FLAME_LEGION_SLAYING, sigil_night=NIGHT_SIGIL, sigil_slaying=FLAME_LEGION_SIGIL
+        ),
+        sector_patches=[],
     ),
     # ---------------------------- Honor of the Waves ---------------------------- #
     MapPatch(
-        DungeonMap.HotW_STORY,
-        Buffs(
+        map_id=DungeonMap.HotW_STORY,
+        default=Buffs(
             utility=ICEBROOD_SLAYING,
-            sigil=NOT_NIGHT_SIGIL,
+            sigil_night=NO_NIGHT_SIGIL,
             sigil_slaying=ICEBROOD_SIGIL,
         ),
         sector_patches=[
             # Kulag the Fallen
             SectorPatch(
-                661, Buffs(utility=SONS_OF_SVANIR_SLAYING, sigil_slaying=SONS_OF_SVANIR_SIGIL)
+                sector_id=661,
+                buffs=Buffs(utility=SONS_OF_SVANIR_SLAYING, sigil_slaying=SONS_OF_SVANIR_SIGIL),
             ),
             # Lani Winterfist
             SectorPatch(
-                669, Buffs(utility=SONS_OF_SVANIR_SLAYING, sigil_slaying=SONS_OF_SVANIR_SIGIL)
+                sector_id=669,
+                buffs=Buffs(utility=SONS_OF_SVANIR_SLAYING, sigil_slaying=SONS_OF_SVANIR_SIGIL),
             ),
             # Lani Winterfist (can move a lot)
             SectorPatch(
-                667, Buffs(utility=SONS_OF_SVANIR_SLAYING, sigil_slaying=SONS_OF_SVANIR_SIGIL)
+                sector_id=667,
+                buffs=Buffs(utility=SONS_OF_SVANIR_SLAYING, sigil_slaying=SONS_OF_SVANIR_SIGIL),
             ),
         ],
     ),
     MapPatch(
-        DungeonMap.HotW_EXPLORABLE,
-        Buffs(utility=ICEBROOD_SLAYING, sigil=NOT_NIGHT_SIGIL, sigil_slaying=ICEBROOD_SIGIL),
-        [
+        map_id=DungeonMap.HotW_EXPLORABLE,
+        default=Buffs(
+            utility=ICEBROOD_SLAYING, sigil_night=NO_NIGHT_SIGIL, sigil_slaying=ICEBROOD_SIGIL
+        ),
+        sector_patches=[
             # Aldus Stormbringer (p1)
             SectorPatch(
-                658, Buffs(utility=SONS_OF_SVANIR_SLAYING, sigil_slaying=SONS_OF_SVANIR_SIGIL)
+                sector_id=658,
+                buffs=Buffs(utility=SONS_OF_SVANIR_SLAYING, sigil_slaying=SONS_OF_SVANIR_SIGIL),
             ),
             # Andal The Thug (p2)
             NewSector(
@@ -316,33 +381,46 @@ PATCHES = [
             ),
             # Fimbul (p3)
             SectorPatch(
-                669, Buffs(utility=SONS_OF_SVANIR_SLAYING, sigil_slaying=SONS_OF_SVANIR_SIGIL)
+                sector_id=669,
+                buffs=Buffs(utility=SONS_OF_SVANIR_SLAYING, sigil_slaying=SONS_OF_SVANIR_SIGIL),
             ),
         ],
     ),
     # --------------------------- Crucible of Eternity --------------------------- #
     MapPatch(
-        DungeonMap.CoE_STORY,
-        Buffs(utility=INQUEST_SLAYING, sigil=NOT_NIGHT_SIGIL, sigil_slaying=INQUEST_SIGIL),
+        map_id=DungeonMap.CoE_STORY,
+        default=Buffs(
+            utility=INQUEST_SLAYING, sigil_night=NO_NIGHT_SIGIL, sigil_slaying=INQUEST_SIGIL
+        ),
         floors=[-11, -12],
         sector_patches=[
             NewSector(
                 sector_id=-1,
                 name="Kudu",
                 floors=[-12],  # custom floor
-                buffs=Buffs(utility=GENERIC_ENHANCEMENT, sigil_slaying=GENERIC_SIGIL),
+                buffs=Buffs(utility=NO_SLAYING_POTION, sigil_slaying=NO_SLAYING_SIGIL),
                 bounds=[
-                    [53699, 38218],
-                    [53695, 38324],
-                    [53822, 38324],
-                    [53818, 38215],
+                    [53860, 38652],
+                    [53639, 38677],
+                    [53569, 38671],
+                    [53321, 38582],
+                    [53365, 38363],
+                    [53702, 38141],
+                    [53857, 38148],
+                    [53859, 38330],
+                    [53695, 38334],
+                    [53456, 38548],
+                    [53671, 38571],
+                    [53860, 38573],
                 ],
             )
         ],
     ),
     MapPatch(
         map_id=DungeonMap.CoE_EXPLORABLE,
-        default=Buffs(utility=UNDEAD_SLAYING, sigil=NOT_NIGHT_SIGIL, sigil_slaying=UNDEAD_SIGIL),
+        default=Buffs(
+            utility=UNDEAD_SLAYING, sigil_night=NO_NIGHT_SIGIL, sigil_slaying=UNDEAD_SIGIL
+        ),
         floors=[-10, -11],
         sector_patches=[
             # The Aquarium
@@ -396,7 +474,7 @@ PATCHES = [
             NewSector(
                 sector_id=-2,
                 name="Husk",
-                buffs=Buffs(utility=GENERIC_ENHANCEMENT, sigil_slaying=GENERIC_SIGIL),
+                buffs=Buffs(utility=NO_SLAYING_POTION, sigil_slaying=NO_SLAYING_SIGIL),
                 bounds=[
                     [53623, 37703],
                     [53820, 37704],
@@ -448,9 +526,11 @@ PATCHES = [
     ),
     # ----------------------------------- Arah ----------------------------------- #
     MapPatch(
-        DungeonMap.ARAH_EXPLORABLE,
-        Buffs(utility=UNDEAD_SLAYING, sigil=NOT_NIGHT_SIGIL, sigil_slaying=UNDEAD_SIGIL),
-        [
+        map_id=DungeonMap.ARAH_EXPLORABLE,
+        default=Buffs(
+            utility=UNDEAD_SLAYING, sigil_night=NO_NIGHT_SIGIL, sigil_slaying=UNDEAD_SIGIL
+        ),
+        sector_patches=[
             # P1 Shoggroth
             NewSector(
                 sector_id=-1,

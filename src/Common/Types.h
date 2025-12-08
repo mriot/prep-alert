@@ -11,14 +11,13 @@
 /// GENERAL TYPES
 /// ----------------------------------------------------------------------------------------------------
 
-// TODO remove and use ImVec2 directly?
 struct Vec2
 {
     double x;
     double y;
 };
 
-enum class Pivot : int
+enum class Pivot : std::uint8_t
 {
     TopLeft,
     TopRight,
@@ -26,38 +25,37 @@ enum class Pivot : int
     BottomRight,
 };
 
+
 /// ----------------------------------------------------------------------------------------------------
 /// MAP / BUFF DATA TYPES
 /// ----------------------------------------------------------------------------------------------------
 
-enum class Continent
+enum class Continent : std::uint8_t
 {
     Tyria,
     Mists,
     Unknown
 };
 
-// do NOT change order - must match python enum
-enum class BuffType
+// Important: must match PYTHON enum
+enum class BuffType : std::uint8_t
 {
     Utility,
-    Sigil,
-    Food,
-    Reset
+    NightSigil,
+    SlayingSigil,
 };
 
 struct Buff
 {
     int id;
-    std::string name;
     BuffType type;
+    bool remove;
 };
 
 struct Buffs
 {
-    std::optional<Buff> food;
     std::optional<Buff> utility;
-    std::optional<Buff> sigil;
+    std::optional<Buff> sigilNight;
     std::optional<Buff> sigilSlaying;
 };
 
@@ -70,7 +68,7 @@ struct Sector
     std::vector<int> floors;
 };
 
-struct MapData
+struct MapDefinition
 {
     int id;
     int continent_id;
@@ -88,11 +86,9 @@ struct MapData
 struct MapTypeReminder
 {
     bool enabled;
-    bool food;
     bool utility;
-    bool sigil;
-    bool sigilSlaying;
-    bool defaultBuffs;
+    bool nightSigil;
+    bool slayingSigil;
 };
 
 struct Reminders
@@ -104,14 +100,14 @@ struct Reminders
 struct Settings
 {
     ImVec2 position;
-    Pivot window_anchor;
-    Pivot overlay_origin;
-    bool anchorOriginSync;
-    bool compact;
-    bool tooltips;
-    bool horizontal;
-    bool iconFirst;
-    int flashDuration;
-    int imageSize;
-    Reminders reminders;
+    Pivot window_anchor{};
+    Pivot overlay_origin{};
+    bool anchorOriginSync{};
+    bool compact{};
+    bool tooltips{};
+    bool horizontal{};
+    bool iconFirst{};
+    int flashDuration{};
+    int imageSize{};
+    Reminders reminders{};
 };

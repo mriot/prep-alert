@@ -16,14 +16,17 @@ namespace G
     extern NexusLinkData_t *NexusLink;
     extern Mumble::Data *MumbleLink;
     extern Mumble::Identity *MumbleIdentity;
+}
 
+namespace WorldState
+{
     extern bool IsOnSupportedMap;
     extern Continent CurrentContinent;
-    extern MapData CurrentMapData;
+    extern MapDefinition CurrentMapData;
     extern uint32_t CurrentSectorID;
     extern int CurrentMapFloor;
     extern std::unordered_set<uint32_t> SupportedMaps;
-    extern std::unordered_map<int, MapData> MapDataMap;
+    extern std::unordered_map<int, MapDefinition> MapDataMap;
 }
 
 namespace UIState

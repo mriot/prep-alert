@@ -3,4 +3,7 @@
 #include <unordered_map>
 #include <Common/Types.h>
 
-std::unordered_map<int, MapData> LoadMapData();
+namespace MapData
+{
+    std::unordered_map<int, MapDefinition> Load();
+}

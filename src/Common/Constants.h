@@ -2,6 +2,7 @@
 
 namespace MapIds
 {
+    // only those that need special treatment are added here
     constexpr int LONELY_TOWER_FRACTAL       = 1538;
     constexpr int CRUCIBLE_OF_ETERNITY       = 82;
     constexpr int CRUCIBLE_OF_ETERNITY_STORY = 81;
@@ -10,9 +11,7 @@ namespace MapIds
 namespace BuffIds
 {
     // ENHANCEMENTS
-    constexpr int GENERIC_ENHANCEMENT = -1;
-
-    // SLAYING POTIONS (UTILITY)
+    constexpr int REMOVE_ENHANCEMENT      = -1;
     constexpr int UNDEAD_SLAYING          = 9837;
     constexpr int ICEBROOD_SLAYING        = 9861;
     constexpr int DESTROYER_SLAYING       = 9869;
@@ -28,7 +27,7 @@ namespace BuffIds
     constexpr int GHOST_SLAYING           = 10115;
 
     // SIGILS
-    constexpr int GENERIC_SIGIL         = -2;
+    constexpr int REMOVE_SIGIL          = -2;
     constexpr int NIGHT_SIGIL           = 15268;
     constexpr int SERPENT_SIGIL         = 9347;
     constexpr int ICEBROOD_SIGIL        = 9340;
@@ -43,7 +42,4 @@ namespace BuffIds
     constexpr int SONS_OF_SVANIR_SIGIL  = 9356;
     constexpr int UNDEAD_SIGIL          = 9331;
     constexpr int ELEMENTAL_SIGIL       = 9352;
-
-    // FOOD
-    constexpr int GENERIC_FOOD = -3;
 }

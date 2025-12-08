@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------------- #
 #                                  DATACLASSES                                 #
 # ---------------------------------------------------------------------------- #
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from enum import Enum
 from typing import List
 
@@ -9,23 +9,36 @@ from typing import List
 # synced with cpp enum
 class BuffType(Enum):
     UTILITY = 0
-    SIGIL = 1
-    FOOD = 2
-    RESET = 3
+    SIGIL_NIGHT = 1
+    SIGIL_SLAYING = 2
 
 
 @dataclass
 class Buff:
     id: int
-    name: str
     type: BuffType
 
 
 @dataclass
+class Utility(Buff):
+    type: BuffType = field(default=BuffType.UTILITY, init=False)
+
+
+@dataclass
+class SlayingSigil(Buff):
+    type: BuffType = field(default=BuffType.SIGIL_SLAYING, init=False)
+
+
+@dataclass
+class NightSigil(Buff):
+    type: BuffType = field(default=BuffType.SIGIL_NIGHT, init=False)
+
+
+@dataclass
 class Buffs:
-    utility: Buff | None = None
-    sigil: Buff | None = None
-    sigil_slaying: Buff | None = None
+    utility: Utility | None = None
+    sigil_night: NightSigil | None = None
+    sigil_slaying: SlayingSigil | None = None
 
 
 @dataclass

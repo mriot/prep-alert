@@ -40,14 +40,11 @@ void OnOptionsRender()
             ImGui::Indent();
             if (ImGui::Checkbox("Enhancement##dungeons", &reminders.dungeons.utility))
                 SettingsManager::SetReminders(reminders);
-            if (ImGui::Checkbox("Night Sigil##dungeons", &reminders.dungeons.sigil))
+            if (ImGui::Checkbox("Night Sigil##dungeons", &reminders.dungeons.nightSigil))
                 SettingsManager::SetReminders(reminders);
             ImGuiUtil::InlineHelp("Also reminds when NOT to use it");
-            if (ImGui::Checkbox("Slaying Sigil##dungeons", &reminders.dungeons.sigilSlaying))
+            if (ImGui::Checkbox("Slaying Sigil##dungeons", &reminders.dungeons.slayingSigil))
                 SettingsManager::SetReminders(reminders);
-            if (ImGui::Checkbox("Build Defaults##dungeons", &reminders.dungeons.defaultBuffs))
-                SettingsManager::SetReminders(reminders);
-            ImGuiUtil::InlineHelp("Shown when you should use your build’s normal Enhancement, Sigil, etc.");
             ImGui::Unindent();
         }
         else
@@ -69,21 +66,18 @@ void OnOptionsRender()
             ImGui::Indent();
             if (ImGui::Checkbox("Enhancement##fractals", &reminders.fractals.utility))
                 SettingsManager::SetReminders(reminders);
-            if (ImGui::Checkbox("Night Sigil##fractals", &reminders.fractals.sigil))
+            if (ImGui::Checkbox("Night Sigil##fractals", &reminders.fractals.nightSigil))
                 SettingsManager::SetReminders(reminders);
             ImGuiUtil::InlineHelp("Also reminds when NOT to use it");
-            if (ImGui::Checkbox("Slaying Sigil##fractals", &reminders.fractals.sigilSlaying))
+            if (ImGui::Checkbox("Slaying Sigil##fractals", &reminders.fractals.slayingSigil))
                 SettingsManager::SetReminders(reminders);
-            if (ImGui::Checkbox("Build Defaults##fractals", &reminders.fractals.defaultBuffs))
-                SettingsManager::SetReminders(reminders);
-            ImGuiUtil::InlineHelp("Shown when you should use your build’s normal Enhancement, Sigil, etc.");
             ImGui::Unindent();
         }
 
         ImGui::EndTable();
     }
 
-    if (!G::IsOnSupportedMap)
+    if (!WorldState::IsOnSupportedMap)
     {
         const char *msg =
             "You are on an unsupported map. All reminders are shown regardless of configuration.\n"
@@ -171,19 +165,22 @@ void OnOptionsRender()
         static const char *pivotLabels[] = {"Top-Left", "Top-Right", "Bottom-Left", "Bottom-Right"};
 
         ImVec2 pos                       = SettingsManager::GetOverlayPosition();
-        int current_window_anchor_index  = (int)SettingsManager::GetWindowAnchor();
-        int current_overlay_origin_index = (int)SettingsManager::GetOverlayOrigin();
+        int current_window_anchor_index  = static_cast<int>(SettingsManager::GetWindowAnchor());
+        int current_overlay_origin_index = static_cast<int>(SettingsManager::GetOverlayOrigin());
         bool anchorOriginSync            = SettingsManager::IsAnchorOriginSync();
 
         // SYNC CHECKBOX
         if (ImGui::Checkbox("Sync overlay origin with anchor", &anchorOriginSync))
         {
             current_overlay_origin_index = current_window_anchor_index;
-            SettingsManager::SetOverlayOrigin((Pivot)current_overlay_origin_index);
+            SettingsManager::SetOverlayOrigin(static_cast<Pivot>(current_overlay_origin_index));
 
             SettingsManager::SetAnchorOriginSync(anchorOriginSync);
         }
         ImGuiUtil::InlineHelp("Overlay anchor and origin change together for easy positioning\nUncheck to set them independently");
+
+        if (current_overlay_origin_index != current_window_anchor_index)
+            ImGui::TextColored(ImVec4(1.0f, 0.5f, 0.0f, 1.0f), "Warning: Overlay might go off-screen.");
 
         // OVERLAY ANCHOR POSITION
         ImGui::SetNextItemWidth(SLIDER_WIDTH);
@@ -192,9 +189,9 @@ void OnOptionsRender()
             if (anchorOriginSync)
             {
                 current_overlay_origin_index = current_window_anchor_index;
-                SettingsManager::SetOverlayOrigin((Pivot)current_overlay_origin_index);
+                SettingsManager::SetOverlayOrigin(static_cast<Pivot>(current_overlay_origin_index));
             }
-            SettingsManager::SetWindowAnchor((Pivot)current_window_anchor_index);
+            SettingsManager::SetWindowAnchor(static_cast<Pivot>(current_window_anchor_index));
         }
         ImGuiUtil::InlineHelp("Defines the screen corner the overlay is anchored to");
 
@@ -203,46 +200,44 @@ void OnOptionsRender()
             // OVERLAY CONTENT ORIGIN POSITION
             ImGui::SetNextItemWidth(SLIDER_WIDTH);
             if (ImGui::Combo("Overlay content origin", &current_overlay_origin_index, pivotLabels, IM_ARRAYSIZE(pivotLabels)))
-                SettingsManager::SetOverlayOrigin((Pivot)current_overlay_origin_index);
+                SettingsManager::SetOverlayOrigin(static_cast<Pivot>(current_overlay_origin_index));
 
             ImGuiUtil::InlineHelp("Sets the point from which reminders expand inside the overlay");
-
-            // warn text
-            if (current_overlay_origin_index != current_window_anchor_index)
-                ImGui::TextColored(ImVec4(1.0f, 0.5f, 0.0f, 1.0f), "Warning: Overlay might go off-screen. Adjust position accordingly.");
         }
+
+        ImGui::Spacing();
 
         // X POSITION / OFFSET
         ImGui::SetNextItemWidth(SLIDER_WIDTH);
         if (ImGui::DragFloat("##OverlayPosX", &pos.x, 1.0f, 0.0f, 0.0f, "X: %.1f px"))
         {
-            SettingsManager::SetPreciseOverlayPosition(pos);
+            SettingsManager::SetOverlayPosition(pos);
         }
         ImGuiUtil::HoverTooltip("Click and Drag or Ctrl + Click to enter a value");
 
         ImGui::SameLine();
         if (ImGui::Button("-##OverlayPosXBtnMinus", ImVec2(30, 0)))
-            SettingsManager::SetPreciseOverlayPosition({pos.x - 1.0f, pos.y});
+            SettingsManager::SetOverlayPosition({pos.x - 1.0f, pos.y});
 
         ImGui::SameLine();
         if (ImGui::Button("+##OverlayPosXBtnPlus", ImVec2(30, 0)))
-            SettingsManager::SetPreciseOverlayPosition({pos.x + 1.0f, pos.y});
+            SettingsManager::SetOverlayPosition({pos.x + 1.0f, pos.y});
 
         // Y POSITION / OFFSET
         ImGui::SetNextItemWidth(SLIDER_WIDTH);
         if (ImGui::DragFloat("##OverlayPosY", &pos.y, 1.0f, 0.0f, 0.0f, "Y: %.1f px"))
         {
-            SettingsManager::SetPreciseOverlayPosition(pos);
+            SettingsManager::SetOverlayPosition(pos);
         }
         ImGuiUtil::HoverTooltip("Click and Drag or Ctrl + Click to enter a value");
 
         ImGui::SameLine();
         if (ImGui::Button("-##OverlayPosYBtnMinus", ImVec2(30, 0)))
-            SettingsManager::SetPreciseOverlayPosition({pos.x, pos.y - 1.0f});
+            SettingsManager::SetOverlayPosition({pos.x, pos.y - 1.0f});
 
         ImGui::SameLine();
         if (ImGui::Button("+##OverlayPosYBtnPlus", ImVec2(30, 0)))
-            SettingsManager::SetPreciseOverlayPosition({pos.x, pos.y + 1.0f});
+            SettingsManager::SetOverlayPosition({pos.x, pos.y + 1.0f});
 
         ImGui::Spacing();
         ImGui::Separator();

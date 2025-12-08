@@ -2,6 +2,7 @@
 #include <Common/Globals.h>
 #include <Core/Addon.h>
 #include <cstdint>
+#include <format>
 #include <nexus/Nexus.h>
 
 
@@ -30,10 +31,10 @@ extern "C" __declspec(dllexport) AddonDefinition_t *GetAddonDef()
 {
     addonDef.Signature   = static_cast<uint32_t>(0xBADA55);
     addonDef.APIVersion  = NEXUS_API_VERSION;
-    addonDef.Name        = G::ADDON_NAME;
+    addonDef.Name        = std::format("{} (beta)", G::ADDON_NAME).c_str();
     addonDef.Version     = {V_MAJOR, V_MINOR, V_BUILD, V_REVISION};
     addonDef.Author      = "Eredin.4187";
-    addonDef.Description = "Location-aware damage buff reminders for Dungeons & Fractals";
+    addonDef.Description = "Location-aware damage buff reminders for Dungeons and Fractal CMs";
     addonDef.Load        = AddonLoad;
     addonDef.Unload      = AddonUnload;
     addonDef.Flags       = AF_None;

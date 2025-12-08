@@ -46,11 +46,6 @@ namespace SettingsManager
 
     void SetOverlayPosition(const ImVec2 &position);
 
-    // overlay position dirty flag
-    bool IsOverlayPositionDirty();
-
-    void SetPreciseOverlayPosition(const ImVec2 &position);
-
     // window anchor
     Pivot GetWindowAnchor();
 

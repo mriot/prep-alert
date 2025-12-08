@@ -21,7 +21,7 @@ namespace
 {
     std::mutex settingsMutex;
 
-    Settings defaultSettings{
+    const Settings defaultSettings{
         .position = {100.0f, 33.0f},
         .window_anchor = Pivot::TopLeft,
         .overlay_origin = Pivot::TopLeft,
@@ -35,32 +35,25 @@ namespace
         .reminders = {
             .dungeons = {
                 .enabled = true,
-                .food = true,
                 .utility = true,
-                .sigil = true,
-                .sigilSlaying = true,
-                .defaultBuffs = true
+                .nightSigil = true,
+                .slayingSigil = true,
             },
             .fractals = {
                 .enabled = true,
-                .food = true,
                 .utility = true,
-                .sigil = true,
-                .sigilSlaying = true,
-                .defaultBuffs = true
+                .nightSigil = true,
+                .slayingSigil = true,
             }
         },
     };
     Settings settings = defaultSettings;
 
-    // volatile state (not persisted)
-    bool overlayPositionDirty = false;
 #ifdef DEBUG
     bool debugWindowEnabled = true;
 #else
     bool debugWindowEnabled = false;
 #endif
-
 
     void DebouncedSave()
     {
@@ -87,22 +80,18 @@ void to_json(json &j, const MapTypeReminder &t)
 {
     j = {
         {"enabled", t.enabled},
-        {"food", t.food},
         {"utility", t.utility},
-        {"sigil", t.sigil},
-        {"sigil_slaying", t.sigilSlaying},
-        {"default_buffs", t.defaultBuffs}
+        {"night_sigil", t.nightSigil},
+        {"sigil_slaying", t.slayingSigil},
     };
 }
 
 void from_json(const json &j, MapTypeReminder &t)
 {
     t.enabled      = j.value("enabled", true);
-    t.food         = j.value("food", true);
     t.utility      = j.value("utility", true);
-    t.sigil        = j.value("sigil", true);
-    t.sigilSlaying = j.value("sigil_slaying", true);
-    t.defaultBuffs = j.value("default_buffs", true);
+    t.nightSigil   = j.value("night_sigil", true);
+    t.slayingSigil = j.value("sigil_slaying", true);
 }
 
 // reminders
@@ -257,22 +246,6 @@ namespace SettingsManager
         DebouncedSave();
     }
 
-    void SetPreciseOverlayPosition(const ImVec2 &position)
-    {
-        settings.position.x  = position.x;
-        settings.position.y  = position.y;
-        overlayPositionDirty = true;
-        DebouncedSave();
-    }
-
-    // Overlay position dirty flag
-    bool IsOverlayPositionDirty()
-    {
-        const bool isDirty   = overlayPositionDirty;
-        overlayPositionDirty = false; // reset after reading
-        return isDirty;
-    }
-
     // Window pivot
     Pivot GetWindowAnchor() { return settings.window_anchor; }
 
@@ -300,7 +273,7 @@ namespace SettingsManager
         DebouncedSave();
     }
 
-    // Debug window
+    // Debug window (not persisted)
     bool IsDebugWindowEnabled() { return debugWindowEnabled; }
     void SetDebugWindowEnabled(const bool enabled) { debugWindowEnabled = enabled; }
 
@@ -326,8 +299,7 @@ namespace SettingsManager
 
     void ResetSettings()
     {
-        settings             = defaultSettings;
-        overlayPositionDirty = true;
+        settings = defaultSettings;
         DebouncedSave();
     }
 
@@ -350,7 +322,7 @@ namespace SettingsManager
             file >> settingsJson;
             file.close();
 
-            std::lock_guard<std::mutex> lock(settingsMutex);
+            std::lock_guard lock(settingsMutex);
             settings = settingsJson.get<Settings>();
         }
         catch (const std::exception &ex)
@@ -365,7 +337,7 @@ namespace SettingsManager
 
     bool SaveSettings()
     {
-        std::lock_guard<std::mutex> lock(settingsMutex);
+        std::lock_guard lock(settingsMutex);
 
         const std::filesystem::path path = GetSettingsPath();
         Log::Info(std::format("Saving settings to {}", path.string()));

@@ -1,9 +1,12 @@
 #include "Overlay.h"
+
+#include "Common/BuffData.h"
+
 #include <Common/Globals.h>
 #include <Common/Types.h>
 #include <Common/Utils.h>
 #include <Data/SettingsManager.h>
-#include <Data/TextureLoader.h>
+#include <Data/Texture.h>
 #include <chrono>
 #include <imgui/imgui.h>
 #include <nexus/Nexus.h>
@@ -33,35 +36,15 @@ namespace Overlay
             }
         }
 
-        void HandleOverlayDrag()
-        {
-            static ImVec2 prevPos = SettingsManager::GetOverlayPosition();
-            static bool wasMoving = false;
-
-            const ImVec2 currentPos = ImGui::GetWindowPos();
-
-            if (currentPos.x != prevPos.x || currentPos.y != prevPos.y)
-            {
-                wasMoving = true;
-            }
-
-            if (wasMoving && !ImGui::IsMouseDown(ImGuiMouseButton_Left))
-            {
-                SettingsManager::SetOverlayPosition(currentPos);
-                wasMoving = false;
-                prevPos   = currentPos;
-            }
-        }
-
         void RenderBuffIcon(const Buff &buff, const ImVec2 &imageSize, const float &windowAlpha)
         {
-            if (const Texture_t *texture = LoadTexture(buff.id))
+            if (const Texture_t *texture = Texture::LoadBuffTex(buff.id))
                 ImGui::Image(texture->Resource, imageSize);
             else
                 ImGui::Dummy(imageSize);
 
-            // draw red X over reset-type buffs
-            if (buff.type == BuffType::Reset)
+            // draw red X over icon if buff should be removed
+            if (buff.remove)
             {
                 {
                     ImDrawList *drawList      = ImGui::GetWindowDrawList();
@@ -83,12 +66,13 @@ namespace Overlay
         void RenderBuffName(const Buff &buff, const ImVec2 &imageSize, const float &textHeight)
         {
             // center text vertically in cell
-            const ImVec2 cellMin = ImGui::GetCursorScreenPos();
-            const ImVec2 cellMax = ImVec2(cellMin.x + ImGui::GetColumnWidth(), cellMin.y + imageSize.y);
-            const float yOffset  = (imageSize.y - textHeight) * 0.5f;
+            const ImVec2 cellMin          = ImGui::GetCursorScreenPos();
+            const ImVec2 cellMax          = ImVec2(cellMin.x + ImGui::GetColumnWidth(), cellMin.y + imageSize.y);
+            const float yOffset           = (imageSize.y - textHeight) * 0.5f;
+            const std::string displayName = (buff.remove ? "Replace " : "") + BuffData::GetBuffName(buff.id);
 
             ImGui::SetCursorScreenPos(ImVec2(cellMin.x, cellMin.y + yOffset));
-            ImGuiUtil::TextOutlined("%s", buff.name.c_str());
+            ImGuiUtil::TextOutlined("%s", displayName.c_str());
             ImGui::SetCursorScreenPos(ImVec2(cellMin.x, cellMax.y));
         }
 
@@ -122,6 +106,7 @@ namespace Overlay
                                     ImGuiWindowFlags_NoCollapse |
                                     ImGuiWindowFlags_AlwaysAutoResize |
                                     ImGuiWindowFlags_NoNav |
+                                    ImGuiWindowFlags_NoMove |
                                     ImGuiWindowFlags_NoTitleBar;
 
         if (!UIState::IsOptionsPaneOpen)
@@ -153,12 +138,13 @@ namespace Overlay
         const Pivot windowAnchor  = SettingsManager::GetWindowAnchor();
         const Pivot overlayOrigin = SettingsManager::GetOverlayOrigin();
 
-        ImGui::SetNextWindowPos(GetPivotRelativePosition(offset, windowAnchor), ImGuiCond_Always, Utils::PivotToVec2(overlayOrigin));
+        ImGui::SetNextWindowPos(GetPivotRelativePosition(offset, windowAnchor), ImGuiCond_Always, Utils::PivotToImVec2(overlayOrigin));
 
-        ImGui::PushStyleVar(ImGuiStyleVar_Alpha, UIState::IsOptionsPaneOpen ? 1.0f : windowAlpha);     // always full alpha in options pane (no flashing effect)
-        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));                                // no padding around the content
-        ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0.0f, 0.0f));                            // no spacing between icons/names
-        ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(ImGui::GetStyle().CellPadding.x, 0.0f)); // no vertical padding in table cells
+        ImGui::PushStyleVar(ImGuiStyleVar_Alpha, UIState::IsOptionsPaneOpen ? 1.0f : windowAlpha); // always full alpha in options pane (no flashing effect)
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));                            // no padding around the content
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);                                 // no border
+        ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0.0f, 0.0f));                        // no spacing between icons/names
+        ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(10.0f, 0.0f));                       // no vertical padding in table cells
 
         if (ImGui::Begin(G::ADDON_NAME, nullptr, winFlags))
         {
@@ -174,7 +160,7 @@ namespace Overlay
                     RenderBuffIcon(buff, imageSize, windowAlpha);
 
                     if (SettingsManager::IsTooltipsEnabled())
-                        ImGuiUtil::HoverTooltip(buff.name);
+                        ImGuiUtil::HoverTooltip(BuffData::GetBuffName(buff.id));
 
                     if (SettingsManager::IsHorizontalMode())
                         ImGui::SameLine();
@@ -209,6 +195,6 @@ namespace Overlay
             }
         }
         ImGui::End();
-        ImGui::PopStyleVar(4); // window alpha + window padding + item spacing + cell padding
+        ImGui::PopStyleVar(5); // window alpha + window padding + window border size + item spacing + cell padding
     }
 }

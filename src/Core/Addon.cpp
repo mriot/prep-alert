@@ -58,7 +58,7 @@ void AddonLoad(AddonAPI_t *api)
         return;
     }
 
-    if ((G::MapDataMap = LoadMapData()).empty())
+    if ((WorldState::MapDataMap = MapData::Load()).empty())
     {
         Log::Critical("Failed to load map data");
         return;
@@ -72,10 +72,10 @@ void AddonLoad(AddonAPI_t *api)
     ImGui::SetAllocatorFunctions((void *(*)(size_t, void *))G::APIDefs->ImguiMalloc,
                                  (void (*)(void *, void *))G::APIDefs->ImguiFree);
 
-    for (const auto &[id, data] : G::MapDataMap)
-        G::SupportedMaps.insert(id);
+    for (const auto &[id, data] : WorldState::MapDataMap)
+        WorldState::SupportedMaps.insert(id);
 
-    Log::Info(std::format("{} supported maps", G::SupportedMaps.size()));
+    Log::Info(std::format("{} supported maps", WorldState::SupportedMaps.size()));
 
     G::APIDefs->GUI_Register(RT_Render, OnRender);
     G::APIDefs->GUI_Register(RT_OptionsRender, OnOptionsRender);

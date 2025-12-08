@@ -24,19 +24,8 @@ namespace
     struct BuffReminder
     {
         std::optional<Buff> buff;
-        bool isGenericDismissed         = false;
-        bool hasGenericRemindersEnabled = true;
-        bool isPlayerInCombat           = false;
-
-        bool isGenericBuff() const { return buff.has_value() && buff->id < 0; }
-
-        void clearBuff() { buff = {}; }
-
-        void reset()
-        {
-            buff.reset();
-            isGenericDismissed = false;
-        }
+        void reset() { buff.reset(); }
+        bool shouldRemoveBuff() const { return buff.has_value() && buff->id < 0; }
     };
 
     // artificially adjust the floor level based on map ID and player Y position if needed
@@ -76,44 +65,42 @@ namespace
 
         for (size_t i = 0; i < buffBar.Capacity; ++i)
         {
-            const auto &entry = buffBar.Entries[i];
-            if (entry.Hash == 0 || !entry.KVP.Value)
+            const auto &[KVP, Hash] = buffBar.Entries[i];
+            if (Hash == 0 || !KVP.Value)
                 continue;
 
-            ids.insert(static_cast<int>(entry.KVP.Value->EffectID));
+            ids.insert(static_cast<int>(KVP.Value->EffectID));
         }
         return ids;
     }
 
-    bool shouldAddBuffReminder(const BuffReminder &reminder, const std::unordered_set<int> &activeBuffIds)
+    bool shouldAddBuffReminder(BuffReminder &reminder, const std::unordered_set<int> &activeBuffIds)
     {
         if (!reminder.buff.has_value())
             return false;
 
-        if (reminder.isGenericBuff())
+        if (reminder.shouldRemoveBuff())
         {
-            if (!reminder.hasGenericRemindersEnabled)
-                return false;
-
             // check if any specific buff of the same type is active
-            for (const auto &[buffId, buffDef] : BuffDefs)
+            for (const auto &[buffId, buffDef] : BuffData::BuffDefs)
             {
                 if (buffDef.type != reminder.buff->type)
                     continue;
 
+                // TODO handle elsewhere and keep function pure
                 if (activeBuffIds.contains(buffId))
-                    return true; // some specific buff active, show reminder
+                {
+                    // load the specific buff info into the reminder
+                    reminder.buff->id     = buffId;
+                    reminder.buff->remove = true;
+                    return true; // some specific buff active, show reminder to replace it
+                }
 
             }
-            return false;
+            return false; // no specific buff of this type active, no reminder needed
         }
 
-        // player has buff - now check whether it SHOULD be active
-        if (activeBuffIds.contains(reminder.buff->id))
-            return reminder.buff->type == BuffType::Reset; // show reminder only if the player should remove it
-
-        // buff not active - show reminder
-        return reminder.buff->type != BuffType::Reset; // don't show reminder to remove a buff that's not active
+        return !activeBuffIds.contains(reminder.buff->id);
     }
 
     bool IsPlayerInSector(const Vec2 &pos, const Sector &sector, const int floorLevel)
@@ -157,38 +144,38 @@ void OnRender()
     static BuffReminder sigilSlayingReminder;
 
     if (SettingsManager::IsDebugWindowEnabled())
-        DebugOverlay::RenderDebugOverlay(buffReminders);
+        Debug::RenderDebugOverlay(buffReminders);
 
     if (!G::NexusLink->IsGameplay || G::MumbleLink->Context.IsMapOpen)
         return;
 
-    const MapTypeReminder reminderCfg = SettingsManager::GetReminder(G::CurrentContinent);
+    const MapTypeReminder reminderCfg = SettingsManager::GetReminder(WorldState::CurrentContinent);
 
-    // set up the draggable overlay when options are open
     if (UIState::IsOptionsPaneOpen)
     {
         buffReminders.clear();
 
-        const Buff genericUtilityBuff(BuffIds::GENERIC_ENHANCEMENT, "\"Potion of Calibration\"");
-        const Buff genericSigilBuff(BuffIds::NIGHT_SIGIL, "\"Sigil of the Night\"");
-        const Buff genericSigilSlayingBuff(BuffIds::GENERIC_SIGIL, "\"Sigil of Slaying\"");
+        constexpr Buff optionsUtilityBuff(BuffIds::REMOVE_ENHANCEMENT);
+        constexpr Buff optionsNightSigil(BuffIds::NIGHT_SIGIL);
+        constexpr Buff optionsSlayingSigil(BuffIds::REMOVE_SIGIL);
 
-        if (G::CurrentContinent == Continent::Unknown)
+        // for unsupported maps, always show all buffs in options pane
+        if (WorldState::CurrentContinent == Continent::Unknown) // TODO: works, but maybe change to a better check later
         {
-            buffReminders.push_back(genericUtilityBuff);
-            buffReminders.push_back(genericSigilBuff);
-            buffReminders.push_back(genericSigilSlayingBuff);
+            buffReminders.push_back(optionsUtilityBuff);
+            buffReminders.push_back(optionsNightSigil);
+            buffReminders.push_back(optionsSlayingSigil);
         }
         else
         {
             if (!reminderCfg.enabled)
                 return;
             if (reminderCfg.utility)
-                buffReminders.push_back(genericUtilityBuff);
-            if (reminderCfg.sigil)
-                buffReminders.push_back(genericSigilBuff);
-            if (reminderCfg.sigilSlaying)
-                buffReminders.push_back(genericSigilSlayingBuff);
+                buffReminders.push_back(optionsUtilityBuff);
+            if (reminderCfg.nightSigil)
+                buffReminders.push_back(optionsNightSigil);
+            if (reminderCfg.slayingSigil)
+                buffReminders.push_back(optionsSlayingSigil);
         }
     }
 
@@ -203,7 +190,7 @@ void OnRender()
     }
 
     // reset reminders if not on supported map or reminders disabled
-    if (!G::IsOnSupportedMap || !reminderCfg.enabled)
+    if (!WorldState::IsOnSupportedMap || !reminderCfg.enabled)
     {
         sigilReminder.reset();
         utilityReminder.reset();
@@ -222,47 +209,40 @@ void OnRender()
 
     buffReminders.clear(); // clear for new data
 
-    const auto activeBuffIds  = buildActiveBuffIdSet();
-    const bool playerInCombat = static_cast<bool>(G::MumbleLink->Context.IsInCombat);
-    const auto &currentMap    = G::CurrentMapData;
-    const float mapX          = G::MumbleLink->Context.Compass.PlayerPosition.X;
-    const float mapY          = G::MumbleLink->Context.Compass.PlayerPosition.Y;
-    const float playerY       = G::MumbleLink->AvatarPosition.Y; // there is no vertical position in compass
-
-    // TODO refactor this
-    utilityReminder.clearBuff();
-    utilityReminder.hasGenericRemindersEnabled = reminderCfg.defaultBuffs;
-    utilityReminder.isPlayerInCombat           = playerInCombat;
-
-    sigilReminder.clearBuff();
-    sigilReminder.hasGenericRemindersEnabled = reminderCfg.defaultBuffs;
-    sigilReminder.isPlayerInCombat           = playerInCombat;
-
-    sigilSlayingReminder.clearBuff();
-    sigilSlayingReminder.hasGenericRemindersEnabled = reminderCfg.defaultBuffs;
-    sigilSlayingReminder.isPlayerInCombat           = playerInCombat;
+    const auto activeBuffIds = buildActiveBuffIdSet();
+    const auto &currentMap   = WorldState::CurrentMapData;
+    const float mapX         = G::MumbleLink->Context.Compass.PlayerPosition.X;
+    const float mapY         = G::MumbleLink->Context.Compass.PlayerPosition.Y;
+    const float playerY      = G::MumbleLink->AvatarPosition.Y; // there is no vertical position in compass
+    int actualFloorLevel     = WorldState::CurrentMapFloor;
 
     // certain maps need special floor level overrides based on player Y position
     if (const auto override = getFloorLevelOverride(currentMap.id, playerY))
-        G::CurrentMapFloor  = *override;
+        actualFloorLevel    = *override;
 
-    G::CurrentSectorID = 0;
+    Debug::Info.actualFloorLevel = actualFloorLevel;
+
+    utilityReminder.reset();
+    sigilReminder.reset();
+    sigilSlayingReminder.reset();
+
+    WorldState::CurrentSectorID = 0;
 
     // check for sector specific buffs
-    for (auto &sector : currentMap.sectors)
+    for (const auto &sector : currentMap.sectors)
     {
-        if (!IsPlayerInSector({mapX, mapY}, sector, G::CurrentMapFloor))
+        if (!IsPlayerInSector({mapX, mapY}, sector, actualFloorLevel))
             continue;
 
-        G::CurrentSectorID = sector.id;
+        WorldState::CurrentSectorID = sector.id;
 
         if (reminderCfg.utility)
             utilityReminder.buff = sector.buffs.utility;
 
-        if (reminderCfg.sigil)
-            sigilReminder.buff = sector.buffs.sigil;
+        if (reminderCfg.nightSigil)
+            sigilReminder.buff = sector.buffs.sigilNight;
 
-        if (reminderCfg.sigilSlaying)
+        if (reminderCfg.slayingSigil)
             sigilSlayingReminder.buff = sector.buffs.sigilSlaying;
 
         break; // player can be in only one sector at a time
@@ -273,10 +253,10 @@ void OnRender()
     if (!utilityReminder.buff.has_value() && reminderCfg.utility)
         utilityReminder.buff = currentMap.default_buffs.utility;
 
-    if (!sigilReminder.buff.has_value() && reminderCfg.sigil)
-        sigilReminder.buff = currentMap.default_buffs.sigil;
+    if (!sigilReminder.buff.has_value() && reminderCfg.nightSigil)
+        sigilReminder.buff = currentMap.default_buffs.sigilNight;
 
-    if (!sigilSlayingReminder.buff.has_value() && reminderCfg.sigilSlaying)
+    if (!sigilSlayingReminder.buff.has_value() && reminderCfg.slayingSigil)
         sigilSlayingReminder.buff = currentMap.default_buffs.sigilSlaying;
 
     // build final buff reminder list

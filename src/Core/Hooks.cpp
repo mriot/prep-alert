@@ -1,5 +1,6 @@
 #include "Hooks.h"
 
+#include "UI/Debug/Debug.h"
 #include "Util/Validation.h"
 #include "aob-patterns/Patterns.h"
 #include "memtools/memtools.h"
@@ -24,7 +25,8 @@ namespace Hooks
     {
         const std::lock_guard lock(SetMapFloorLevelHook->Mutex);
 
-        G::CurrentMapFloor = floor_level;
+        WorldState::CurrentMapFloor  = floor_level;
+        Debug::Info.actualFloorLevel = floor_level;
 
         if (SetMapFloorLevelHook->OriginalFunction)
             SetMapFloorLevelHook->OriginalFunction(floor_level);
@@ -39,7 +41,8 @@ namespace Hooks
 
         std::string error;
 
-        void *fnSetMapFloorLevel = memtools::PatternScan(PATTERNS::SET_MAP_FLOOR_LEVEL, memtools::AdvWcard(2), memtools::Follow()).Scan();
+        void *fnSetMapFloorLevel = memtools::PatternScan(PATTERNS::SET_MAP_FLOOR_LEVEL, memtools::AdvWcard(2),
+                                                         memtools::Follow()).Scan();
 
         GW2RE::Validate(fnSetMapFloorLevel, error, "SetMapFloorLevel not found!");
 
