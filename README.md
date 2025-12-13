@@ -1,4 +1,7 @@
-# Prep Alert (beta)
+# PrepAlert (beta)
+
+[![latest release downloads](https://img.shields.io/github/downloads/mriot/prep-alert/latest/PrepAlert.dll?displayAssetName=false&label=latest%20release%20downloads&color=blue)](https://github.com/mriot/prep-alert/releases/latest)
+[![total downloads](https://img.shields.io/github/downloads/mriot/prep-alert/total?label=total%20downloads&color=red)](https://github.com/mriot/prep-alert/releases)
 
 A Guild Wars 2 Nexus addon that reminds you when important buffs such as
 <sub><img src="./docs/utility.png" height="20" /></sub> Enhancements and
@@ -54,8 +57,7 @@ The X and Y offset sliders can be clicked and dragged to quickly adjust the posi
 > Modifying Guild Wars 2 through any third-party software is not supported by ArenaNet.  
 > Use this addon at your own risk.
 
-Currently, the addon is in beta and not available in the Nexus library.
-<!-- You can install the addon directly through the in-game Nexus library with a single click. -->
+#### You can install the addon directly through the in-game Nexus library with a single click.
 
 Manual installation:
 
