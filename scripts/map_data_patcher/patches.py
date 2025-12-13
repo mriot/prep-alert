@@ -304,9 +304,17 @@ PATCHES = [
                 sector_id=181, buffs=Buffs(utility=INQUEST_SLAYING, sigil_slaying=INQUEST_SIGIL)
             ),
             # p3 cart
-            SectorPatch(
-                sector_id=172,
+            NewSector(
+                sector_id=-1,
+                name="P3 Cart",
                 buffs=Buffs(utility=NO_SLAYING_POTION, sigil_slaying=NO_SLAYING_SIGIL),
+                bounds=[
+                    [52372, 34745],
+                    [52417, 34841],
+                    [52422, 34948],
+                    [52284, 34951],
+                    [52294, 34786],
+                ],
             ),
             # p3 endboss
             SectorPatch(
