@@ -102,6 +102,7 @@ namespace Overlay
         }
 
         ImGuiWindowFlags winFlags = ImGuiWindowFlags_NoFocusOnAppearing |
+                                    ImGuiWindowFlags_NoBringToFrontOnFocus |
                                     ImGuiWindowFlags_NoBackground |
                                     ImGuiWindowFlags_NoCollapse |
                                     ImGuiWindowFlags_AlwaysAutoResize |
