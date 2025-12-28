@@ -426,9 +426,7 @@ PATCHES = [
     ),
     MapPatch(
         map_id=DungeonMap.CoE_EXPLORABLE,
-        default=Buffs(
-            utility=UNDEAD_SLAYING, sigil_night=NO_NIGHT_SIGIL, sigil_slaying=UNDEAD_SIGIL
-        ),
+        default=Buffs(utility=UNDEAD_SLAYING, sigil_night=NIGHT_SIGIL, sigil_slaying=UNDEAD_SIGIL),
         floors=[-10, -11],
         sector_patches=[
             # The Aquarium
