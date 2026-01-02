@@ -31,7 +31,7 @@ extern "C" __declspec(dllexport) AddonDefinition_t *GetAddonDef()
 {
     addonDef.Signature   = static_cast<uint32_t>(0xBADA55);
     addonDef.APIVersion  = NEXUS_API_VERSION;
-    addonDef.Name        = std::format("{} (beta)", G::ADDON_NAME).c_str();
+    addonDef.Name        = G::ADDON_NAME;
     addonDef.Version     = {V_MAJOR, V_MINOR, V_BUILD, V_REVISION};
     addonDef.Author      = "Eredin.4187";
     addonDef.Description = "Location-aware damage buff reminders for Dungeons and Fractal CMs";

@@ -1,7 +1,7 @@
-# PrepAlert (beta)
+# PrepAlert
 
-[![latest release downloads](https://img.shields.io/github/downloads/mriot/prep-alert/latest/PrepAlert.dll?displayAssetName=false&label=latest%20release%20downloads&color=blue)](https://github.com/mriot/prep-alert/releases/latest)
-[![total downloads](https://img.shields.io/github/downloads/mriot/prep-alert/total?label=total%20downloads&color=red)](https://github.com/mriot/prep-alert/releases)
+![release](https://img.shields.io/github/v/release/mriot/prep-alert?style=for-the-badge&labelColor=%23101411&color=%234493f8)
+![downloads](https://img.shields.io/github/downloads/mriot/prep-alert/total?style=for-the-badge&labelColor=%23101411&color=%234493f8)
 
 A Guild Wars 2 Nexus addon that reminds you when important buffs such as
 <sub><img src="./docs/utility.png" height="20" /></sub> Enhancements and
