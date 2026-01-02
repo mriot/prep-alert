@@ -1,4 +1,4 @@
-# PrepAlert (beta)
+# PrepAlert
 
 [![latest release downloads](https://img.shields.io/github/downloads/mriot/prep-alert/latest/PrepAlert.dll?displayAssetName=false&label=latest%20release%20downloads&color=blue)](https://github.com/mriot/prep-alert/releases/latest)
 [![total downloads](https://img.shields.io/github/downloads/mriot/prep-alert/total?label=total%20downloads&color=red)](https://github.com/mriot/prep-alert/releases)

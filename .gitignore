@@ -37,6 +37,9 @@
 x64/
 *.vcxproj.user
 
+# IDE
+.idea/
+
 # Python
 __pycache__
 .venv
