@@ -36,6 +36,7 @@ namespace BuffData
         { BuffIds::DREDGE_SLAYING,             { .resourceID = RC_DREDGE_SLAYING,            .name = "Dredge Potion",            .type = BuffType::Utility       } },
         { BuffIds::SCARLETS_ARMIES_SLAYING,    { .resourceID = RC_DEMON_SLAYING,             .name = "Scarlet's Armies Potion",  .type = BuffType::Utility       } }, // shares icon with demon slaying
         { BuffIds::GHOST_SLAYING,              { .resourceID = RC_GHOST_SLAYING,             .name = "Ghost Potion",             .type = BuffType::Utility       } },
+        { BuffIds::MORDREM_SLAYING,            { .resourceID = RC_MORDREM_SLAYING,           .name = "Mordrem Potion",           .type = BuffType::Utility       } },
 
         // Sigil
         { BuffIds::NIGHT_SIGIL,                { .resourceID = RC_NIGHT_SIGIL,               .name = "Night Sigil",              .type = BuffType::NightSigil    } },

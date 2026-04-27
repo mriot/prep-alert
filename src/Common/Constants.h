@@ -25,6 +25,7 @@ namespace BuffIds
     constexpr int DREDGE_SLAYING          = 9949;
     constexpr int SCARLETS_ARMIES_SLAYING = 23228;
     constexpr int GHOST_SLAYING           = 10115;
+    constexpr int MORDREM_SLAYING         = 91350;
 
     // SIGILS
     constexpr int REMOVE_SIGIL          = -2;

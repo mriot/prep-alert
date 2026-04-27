@@ -15,6 +15,7 @@ from buffs import (
     ICEBROOD_SLAYING,
     INQUEST_SIGIL,
     INQUEST_SLAYING,
+    MORDREM_SLAYING,
     NIGHT_SIGIL,
     NIGHTMARE_COURT_SIGIL,
     NIGHTMARE_COURT_SLAYING,
@@ -480,7 +481,8 @@ PATCHES = [
             NewSector(
                 sector_id=-2,
                 name="Husk",
-                buffs=Buffs(utility=NO_SLAYING_POTION, sigil_slaying=NO_SLAYING_SIGIL),
+                floors=[-11, -10],
+                buffs=Buffs(utility=MORDREM_SLAYING, sigil_slaying=NO_SLAYING_SIGIL),
                 bounds=[
                     [53623, 37703],
                     [53820, 37704],

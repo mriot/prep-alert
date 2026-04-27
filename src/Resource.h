@@ -21,19 +21,20 @@
 #define RC_ICEBROOD_SLAYING           15
 #define RC_SONS_OF_SVANIR_SLAYING     16
 #define RC_SCARLETS_ARMIES_SLAYING    17
+#define RC_MORDREM_SLAYING            18
 
 // Sigils
-#define RC_NIGHT_SIGIL                18
-#define RC_SERPENT_SIGIL              19
-#define RC_ICEBROOD_SIGIL             20
-#define RC_DEMON_SIGIL                21
-#define RC_DREDGE_SIGIL               22
-#define RC_GHOST_SIGIL                23
-#define RC_OUTLAW_SIGIL               24
-#define RC_NIGHTMARE_COURT_SIGIL      25
-#define RC_INQUEST_SIGIL              26
-#define RC_DESTROYER_SIGIL            27
-#define RC_FLAME_LEGION_SIGIL         28
-#define RC_SONS_OF_SVANIR_SIGIL       29
-#define RC_UNDEAD_SIGIL               30
-#define RC_ELEMENTAL_SIGIL            31
+#define RC_NIGHT_SIGIL                19
+#define RC_SERPENT_SIGIL              20
+#define RC_ICEBROOD_SIGIL             21
+#define RC_DEMON_SIGIL                22
+#define RC_DREDGE_SIGIL               23
+#define RC_GHOST_SIGIL                24
+#define RC_OUTLAW_SIGIL               25
+#define RC_NIGHTMARE_COURT_SIGIL      26
+#define RC_INQUEST_SIGIL              27
+#define RC_DESTROYER_SIGIL            28
+#define RC_FLAME_LEGION_SIGIL         29
+#define RC_SONS_OF_SVANIR_SIGIL       30
+#define RC_UNDEAD_SIGIL               31
+#define RC_ELEMENTAL_SIGIL            32
